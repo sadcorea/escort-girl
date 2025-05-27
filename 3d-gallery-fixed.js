@@ -89,7 +89,7 @@ async function init3DGallery() {
     renderer.setClearColor(0x000000, 0);
 
     // 이미지 로드 및 배치
-    await loadImages();
+    await loadImages(20);
 
     // 마우스 이벤트 설정
     setupMouseEvents(canvas);
@@ -104,7 +104,7 @@ async function init3DGallery() {
 }
 
 // 🖼️ 이미지 로드 및 3D 배치
-async function loadImages() {
+async function loadImages(20) {
     console.log('📸 이미지 로딩 프로세스 시작...');
     
     // JSON에서 이미지 목록 로드
