@@ -153,7 +153,7 @@ async function loadImages() {
                 sprite.position.set(x, y, z);
                 
                 // 원본 비율 유지 (크기 증가)
-                const baseSize = 1.2;  // 0.8 → 1.2로 크기 증가
+                const baseSize = 2.0;  // 0.8 → 1.2로 크기 증가
                 if (aspectRatio > 1) {
                     sprite.scale.set(baseSize, baseSize / aspectRatio, 1);
                 } else {
