@@ -73,6 +73,17 @@
             border-bottom-color: #667eea;
         }
 
+        /* 에코걸 메뉴만 빨간색 */
+        .ecogirl-nav {
+            color: #ff4757 !important;
+            font-weight: 600;
+        }
+
+        .ecogirl-nav:hover, .ecogirl-nav.active {
+            color: #ff3742 !important;
+            border-bottom-color: #ff4757 !important;
+        }
+
         .header-actions {
             display: flex;
             align-items: center;
@@ -101,6 +112,34 @@
             border: none;
             cursor: pointer;
             font-size: 1.2rem;
+        }
+
+        /* 🌟 상단 에코걸 안내 섹션 */
+        .ecogirl-intro-top {
+            background: linear-gradient(135deg, #f8f9ff 0%, #e8f0ff 100%);
+            padding: 3rem 2rem;
+            border-bottom: 1px solid #e0e8ff;
+        }
+
+        .intro-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .intro-container h2 {
+            font-size: 2.2rem;
+            color: #333;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .intro-container p {
+            font-size: 1.1rem;
+            color: #666;
+            line-height: 1.8;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
         /* 🎨 메인 3D 갤러리 섹션 */
@@ -273,6 +312,18 @@
                 width: 250px;
             }
 
+            .ecogirl-intro-top {
+                padding: 2rem 1rem;
+            }
+
+            .intro-container h2 {
+                font-size: 1.8rem;
+            }
+
+            .intro-container p {
+                font-size: 1rem;
+            }
+
             .gallery-background-title {
                 font-size: 2.5rem;
             }
@@ -309,7 +360,7 @@
             <a href="#" class="logo">DNRed</a>
             
             <nav class="main-nav">
-                <div class="nav-item active" data-menu="ecogirl">기획전</div>
+                <div class="nav-item active ecogirl-nav" data-menu="ecogirl">에코걸</div>
                 <div class="nav-item" data-menu="karaoke">가라오케</div>
                 <div class="nav-item" data-menu="poolvilla">풀빌라</div>
                 <div class="nav-item" data-menu="massage">마사지</div>
@@ -325,6 +376,14 @@
             </div>
         </div>
     </header>
+
+    <!-- 🌟 에코걸 안내 섹션 (상단 이동) -->
+    <section class="ecogirl-intro-top">
+        <div class="intro-container">
+            <h2>에코걸과 함께하는 다낭 여행</h2>
+            <p>현지 문화를 아는 친절한 가이드와 함께 특별한 다낭을 경험하세요. 숨은 명소부터 인기 관광지까지, 에코걸들이 안내하는 프리미엄 여행 서비스를 제공합니다.</p>
+        </div>
+    </section>
 
     <!-- 🎨 메인 3D 갤러리 섹션 -->
     <section class="main-gallery">
@@ -362,11 +421,6 @@
 
     <!-- 🎨 콘텐츠 섹션 -->
     <div class="content-sections">
-        <section class="section" id="ecogirlIntro">
-            <h2>에코걸과 함께하는 다낭 여행</h2>
-            <p>현지 문화를 아는 친절한 가이드와 함께 특별한 다낭을 경험하세요. 숨은 명소부터 인기 관광지까지, 에코걸들이 안내하는 프리미엄 여행 서비스를 제공합니다.</p>
-        </section>
-
         <!-- 💰 중간 광고 배너 -->
         <div class="ad-banner">
             <div>🎯 중간 광고 공간 🎯</div>
