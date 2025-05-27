@@ -49,31 +49,60 @@ async function checkImageExists(url) {
     });
 }
 
-function getImageUrl(baseName, folder = 'images/profiles/') {
-    // 직접 PNG 파일 경로 반환 (파일이 존재하는 것 확인됨)
-    return `${folder}${baseName}.png`;
+// 🖼️ JSON 기반 동적 이미지 관리 시스템 (게시판 연동 준비)
+let availableImages = []; // JSON에서 로드할 이미지 목록
+
+// JSON에서 이미지 목록 가져오기
+async function loadImageList() {
+    try {
+        const response = await fetch('data/images.json');
+        const data = await response.json();
+        availableImages = data.images;
+        console.log(`📸 ${availableImages.length}개 이미지 로드됨`);
+        return availableImages;
+    } catch (error) {
+        console.error('이미지 목록 로드 실패:', error);
+        // 실패 시 기본 이미지 사용
+        availableImages = [
+            { id: 1, filename: '250524-15-10_00002_', title: 'Default Image' }
+        ];
+        return availableImages;
+    }
 }
 
-// 게시판 데이터 연동 준비용 함수 (실제 존재하는 이미지들 사용)
-function getImageUrls() {
-    // 실제 존재하는 이미지 파일들
-    const imageNames = [
-        '250524-15-10_00002_',
-        '250524-15-38_00003_',
-        '250524-16-13_00001_',
-        '250524-16-13_00008_',
-        '250524-16-37_00001_',
-        '250524-17-33_00005_',
-        '250524-18-19_00006_',
-        '250524-18-30_00013_',
-        '250524-19-41_00002_',
-        '250524-19-55_00004_',
-        // 12개 맞추기 위해 추가
-        '250524-15-10_00002_',
-        '250524-15-38_00003_'
-    ];
+// 랜덤 이미지 선택 (JSON 기반)
+function getRandomImages(count = 12) {
+    if (availableImages.length === 0) {
+        console.warn('이미지 목록이 비어있습니다.');
+        return [];
+    }
     
-    return imageNames.map(name => getImageUrl(name));
+    const selectedImages = [];
+    for (let i = 0; i < count; i++) {
+        const randomIndex = Math.floor(Math.random() * availableImages.length);
+        selectedImages.push(availableImages[randomIndex]);
+    }
+    
+    console.log(`🎲 ${count}개 랜덤 이미지 선택됨`);
+    return selectedImages;
+}
+
+function getImageUrl(imageData) {
+    return `images/profiles/${imageData.filename}.png`;
+}
+
+// 게시판 연동 준비용 함수 (JSON 기반 - 나중에 API로 교체)
+async function getImageUrls() {
+    // JSON에서 이미지 목록 로드
+    await loadImageList();
+    
+    // 랜덤 이미지 선택
+    const selectedImages = getRandomImages(12);
+    
+    // 현재 선택된 이미지 정보 저장 (클릭 시 사용)
+    window.currentSelectedImages = selectedImages;
+    
+    return selectedImages.map(imageData => getImageUrl(imageData));
 }
 
 // 실제 이미지 파일들 (자동 확장자 감지 + 게시판 연동 준비)
@@ -100,7 +129,7 @@ async function init3DGallery() {
     renderer.setClearColor(0x000000, 0);
 
     // 이미지 로드 및 스프라이트 생성
-    loadImages();
+    await loadImages();
 
     // 마우스 이벤트 리스너
     setupMouseEvents(canvas);
@@ -112,8 +141,11 @@ async function init3DGallery() {
     animate();
 }
 
-// 이미지 로드 및 3D 구체 배치
-function loadImages() {
+// 이미지 로드 및 3D 원통 배치
+async function loadImages() {
+    // JSON에서 이미지 URL 목록 가져오기
+    const imageUrls = await getImageUrls();
+    
     const loader = new THREE.TextureLoader();
     const radius = 3;
     const imageCount = imageUrls.length;
@@ -232,12 +264,12 @@ function setupMouseEvents(canvas) {
             // 드래그 거리 누적
             dragDistance += Math.abs(deltaX) + Math.abs(deltaY);
             
-            // 이미지를 직접 잡고 끄는 느낌 (드래그 방향과 반대로 회전)
-            targetRotation.y -= deltaX * 0.01;  // 이미지 끌기 느낌
-            targetRotation.x -= deltaY * 0.01;  // 이미지 끌기 느낌
+            // 이미지를 직접 잡고 끄는 느낌 (완전 반전)
+            targetRotation.y += deltaX * 0.01;  // 완전 반대로
+            targetRotation.x += deltaY * 0.01;  // 완전 반대로
             
-            // X축 회전 제한 (더 자유롭게 회전 가능)
-            targetRotation.x = Math.max(-Math.PI/2, Math.min(Math.PI/2, targetRotation.x));
+            // X축 회전 제한 제거 (360도 회전 허용)
+            // targetRotation.x = Math.max(-Math.PI/2, Math.min(Math.PI/2, targetRotation.x));
         }
         
         mouse.x = event.clientX;
@@ -263,11 +295,12 @@ function setupMouseEvents(canvas) {
             const deltaX = touch.clientX - mouse.x;
             const deltaY = touch.clientY - mouse.y;
             
-            // 이미지를 직접 잡고 끄는 느낌
-            targetRotation.y -= deltaX * 0.01;  // 이미지 끌기 느낌
-            targetRotation.x -= deltaY * 0.01;  // 이미지 끌기 느낌
+            // 이미지를 직접 잡고 끄는 느낌 (완전 반전)
+            targetRotation.y += deltaX * 0.01;  // 완전 반대로
+            targetRotation.x += deltaY * 0.01;  // 완전 반대로
             
-            targetRotation.x = Math.max(-Math.PI/2, Math.min(Math.PI/2, targetRotation.x));
+            // X축 회전 제한 제거 (360도 회전 허용)
+            // targetRotation.x = Math.max(-Math.PI/2, Math.min(Math.PI/2, targetRotation.x));
             
             mouse.x = touch.clientX;
             mouse.y = touch.clientY;
@@ -347,29 +380,36 @@ function animate() {
     renderer.render(scene, camera);
 }
 
-// 이미지 클릭 핸들러
+// 이미지 클릭 핸들러 (정확한 클릭 감지)
 function handleImageClick(event) {
-    // 중앙에 가장 가까운 이미지 찾기
-    let closestSprite = null;
-    let minDistance = Infinity;
-    let closestIndex = -1;
-
-    imageSprites.forEach((item, index) => {
-        const sprite = item.sprite;
-        const distance = sprite.position.distanceTo(camera.position);
+    // 마우스 좌표를 정규화된 디바이스 좌표로 변환
+    const rect = renderer.domElement.getBoundingClientRect();
+    const mouse = new THREE.Vector2();
+    
+    mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+    
+    // 레이캐스터 생성
+    const raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(mouse, camera);
+    
+    // 스프라이트들과의 교차점 찾기
+    const sprites = imageSprites.map(item => item.sprite);
+    const intersects = raycaster.intersectObjects(sprites);
+    
+    // 교차점이 있으면 클릭된 것으로 처리
+    if (intersects.length > 0) {
+        const clickedSprite = intersects[0].object;
         
-        if (distance < minDistance) {
-            minDistance = distance;
-            closestSprite = sprite;
-            closestIndex = index;
+        // 클릭된 스프라이트의 인덱스 찾기
+        const clickedIndex = imageSprites.findIndex(item => item.sprite === clickedSprite);
+        
+        if (clickedIndex >= 0 && currentSelectedEcoGirls[clickedIndex]) {
+            const ecoGirlId = currentSelectedEcoGirls[clickedIndex].id;
+            window.location.href = `ecogirl-detail.html?id=${ecoGirlId}`;
         }
-    });
-
-    // 가장 가까운 이미지가 있으면 상세페이지로 이동
-    if (closestSprite && closestIndex >= 0 && currentSelectedEcoGirls[closestIndex]) {
-        const ecoGirlId = currentSelectedEcoGirls[closestIndex].id;
-        window.location.href = `ecogirl-detail.html?id=${ecoGirlId}`;
     }
+    // 교차점이 없으면 아무것도 하지 않음 (배경 클릭)
 }
 
 // 페이지 로드 시 3D 갤러리 초기화
