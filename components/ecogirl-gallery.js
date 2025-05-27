@@ -128,7 +128,7 @@ class EcogirlGallery {
         console.log('📸 에코걸 이미지 로딩 시작...');
         
         await this.loadImageList();
-        const selectedImages = this.getRandomImages(12);
+        const selectedImages = this.getRandomImages(20);
         window.currentSelectedEcogirlImages = selectedImages;
         
         const loader = new THREE.TextureLoader();

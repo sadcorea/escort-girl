@@ -105,24 +105,121 @@ class KaraokeSection {
         this.setupAdClickEvents();
     }
 
-    // 🗺️ 지도 렌더링 (구글 맵스 API 대신 임시)
+    // 🗺️ 구글 맵 렌더링
     renderMap() {
         const mapContainer = document.getElementById('karaokeMapContainer');
         if (!mapContainer) return;
 
-        // 임시로 핀 리스트 표시 (나중에 실제 지도로 교체)
-        mapContainer.innerHTML = `
-            <div class="map-pins-list">
-                <h3>🎤 가라오케 위치</h3>
-                ${this.karaokeLocations.map(location => `
-                    <div class="map-pin" data-location-id="${location.id}" data-ad-id="${location.adId}">
-                        <div class="pin-icon ${location.type}">📍</div>
-                        <div class="pin-info">
-                            <h4>${location.name}</h4>
-                            <p>${location.address}</p>
+        // 구글 맵 초기화
+        const mapOptions = {
+            center: { lat: 16.0544, lng: 108.2022 }, // 다낭 중심
+            zoom: 13,
+            mapTypeControl: false,
+            streetViewControl: false,
+            fullscreenControl: true,
+            zoomControl: true,
+            styles: [
+                {
+                    featureType: "poi",
+                    elementType: "labels",
+                    stylers: [{ visibility: "off" }]
+                }
+            ]
+        };
+
+        try {
+            this.map = new google.maps.Map(mapContainer, mapOptions);
+            
+            // 마커들 추가
+            this.addMarkers();
+            
+            console.log('✅ 구글 맵 로드 완료');
+        } catch (error) {
+            console.error('❌ 구글 맵 로드 실패:', error);
+            // 실패 시 기존 핀 리스트 표시
+            this.renderMapFallback();
+        }
+    }
+
+    // 📍 마커들 추가
+    addMarkers() {
+        this.markers = [];
+        
+        this.karaokeLocations.forEach(location => {
+            const marker = new google.maps.Marker({
+                position: { lat: location.lat, lng: location.lng },
+                map: this.map,
+                title: location.name,
+                icon: {
+                    url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="40" viewBox="0 0 30 40">
+                            <path d="M15 0C6.7 0 0 6.7 0 15c0 15 15 25 15 25s15-10 15-25C30 6.7 23.3 0 15 0z" fill="#667eea"/>
+                            <circle cx="15" cy="15" r="8" fill="white"/>
+                            <text x="15" y="19" text-anchor="middle" font-size="16" fill="#667eea">🎤</text>
+                        </svg>
+                    `),
+                    scaledSize: new google.maps.Size(30, 40),
+                    anchor: new google.maps.Point(15, 40)
+                }
+            });
+
+            // 정보창 생성
+            const ad = this.karaokeAds.find(a => a.id == location.adId);
+            if (ad) {
+                const infoWindow = new google.maps.InfoWindow({
+                    content: `
+                        <div style="padding: 10px; max-width: 200px;">
+                            <h3 style="margin: 0 0 8px 0; color: #333;">${ad.name}</h3>
+                            <p style="margin: 0 0 5px 0; font-size: 0.9rem; color: #666;">${ad.description}</p>
+                            <p style="margin: 0 0 8px 0; font-size: 0.8rem; color: #888;">📍 ${ad.location}</p>
+                            <p style="margin: 0 0 8px 0; font-size: 0.8rem; color: #888;">💰 ${ad.price}</p>
+                            <button onclick="window.karaokeSection.openAdDetail(${ad.id})" 
+                                    style="background: #667eea; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">
+                                상세보기
+                            </button>
                         </div>
-                    </div>
-                `).join('')}
+                    `
+                });
+
+                marker.addListener('click', () => {
+                    // 다른 정보창들 닫기
+                    this.markers.forEach(m => {
+                        if (m.infoWindow) m.infoWindow.close();
+                    });
+                    
+                    infoWindow.open(this.map, marker);
+                });
+
+                marker.infoWindow = infoWindow;
+            }
+
+            this.markers.push(marker);
+        });
+    }
+
+    // 🗺️ 구글 맵 실패 시 대체 렌더링 (스크롤 없이)
+    renderMapFallback() {
+        const mapContainer = document.getElementById('karaokeMapContainer');
+        if (!mapContainer) return;
+
+        mapContainer.innerHTML = `
+            <div class="map-pins-grid">
+                <h3>🎤 가라오케 위치</h3>
+                <div class="pins-grid">
+                    ${this.karaokeLocations.map(location => {
+                        const ad = this.karaokeAds.find(a => a.id == location.adId);
+                        return `
+                            <div class="map-pin-card" data-location-id="${location.id}" data-ad-id="${location.adId}">
+                                <div class="pin-header">
+                                    <span class="pin-icon">🎤</span>
+                                    <h4>${location.name}</h4>
+                                </div>
+                                <p class="pin-address">${location.address}</p>
+                                ${ad ? `<p class="pin-price">${ad.price}</p>` : ''}
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
             </div>
         `;
 
@@ -159,14 +256,17 @@ class KaraokeSection {
     }
 
     // 📄 광고 상세 페이지 열기
-    openAdDetail(ad) {
+    openAdDetail(adId) {
+        const ad = this.karaokeAds.find(a => a.id == adId);
+        if (!ad) return;
+        
         // 새 창으로 해당 업체 게시판 열기
         const url = ad.link || `/karaoke/detail/${ad.id}`;
         console.log(`🔗 ${ad.name} 상세 페이지 이동:`, url);
         
         // 실제로는 새 창 또는 페이지 이동
         // window.open(url, '_blank');
-        alert(`${ad.name} 상세 페이지로 이동합니다.\n문의: ${ad.contact}`);
+        alert(`${ad.name} 상세 페이지로 이동합니다.\n문의: ${ad.contact}\n\n실제 서비스에서는 해당 업체 게시판으로 이동합니다.`);
     }
 
     // 🎭 CSS 스타일 추가
@@ -180,6 +280,14 @@ class KaraokeSection {
                 max-width: 1200px;
                 margin: 4rem auto;
                 padding: 0 2rem;
+                opacity: 0;
+                transform: translateY(50px);
+                transition: all 0.8s ease;
+            }
+
+            .karaoke-section.animate-in {
+                opacity: 1;
+                transform: translateY(0);
             }
 
             .section-header {
@@ -312,6 +420,81 @@ class KaraokeSection {
                 color: #666;
             }
 
+            /* 구글 맵 스타일 */
+            .gm-style {
+                border-radius: 10px;
+            }
+
+            /* 대체 핀 그리드 (스크롤 없이) */
+            .map-pins-grid {
+                padding: 2rem;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .map-pins-grid h3 {
+                margin-bottom: 1.5rem;
+                color: #333;
+                text-align: center;
+            }
+
+            .pins-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 1rem;
+                flex: 1;
+                align-content: start;
+            }
+
+            .map-pin-card {
+                background: white;
+                border-radius: 8px;
+                padding: 1rem;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                border: 1px solid #e0e0e0;
+                height: fit-content;
+            }
+
+            .map-pin-card:hover {
+                background: #f0f2ff;
+                border-color: #667eea;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            }
+
+            .pin-header {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .pin-icon {
+                font-size: 1.2rem;
+            }
+
+            .pin-header h4 {
+                margin: 0;
+                color: #333;
+                font-size: 1rem;
+            }
+
+            .pin-address {
+                margin: 0 0 0.3rem 0;
+                font-size: 0.8rem;
+                color: #666;
+            }
+
+            .pin-price {
+                margin: 0;
+                font-size: 0.8rem;
+                color: #667eea;
+                font-weight: 500;
+            }
+
+            /* 기존 리스트 스타일 제거 */
             .map-pins-list {
                 padding: 2rem;
                 height: 100%;
@@ -338,12 +521,6 @@ class KaraokeSection {
             .map-pin:hover {
                 background: #f0f2ff;
                 transform: translateX(5px);
-            }
-
-            .pin-icon {
-                font-size: 1.5rem;
-                width: 2rem;
-                text-align: center;
             }
 
             .pin-info h4 {
@@ -413,6 +590,9 @@ class KaraokeSection {
         console.log('🎤 가라오케 섹션 초기화 시작...');
 
         try {
+            // 전역 참조 설정 (구글 맵 정보창에서 사용)
+            window.karaokeSection = this;
+
             // 스타일 추가
             this.addStyles();
 
@@ -431,11 +611,50 @@ class KaraokeSection {
             // 지도 렌더링
             this.renderMap();
 
+            // 스크롤 애니메이션 설정
+            this.setupScrollAnimation();
+
             this.isInitialized = true;
             console.log('✅ 가라오케 섹션 초기화 완료!');
 
         } catch (error) {
             console.error('❌ 가라오케 섹션 초기화 실패:', error);
+        }
+    }
+
+    // 🎭 스크롤 애니메이션 설정
+    setupScrollAnimation() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-in');
+                    
+                    // 지도도 애니메이션과 함께 나타나게
+                    setTimeout(() => {
+                        const mapContainer = entry.target.querySelector('.map-container');
+                        if (mapContainer) {
+                            mapContainer.style.opacity = '0';
+                            mapContainer.style.transform = 'scale(0.95)';
+                            mapContainer.style.transition = 'all 0.6s ease 0.3s';
+                            
+                            setTimeout(() => {
+                                mapContainer.style.opacity = '1';
+                                mapContainer.style.transform = 'scale(1)';
+                            }, 100);
+                        }
+                    }, 200);
+                    
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.2,
+            rootMargin: '0px 0px -50px 0px'
+        });
+
+        const karaokeSection = this.container.querySelector('.karaoke-section');
+        if (karaokeSection) {
+            observer.observe(karaokeSection);
         }
     }
 
