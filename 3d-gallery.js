@@ -120,6 +120,10 @@ function loadImages() {
 
     imageUrls.forEach((url, index) => {
         loader.load(url, (texture) => {
+            // 텍스처 원본 크기 가져오기
+            const img = texture.image;
+            const aspectRatio = img.width / img.height;
+            
             // 스프라이트 재질 생성
             const spriteMaterial = new THREE.SpriteMaterial({ 
                 map: texture,
@@ -130,16 +134,26 @@ function loadImages() {
             // 스프라이트 생성
             const sprite = new THREE.Sprite(spriteMaterial);
             
-            // 구체 표면에 배치 (구면 좌표계)
-            const phi = Math.acos(-1 + (2 * index) / imageCount);
-            const theta = Math.sqrt(imageCount * Math.PI) * phi;
+            // 원통형 배치 (구형보다 더 직관적)
+            const angle = (index / imageCount) * Math.PI * 2;
+            const radius = 3;
+            const height = (index % 3 - 1) * 1.5; // 3단계 높이
             
-            const x = radius * Math.cos(theta) * Math.sin(phi);
-            const y = radius * Math.sin(theta) * Math.sin(phi);
-            const z = radius * Math.cos(phi);
+            const x = radius * Math.cos(angle);
+            const y = height;
+            const z = radius * Math.sin(angle);
             
             sprite.position.set(x, y, z);
-            sprite.scale.set(0.8, 1.0, 1); // 3:4 비율 (폭:높이 = 3:4)
+            
+            // 원본 이미지 비율 유지 (기본 크기 0.8)
+            const baseSize = 0.8;
+            if (aspectRatio > 1) {
+                // 가로가 더 긴 경우
+                sprite.scale.set(baseSize, baseSize / aspectRatio, 1);
+            } else {
+                // 세로가 더 긴 경우
+                sprite.scale.set(baseSize * aspectRatio, baseSize, 1);
+            }
             
             // 항상 카메라를 향하도록 설정
             sprite.lookAt(camera.position);
@@ -218,11 +232,12 @@ function setupMouseEvents(canvas) {
             // 드래그 거리 누적
             dragDistance += Math.abs(deltaX) + Math.abs(deltaY);
             
-            targetRotation.y += deltaX * 0.01;
-            targetRotation.x += deltaY * 0.01;
+            // 마우스 방향과 동일하게 수정 (음수 제거)
+            targetRotation.y -= deltaX * 0.01;  // 방향 반전
+            targetRotation.x -= deltaY * 0.01;  // 방향 반전
             
-            // X축 회전 제한
-            targetRotation.x = Math.max(-Math.PI/3, Math.min(Math.PI/3, targetRotation.x));
+            // X축 회전 제한 (더 자유롭게 회전 가능)
+            targetRotation.x = Math.max(-Math.PI/2, Math.min(Math.PI/2, targetRotation.x));
         }
         
         mouse.x = event.clientX;
@@ -248,10 +263,11 @@ function setupMouseEvents(canvas) {
             const deltaX = touch.clientX - mouse.x;
             const deltaY = touch.clientY - mouse.y;
             
-            targetRotation.y += deltaX * 0.01;
-            targetRotation.x += deltaY * 0.01;
+            // 마우스와 동일한 방향으로 수정
+            targetRotation.y -= deltaX * 0.01;  // 방향 반전
+            targetRotation.x -= deltaY * 0.01;  // 방향 반전
             
-            targetRotation.x = Math.max(-Math.PI/3, Math.min(Math.PI/3, targetRotation.x));
+            targetRotation.x = Math.max(-Math.PI/2, Math.min(Math.PI/2, targetRotation.x));
             
             mouse.x = touch.clientX;
             mouse.y = touch.clientY;
