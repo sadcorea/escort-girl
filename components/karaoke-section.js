@@ -80,23 +80,20 @@ class KaraokeSection {
 
         adsContainer.innerHTML = this.karaokeAds.map(ad => `
             <div class="ad-box ${ad.featured ? 'featured' : ''}" data-ad-id="${ad.id}">
-                <div class="ad-image">
-                    <img src="images/ads/${ad.image}" alt="${ad.name}" onerror="this.src='images/ads/default-karaoke.jpg'">
-                    ${ad.featured ? '<div class="featured-badge">인기</div>' : ''}
-                </div>
+                ${ad.featured ? '<div class="featured-badge">🔥 HOT</div>' : ''}
                 <div class="ad-content">
                     <h3 class="ad-title">${ad.name}</h3>
-                    <p class="ad-description">${ad.description}</p>
+                    <p class="ad-description">💋 ${ad.description}</p>
                     <div class="ad-info">
                         <div class="ad-location">📍 ${ad.location}</div>
                         <div class="ad-price">💰 ${ad.price}</div>
                     </div>
                     <div class="ad-contact">
-                        <span>문의: ${ad.contact}</span>
+                        📞 ${ad.contact}
                     </div>
                 </div>
                 <div class="ad-overlay">
-                    <button class="ad-button">상세보기</button>
+                    <button class="ad-button">지금 예약하기 💕</button>
                 </div>
             </div>
         `).join('');
@@ -319,41 +316,74 @@ class KaraokeSection {
             .ads-container {
                 display: flex;
                 flex-direction: column;
-                gap: 1rem;
-                max-height: 600px;
+                gap: 1.5rem;
+                height: 600px;
                 overflow-y: auto;
-                padding-right: 1rem;
+                padding: 1rem;
+                background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+                border-radius: 15px;
+                backdrop-filter: blur(5px);
+            }
+
+            .ads-container::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            .ads-container::-webkit-scrollbar-track {
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 10px;
+            }
+
+            .ads-container::-webkit-scrollbar-thumb {
+                background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+                border-radius: 10px;
             }
 
             .ad-box {
-                background: white;
-                border-radius: 10px;
+                background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 25%, #ff8e53 50%, #ff6b9d 75%, #c44569 100%);
+                border-radius: 15px;
                 overflow: hidden;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
                 cursor: pointer;
                 transition: all 0.3s ease;
                 position: relative;
+                border: 2px solid rgba(255, 255, 255, 0.2);
             }
 
             .ad-box:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+                transform: translateY(-8px) scale(1.02);
+                box-shadow: 0 15px 35px rgba(255, 107, 107, 0.4);
+                border-color: rgba(255, 255, 255, 0.4);
             }
 
             .ad-box.featured {
-                border: 2px solid #667eea;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            }
+
+            .ad-box.featured:hover {
+                box-shadow: 0 15px 35px rgba(102, 126, 234, 0.5);
             }
 
             .featured-badge {
                 position: absolute;
-                top: 10px;
-                right: 10px;
-                background: #667eea;
+                top: 15px;
+                right: 15px;
+                background: linear-gradient(45deg, #ff6b6b, #ee5a52);
                 color: white;
-                padding: 0.2rem 0.5rem;
-                border-radius: 10px;
-                font-size: 0.8rem;
+                padding: 0.5rem 1rem;
+                border-radius: 20px;
+                font-size: 0.9rem;
+                font-weight: 600;
                 z-index: 2;
+                box-shadow: 0 3px 10px rgba(255, 107, 107, 0.4);
+                animation: pulse 2s infinite;
+            }
+
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+                100% { transform: scale(1); }
             }
 
             .ad-image {
@@ -369,33 +399,78 @@ class KaraokeSection {
             }
 
             .ad-content {
-                padding: 1rem;
+                padding: 1.5rem;
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(10px);
+                margin: 0.5rem;
+                border-radius: 10px;
             }
 
             .ad-title {
-                font-size: 1.1rem;
-                font-weight: 600;
-                margin-bottom: 0.5rem;
+                font-size: 1.2rem;
+                font-weight: 700;
+                margin-bottom: 0.8rem;
                 color: #333;
+                text-align: center;
             }
 
             .ad-description {
-                font-size: 0.9rem;
-                color: #666;
-                margin-bottom: 0.8rem;
+                font-size: 1rem;
+                color: #555;
+                margin-bottom: 1rem;
+                text-align: center;
+                font-weight: 500;
             }
 
             .ad-info {
-                font-size: 0.8rem;
-                color: #888;
-                line-height: 1.4;
+                font-size: 0.9rem;
+                color: #666;
+                line-height: 1.6;
+                text-align: center;
             }
 
             .ad-contact {
-                margin-top: 0.5rem;
-                font-size: 0.8rem;
+                margin-top: 0.8rem;
+                font-size: 0.9rem;
                 color: #667eea;
-                font-weight: 500;
+                font-weight: 600;
+                text-align: center;
+            }
+
+            .ad-overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: linear-gradient(45deg, rgba(255, 107, 107, 0.9), rgba(238, 90, 82, 0.9));
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                opacity: 0;
+                transition: all 0.3s ease;
+            }
+
+            .ad-box:hover .ad-overlay {
+                opacity: 1;
+            }
+
+            .ad-button {
+                background: white;
+                color: #ff6b6b;
+                border: none;
+                padding: 1rem 2rem;
+                border-radius: 25px;
+                font-size: 1.1rem;
+                font-weight: 600;
+                cursor: pointer;
+                transform: translateY(20px);
+                transition: all 0.3s ease;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            }
+
+            .ad-box:hover .ad-button {
+                transform: translateY(0);
             }
 
             .karaoke-map {
