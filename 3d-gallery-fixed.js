@@ -295,9 +295,9 @@ function animate() {
         
         sprite.position.set(rotatedX, rotatedY, finalZ);
         
-        // 거리에 따른 크기 조정
+        // 거리에 따른 크기 조정 (전체적으로 크기 증가)
         const distance = sprite.position.distanceTo(camera.position);
-        const scale = Math.max(0.3, 2 - distance * 0.3);
+        const scale = Math.max(0.6, 3 - distance * 0.3);  // 최소 0.6, 최대 3으로 증가
         
         // 스케일 적용시 원본 비율 유지
         const baseScale = sprite.scale.clone().normalize();
