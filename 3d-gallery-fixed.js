@@ -154,7 +154,7 @@ async function loadImages() {
                 
                 // 🎯 큰 갤러리 고정 크기
                 const fixedWidth = .9;   // 큰 갤러리 가로 크기
-                const fixedHeight = 1.5;  // 큰 갤러리 세로 크기
+                const fixedHeight = 1.7;  // 큰 갤러리 세로 크기
                 sprite.scale.set(fixedWidth, fixedHeight, 1);  // 모든 이미지 동일 크기
                 
                 sprite.lookAt(camera.position);
@@ -298,7 +298,7 @@ function animate() {
         
         // 큰 갤러리 고정 크기 기반으로 원근감 적용
         const fixedWidth = .9;
-        const fixedHeight = 1.5;
+        const fixedHeight = 1.7;
         sprite.scale.set(fixedWidth * perspectiveScale, fixedHeight * perspectiveScale, 1);
     });
 
