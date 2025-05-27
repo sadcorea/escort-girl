@@ -41,7 +41,7 @@ async function loadImageList() {
 }
 
 // 🎲 진짜 랜덤 이미지 선택 (셔플 알고리즘 사용)
-function getRandomImages(count = 12) {
+function getRandomImages(count = 50) {
     console.log(`🎲 ${availableImages.length}개 중에서 ${count}개 랜덤 선택 시작`);
     
     if (availableImages.length === 0) {
@@ -111,7 +111,7 @@ async function loadImages() {
     await loadImageList();
     
     // 랜덤 이미지 선택
-    const selectedImages = getRandomImages(12);
+    const selectedImages = getRandomImages(50);
     
     // 전역 변수에 저장 (클릭용)
     window.currentSelectedImages = selectedImages;
