@@ -232,9 +232,9 @@ function setupMouseEvents(canvas) {
             // 드래그 거리 누적
             dragDistance += Math.abs(deltaX) + Math.abs(deltaY);
             
-            // 마우스 방향과 동일하게 수정 (음수 제거)
-            targetRotation.y -= deltaX * 0.01;  // 방향 반전
-            targetRotation.x -= deltaY * 0.01;  // 방향 반전
+            // 마우스 방향과 동일하게 수정
+            targetRotation.y += deltaX * 0.01;  // 다시 원래 방향
+            targetRotation.x += deltaY * 0.01;  // 다시 원래 방향
             
             // X축 회전 제한 (더 자유롭게 회전 가능)
             targetRotation.x = Math.max(-Math.PI/2, Math.min(Math.PI/2, targetRotation.x));
@@ -264,8 +264,8 @@ function setupMouseEvents(canvas) {
             const deltaY = touch.clientY - mouse.y;
             
             // 마우스와 동일한 방향으로 수정
-            targetRotation.y -= deltaX * 0.01;  // 방향 반전
-            targetRotation.x -= deltaY * 0.01;  // 방향 반전
+            targetRotation.y += deltaX * 0.01;  // 다시 원래 방향
+            targetRotation.x += deltaY * 0.01;  // 다시 원래 방향
             
             targetRotation.x = Math.max(-Math.PI/2, Math.min(Math.PI/2, targetRotation.x));
             
