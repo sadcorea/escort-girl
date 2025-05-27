@@ -41,7 +41,7 @@ async function loadImageList() {
 }
 
 // 🎲 진짜 랜덤 이미지 선택 (셔플 알고리즘 사용)
-function getRandomImages(count = 30) {
+function getRandomImages(count = 12) {
     console.log(`🎲 ${availableImages.length}개 중에서 ${count}개 랜덤 선택 시작`);
     
     if (availableImages.length === 0) {
@@ -111,7 +111,7 @@ async function loadImages() {
     await loadImageList();
     
     // 랜덤 이미지 선택
-    const selectedImages = getRandomImages(30);
+    const selectedImages = getRandomImages(12);
     
     // 전역 변수에 저장 (클릭용)
     window.currentSelectedImages = selectedImages;
@@ -142,19 +142,44 @@ async function loadImages() {
                 
                 const sprite = new THREE.Sprite(spriteMaterial);
                 
-                // 원통형 배치
-                const angle = (index / selectedImages.length) * Math.PI * 2;
-                const height = (index % 3 - 1) * 1.5;
+                // 🏔️ 원뿔형 6층 배치 (위로 갈수록 적게)
+                const totalLayers = 6;
+                const imagesPerLayer = [8, 7, 6, 5, 3, 1]; // 층별 이미지 개수 (아래부터)
                 
-                const x = radius * Math.cos(angle);
-                const y = height;
-                const z = radius * Math.sin(angle);
+                // 현재 이미지가 어느 층에 속하는지 계산
+                let currentLayer = 0;
+                let imageIndex = index;
+                let layerStartIndex = 0;
+                
+                for (let layer = 0; layer < totalLayers; layer++) {
+                    if (imageIndex < imagesPerLayer[layer]) {
+                        currentLayer = layer;
+                        break;
+                    }
+                    imageIndex -= imagesPerLayer[layer];
+                    layerStartIndex += imagesPerLayer[layer];
+                }
+                
+                // 층별 반지름 (위로 갈수록 작아짐)
+                const layerRadius = [3.0, 2.5, 2.0, 1.5, 1.0, 0.5]; // 층별 반지름
+                const layerHeight = [-2.5, -1.5, -0.5, 0.5, 1.5, 2.5]; // 층별 높이
+                
+                const currentRadius = layerRadius[currentLayer];
+                const currentHeight = layerHeight[currentLayer];
+                const imagesInThisLayer = imagesPerLayer[currentLayer];
+                
+                // 해당 층에서의 각도 계산
+                const angle = (imageIndex / imagesInThisLayer) * Math.PI * 2;
+                
+                const x = currentRadius * Math.cos(angle);
+                const y = currentHeight;
+                const z = currentRadius * Math.sin(angle);
                 
                 sprite.position.set(x, y, z);
                 
-                // 🎯 큰 갤러리 고정 크기
-                const fixedWidth = 1.275;   // 큰 갤러리 가로 크기
-                const fixedHeight = 1.7;  // 큰 갤러리 세로 크기
+                // 🎯 갤러리 고정 크기 (1.2 x 1.7 비율)
+                const fixedWidth = 1.2;   // 가로 크기
+                const fixedHeight = 1.7;  // 세로 크기 (약 4:3 비율)
                 sprite.scale.set(fixedWidth, fixedHeight, 1);  // 모든 이미지 동일 크기
                 
                 sprite.lookAt(camera.position);
@@ -292,12 +317,12 @@ function animate() {
         
         sprite.position.set(rotatedX, rotatedY, finalZ);
         
-        // 🎯 큰 갤러리 고정 크기 유지 (거리에 따른 약간의 원근감만)
+        // 🎯 갤러리 고정 크기 유지 (거리에 따른 약간의 원근감만)
         const distance = sprite.position.distanceTo(camera.position);
         const perspectiveScale = Math.max(0.8, 1.2 - distance * 0.05);  // 약간의 원근감만
         
-        // 큰 갤러리 고정 크기 기반으로 원근감 적용
-        const fixedWidth = 1.275;
+        // 갤러리 고정 크기 기반으로 원근감 적용 (1.2 x 1.7)
+        const fixedWidth = 1.2;
         const fixedHeight = 1.7;
         sprite.scale.set(fixedWidth * perspectiveScale, fixedHeight * perspectiveScale, 1);
     });

@@ -1,0 +1,58 @@
+{
+  "locations": [
+    {
+      "id": 1,
+      "name": "벤츠 가라오케",
+      "lat": 16.0471,
+      "lng": 108.2348,
+      "address": "뉴민 프라자 호텔 5층, 팜반동",
+      "type": "premium",
+      "adId": 1
+    },
+    {
+      "id": 2, 
+      "name": "원오페라 가라오케",
+      "lat": 16.0678,
+      "lng": 108.2377,
+      "address": "무엉탄 호텔, 하이쩌우",
+      "type": "large",
+      "adId": 2
+    },
+    {
+      "id": 3,
+      "name": "업타운 가라오케", 
+      "lat": 16.0614,
+      "lng": 108.2516,
+      "address": "다낭 해변가 근처",
+      "type": "large",
+      "adId": 3
+    },
+    {
+      "id": 4,
+      "name": "강남 가라오케",
+      "lat": 16.0123,
+      "lng": 108.2634,
+      "address": "55 Trần Bạch Đằng, Ngũ Hành Sơn",
+      "type": "luxury",
+      "adId": 4
+    },
+    {
+      "id": 5,
+      "name": "텐프로 가라오케",
+      "lat": 16.0567,
+      "lng": 108.2298,
+      "address": "하이쩌우 로컬 지역",
+      "type": "standard",
+      "adId": 5
+    },
+    {
+      "id": 6,
+      "name": "빅뱅 가라오케",
+      "lat": 16.0445,
+      "lng": 108.2334,
+      "address": "팜반동 내",
+      "type": "standard", 
+      "adId": 6
+    }
+  ]
+}

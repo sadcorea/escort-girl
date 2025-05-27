@@ -3,315 +3,423 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EchoPal.net - 다낭 종합 가이드</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>DNRed.net - 다낭 종합 가이드</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fff;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* 🎨 삼성 스타일 헤더 */
+        .samsung-header {
+            background: #fff;
+            border-bottom: 1px solid #e0e0e0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-top {
+            background: #f8f9fa;
+            padding: 0.5rem 2rem;
+            font-size: 0.85rem;
+            text-align: right;
+            color: #666;
+        }
+
+        .header-main {
+            padding: 1rem 4rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .main-nav {
+            display: flex;
+            gap: 3rem;
+            list-style: none;
+        }
+
+        .nav-item {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #333;
+            cursor: pointer;
+            padding: 0.5rem 0;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-input {
+            padding: 0.7rem 2.5rem 0.7rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            width: 300px;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        /* 🎨 메인 3D 갤러리 섹션 */
+        .main-gallery {
+            height: 80vh;
+            position: relative;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+        }
+
+        .gallery-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        /* 3D 갤러리 내부 배경 텍스트 */
+        .gallery-background-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            color: rgba(255, 255, 255, 0.1);
+            text-align: center;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .gallery-background-title {
+            font-size: 4rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 20px rgba(0, 0, 0, 0.3);
+            line-height: 1.2;
+        }
+
+        .gallery-background-subtitle {
+            font-size: 1.5rem;
+            opacity: 0.8;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        /* 클릭 안내 (맨 위 레이어, 하단 배치) */
+        .gallery-click-notice {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            color: white;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 0.5rem 1rem;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+            text-align: center;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .gallery-click-notice p {
+            font-size: 1rem;
+            margin: 0;
+            font-weight: 500;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+            white-space: nowrap;
+        }
+
+        /* 3D 캔버스는 위에 */
+        #ecogirlGalleryContainer canvas {
+            position: relative;
+            z-index: 2;
+        }
+
+        .gallery-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .gallery-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            line-height: 1.6;
+        }
+
+        /* 💰 광고 배너 섹션 */
+        .ad-banner {
+            height: 200px;
+            background: #f8f9fa;
+            border: 2px dashed #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: #666;
+            font-size: 1.1rem;
+            margin: 2rem 0;
+        }
+
+        .ad-info {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .ad-contact {
+            color: #667eea;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        .ad-price {
+            background: #667eea;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+
+
+        /* 🎨 콘텐츠 섹션 */
+        .content-sections {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .section {
+            margin: 4rem 0;
+            text-align: center;
+        }
+
+        .section h2 {
+            font-size: 2.2rem;
+            margin-bottom: 2rem;
+            color: #333;
+        }
+
+        .section p {
+            font-size: 1.1rem;
+            color: #666;
+            line-height: 1.8;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* 📱 모바일 반응형 */
+        @media (max-width: 768px) {
+            .header-main {
+                padding: 1rem 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .main-nav {
+                gap: 1.5rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .nav-item {
+                font-size: 0.95rem;
+            }
+
+            .search-input {
+                width: 250px;
+            }
+
+            .gallery-background-title {
+                font-size: 2.5rem;
+            }
+
+            .gallery-background-subtitle {
+                font-size: 1rem;
+            }
+
+            .gallery-click-notice {
+                bottom: 10px;
+                padding: 0.4rem 0.8rem;
+                border-radius: 12px;
+            }
+
+            .gallery-click-notice p {
+                font-size: 0.8rem;
+            }
+
+            .ad-banner {
+                height: 150px;
+                margin: 1rem 0;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- 3D 갤러리 히어로 섹션 -->
-    <section class="hero-3d">
-        <div class="hero-content">
-            <h1 class="hero-title">다낭 최고의 에코걸</h1>
-            <p class="hero-subtitle">3D 갤러리를 돌려보며 다양한 에코걸들을 만나보세요</p>
-            <span class="sr-only">마우스나 터치로 3D 갤러리를 회전시킬 수 있습니다</span>
+    <!-- 🎨 삼성 스타일 헤더 -->
+    <header class="samsung-header">
+        <div class="header-top">
+            고객지원 | 비즈니스 | 법인상담 | 자주가는페이지
         </div>
-        <div class="gallery-3d-container">
-            <canvas id="gallery3D"></canvas>
-            <div class="gallery-controls">
-                <div class="control-hint">마우스로 드래그하여 회전하세요</div>
+        
+        <div class="header-main">
+            <a href="#" class="logo">DNRed</a>
+            
+            <nav class="main-nav">
+                <div class="nav-item active" data-menu="ecogirl">기획전</div>
+                <div class="nav-item" data-menu="karaoke">가라오케</div>
+                <div class="nav-item" data-menu="poolvilla">풀빌라</div>
+                <div class="nav-item" data-menu="massage">마사지</div>
+                <div class="nav-item" data-menu="freeboard">자유게시판</div>
+            </nav>
+            
+            <div class="header-actions">
+                <div class="search-box">
+                    <input type="text" class="search-input" placeholder="다낭 여행 검색...">
+                    <button class="search-btn">🔍</button>
+                </div>
+                <div class="nav-item" data-menu="favorites">♥ 찜목록</div>
             </div>
         </div>
-        <div class="scroll-indicator">
-            <div class="scroll-arrow">↓</div>
-            <span>아래로 스크롤하여 더 많은 정보를 확인하세요</span>
+    </header>
+
+    <!-- 🎨 메인 3D 갤러리 섹션 -->
+    <section class="main-gallery">
+        <div class="gallery-container">
+            <!-- 배경 텍스트 -->
+            <div class="gallery-background-text">
+                <h1 class="gallery-background-title">다낭 최고의 에코걸</h1>
+                <p class="gallery-background-subtitle">3D 갤러리를 돌려보며<br>다양한 에코걸들을 만나보세요</p>
+            </div>
+            
+            <!-- 클릭 안내 (맨 위 레이어) -->
+            <div class="gallery-click-notice">
+                <p>클릭하면 상세보기로 이동</p>
+            </div>
+            
+            <!-- 3D 갤러리 -->
+            <div id="ecogirlGalleryContainer" class="gallery-container"></div>
         </div>
     </section>
 
-    <!-- 사이드바 -->
-    <nav class="sidebar">
-        <div class="sidebar-header">
-            <h1 class="logo">DNRed</h1>
-            <p class="tagline">다낭 종합 가이드</p>
-        </div>
-        
-        <ul class="nav-menu">
-            <li class="nav-item active" data-category="karaoke">
-                <span class="nav-icon">🎤</span>
-                <span class="nav-text">가라오케</span>
-            </li>
-            <li class="nav-item" data-category="massage">
-                <span class="nav-icon">💆‍♀️</span>
-                <span class="nav-text">마사지</span>
-            </li>
-            <li class="nav-item" data-category="ecogirl">
-                <span class="nav-icon">👫</span>
-                <span class="nav-text">에코걸</span>
-            </li>
-            <li class="nav-item" data-category="tour">
-                <span class="nav-icon">🚌</span>
-                <span class="nav-text">투어</span>
-            </li>
-            <li class="nav-item" data-category="poolvilla">
-                <span class="nav-icon">🏖️</span>
-                <span class="nav-text">풀빌라</span>
-            </li>
-            <li class="nav-item" data-category="golf">
-                <span class="nav-icon">⛳</span>
-                <span class="nav-text">골프</span>
-            </li>
-            <li class="nav-item" data-category="restaurant">
-                <span class="nav-icon">🍜</span>
-                <span class="nav-text">맛집</span>
-            </li>
-        </ul>
-        
-        <div class="sidebar-footer">
-            <button class="contact-btn" onclick="openModal('messenger')">
-                💬 문의하기
-            </button>
-        </div>
-    </nav>
-
-    <!-- 메인 콘텐츠 (Stripe 스타일) -->
-    <main class="main-content">
-        <header class="main-header">
-            <div class="search-container">
-                <input type="text" class="search-input" placeholder="검색..." id="searchBar">
-                <button class="favorites-btn" onclick="toggleFavorites()">
-                    ♥ 찜목록
-                </button>
-            </div>
-        </header>
-
-        <!-- 가라오케 섹션 -->
-        <section class="content-section active" id="karaoke">
-            <div class="section-header">
-                <h2 class="section-title">다낭 최고의 가라오케</h2>
-                <p class="section-subtitle">프리미엄 서비스와 최신 시설로 특별한 시간을 만들어드립니다</p>
-            </div>
-            
-            <div class="cards-container">
-                <div class="card" data-id="1">
-                    <div class="card-image">
-                        <div class="image-placeholder">🎤</div>
-                    </div>
-                    <div class="card-content">
-                        <h3 class="card-title">럭셔리 KTV</h3>
-                        <p class="card-description">최고급 시설과 프리미엄 서비스를 제공하는 가라오케입니다.</p>
-                        <div class="card-details">
-                            <div class="detail-item">
-                                <span class="detail-label">위치</span>
-                                <span class="detail-value">한시장 근처</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-label">영업시간</span>
-                                <span class="detail-value">19:00 - 02:00</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-label">가격대</span>
-                                <span class="detail-value">100,000 VND ~</span>
-                            </div>
-                        </div>
-                        <div class="card-actions">
-                            <button class="btn btn-outline" onclick="addToFavorites(1, '럭셔리 KTV')">찜하기</button>
-                            <button class="btn btn-primary" onclick="openModal('booking')">예약문의</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card" data-id="2">
-                    <div class="card-image">
-                        <div class="image-placeholder">🎵</div>
-                    </div>
-                    <div class="card-content">
-                        <h3 class="card-title">프리미엄 노래방</h3>
-                        <p class="card-description">현대적인 시설과 다양한 한국 노래를 즐길 수 있습니다.</p>
-                        <div class="card-details">
-                            <div class="detail-item">
-                                <span class="detail-label">위치</span>
-                                <span class="detail-value">시내 중심가</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-label">영업시간</span>
-                                <span class="detail-value">18:00 - 01:00</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-label">가격대</span>
-                                <span class="detail-value">80,000 VND ~</span>
-                            </div>
-                        </div>
-                        <div class="card-actions">
-                            <button class="btn btn-outline" onclick="addToFavorites(2, '프리미엄 노래방')">찜하기</button>
-                            <button class="btn btn-primary" onclick="openModal('booking')">예약문의</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 다른 섹션들... -->
-        <section class="content-section" id="massage">
-            <div class="section-header">
-                <h2 class="section-title">다낭 프리미엄 마사지</h2>
-                <p class="section-subtitle">전문 테라피스트와 최고급 시설에서 힐링 타임을 즐기세요</p>
-            </div>
-            <div class="coming-soon">
-                <h3>준비 중입니다</h3>
-                <p>곧 다양한 마사지 정보를 제공해드립니다.</p>
-            </div>
-        </section>
-
-        <section class="content-section" id="ecogirl">
-            <div class="section-header">
-                <h2 class="section-title">다낭 에코걸 가이드</h2>
-                <p class="section-subtitle">현지 문화를 아는 친절한 가이드와 함께 특별한 다낭을 경험하세요</p>
-            </div>
-            <div class="coming-soon">
-                <h3>3D 갤러리에서 확인하세요</h3>
-                <p>위의 3D 구체를 돌려보며 다양한 에코걸들을 만나보세요.</p>
-            </div>
-        </section>
-
-                <h2 class="section-title">다낭 투어</h2>
-                <p class="section-subtitle">다낭의 아름다운 명소들을 편안하게 둘러보세요</p>
-            </div>
-            <div class="coming-soon">
-                <h3>준비 중입니다</h3>
-                <p>곧 다양한 투어 상품을 만나보실 수 있습니다.</p>
-            </div>
-        </section>
-
-        <section class="content-section" id="restaurant">
-            <div class="section-header">
-                <h2 class="section-title">맛집</h2>
-                <p class="section-subtitle">다낭의 맛있는 음식점들을 소개해드립니다</p>
-            </div>
-            <div class="coming-soon">
-                <h3>준비 중입니다</h3>
-                <p>곧 다양한 맛집 정보를 제공해드립니다.</p>
-            </div>
-        </section>
-    </main>
-
-    <!-- 사이드바 (기존 유지) -->
-    <nav class="sidebar hidden">
-        <div class="sidebar-header">
-            <h1 class="logo">DNRed</h1>
-            <p class="tagline">다낭 종합 가이드</p>
-        </div>
-        
-        <ul class="nav-menu">
-            <li class="nav-item active" data-category="karaoke">
-                <span class="nav-icon">🎤</span>
-                <span class="nav-text">가라오케</span>
-            </li>
-            <li class="nav-item" data-category="massage">
-                <span class="nav-icon">💆‍♀️</span>
-                <span class="nav-text">마사지</span>
-            </li>
-            <li class="nav-item" data-category="ecogirl">
-                <span class="nav-icon">👫</span>
-                <span class="nav-text">에코걸</span>
-            </li>
-            <li class="nav-item" data-category="tour">
-                <span class="nav-icon">🚌</span>
-                <span class="nav-text">투어</span>
-            </li>
-            <li class="nav-item" data-category="restaurant">
-                <span class="nav-icon">🍜</span>
-                <span class="nav-text">맛집</span>
-            </li>
-        </ul>
-        
-        <div class="sidebar-footer">
-            <button class="contact-btn" onclick="openModal('messenger')">
-                💬 문의하기
-            </button>
-        </div>
-    </nav>
-
-    <!-- 찜 목록 패널 -->
-    <div class="favorites-panel" id="favoritesPanel">
-        <div class="favorites-header">
-            <h3>찜한 항목</h3>
-            <button class="close-favorites" onclick="toggleFavorites()">×</button>
-        </div>
-        <div class="favorites-content" id="favoritesList">
-            <p class="empty-message">찜한 항목이 없습니다.</p>
+    <!-- 💰 메인 광고 배너 -->
+    <div class="ad-banner">
+        <div>🎯 프리미엄 광고 공간 🎯</div>
+        <div class="ad-info">
+            <div>크기: 1200×200px (반응형)</div>
+            <div class="ad-contact">광고 문의: 카톡 dnred_ad</div>
+            <div class="ad-price">월 50만원 (메인 배너)</div>
         </div>
     </div>
 
-    <!-- 모달들 -->
-    <div class="modal" id="messengerModal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModal('messenger')">×</button>
-            <h3>문의하기</h3>
-            <p>빠른 문의를 원하시면 아래 연락처로 연락해주세요:</p>
-            <div class="contact-info">
-                <div class="contact-item">
-                    <strong>카카오톡:</strong> dnred_danang
-                </div>
-                <div class="contact-item">
-                    <strong>텔레그램:</strong> @dnred_official
-                </div>
-                <div class="contact-item">
-                    <strong>위챗:</strong> dnred2024
-                </div>
-                <div class="contact-item">
-                    <strong>전화:</strong> +84-XXX-XXX-XXXX
-                </div>
+
+
+    <!-- 🎤 가라오케 섹션 -->
+    <div id="karaokeSection"></div>
+
+    <!-- 🎨 콘텐츠 섹션 -->
+    <div class="content-sections">
+        <section class="section" id="ecogirlIntro">
+            <h2>에코걸과 함께하는 다낭 여행</h2>
+            <p>현지 문화를 아는 친절한 가이드와 함께 특별한 다낭을 경험하세요. 숨은 명소부터 인기 관광지까지, 에코걸들이 안내하는 프리미엄 여행 서비스를 제공합니다.</p>
+        </section>
+
+        <!-- 💰 중간 광고 배너 -->
+        <div class="ad-banner">
+            <div>🎯 중간 광고 공간 🎯</div>
+            <div class="ad-info">
+                <div>크기: 1200×200px</div>
+                <div class="ad-contact">광고 문의: 카톡 dnred_ad</div>
+                <div class="ad-price">월 30만원 (중간 배너)</div>
             </div>
         </div>
+
+        <section class="section" id="serviceIntro">
+            <h2>프리미엄 서비스</h2>
+            <p>가라오케, 풀빌라, 마사지 등 다낭의 모든 즐거움을 한 곳에서 경험하세요. 검증된 파트너들과 함께 안전하고 품격 있는 서비스를 제공합니다.</p>
+        </section>
+
+        <section class="section" id="contactSection">
+            <h2>연락처</h2>
+            <p>카카오톡: dnred_danang | 텔레그램: @dnred_official<br>
+            빠른 상담과 예약을 원하시면 언제든 연락주세요.</p>
+        </section>
     </div>
 
-    <div class="modal" id="bookingModal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModal('booking')">×</button>
-            <h3>예약 문의</h3>
-            <form class="booking-form" id="bookingForm">
-                <div class="form-group">
-                    <label for="name">이름</label>
-                    <input type="text" id="name" name="name" required>
-                </div>
-                <div class="form-group">
-                    <label for="phone">연락처</label>
-                    <input type="tel" id="phone" name="phone" required>
-                </div>
-                <div class="form-group">
-                    <label for="date">희망 날짜</label>
-                    <input type="date" id="date" name="date" required>
-                </div>
-                <div class="form-group">
-                    <label for="message">요청사항</label>
-                    <textarea id="message" name="message" rows="3" placeholder="추가 요청사항을 입력해주세요."></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary btn-full">예약 문의하기</button>
-            </form>
+    <!-- 💰 하단 광고 배너 -->
+    <div class="ad-banner">
+        <div>🎯 하단 광고 공간 🎯</div>
+        <div class="ad-info">
+            <div>크기: 1200×200px</div>
+            <div class="ad-contact">광고 문의: 카톡 dnred_ad</div>
+            <div class="ad-price">월 40만원 (하단 배너)</div>
         </div>
     </div>
 
     <!-- 스크립트들 -->
-    <script src="script.js"></script>
     <script src="components/ecogirl-gallery.js"></script>
+    <script src="components/karaoke-section.js"></script>
     <script>
         // 🎮 메인 애플리케이션 컨트롤러
         class MainApp {
             constructor() {
                 this.currentMenu = 'ecogirl';
                 this.ecogirlGallery = null;
+                this.karaokeSection = null;
                 this.init();
             }
 
             init() {
-                console.log('🚀 메인 앱 초기화 시작...');
+                console.log('🚀 DNRed 메인 앱 초기화...');
                 
-                // 네비게이션 이벤트 설정
                 this.setupNavigation();
-                
-                // 기본으로 에코걸 갤러리 로드
                 this.loadEcogirlGallery();
+                this.loadKaraokeSection();
                 
-                console.log('✅ 메인 앱 초기화 완료');
+                console.log('✅ DNRed 메인 앱 초기화 완료');
             }
 
             setupNavigation() {
@@ -320,79 +428,51 @@
                 navItems.forEach(item => {
                     item.addEventListener('click', () => {
                         const menu = item.dataset.menu;
-                        this.switchMenu(menu);
+                        if (menu) {
+                            this.switchMenu(menu);
+                        }
                     });
                 });
             }
 
             switchMenu(menu) {
-                console.log(`🔄 메뉴 전환: ${this.currentMenu} → ${menu}`);
+                console.log(`🔄 메뉴 전환: ${menu}`);
                 
                 // 네비게이션 활성화 상태 변경
                 document.querySelectorAll('.nav-item').forEach(item => {
                     item.classList.remove('active');
                 });
-                document.querySelector(`[data-menu="${menu}"]`).classList.add('active');
+                document.querySelector(`[data-menu="${menu}"]`)?.classList.add('active');
                 
-                // 콘텐츠 전환
                 this.currentMenu = menu;
                 this.loadContent(menu);
             }
 
             loadContent(menu) {
-                const galleryTitle = document.getElementById('galleryTitle');
-                const gallerySubtitle = document.getElementById('gallerySubtitle');
-                const mainContent = document.querySelector('.main-content');
-                const mainGallery = document.querySelector('.main-gallery');
-                
                 switch(menu) {
                     case 'ecogirl':
-                        // 3D 갤러리 모드
-                        mainGallery.classList.remove('hidden');
-                        mainContent.classList.add('hidden');
-                        galleryTitle.textContent = '다낭 최고의 에코걸';
-                        gallerySubtitle.textContent = '3D 갤러리를 돌려보며 다양한 에코걸들을 만나보세요';
                         this.loadEcogirlGallery();
                         break;
                         
                     case 'karaoke':
-                        // 기존 카드 뷰 모드
-                        mainGallery.classList.add('hidden');
-                        mainContent.classList.remove('hidden');
-                        this.showSection('karaoke');
+                        this.loadKaraokeSection();
+                        break;
+                        
+                    case 'poolvilla':
+                        console.log('풀빌라 섹션 로드');
                         break;
                         
                     case 'massage':
-                        // 기존 준비중 모드
-                        mainGallery.classList.add('hidden');
-                        mainContent.classList.remove('hidden');
-                        this.showSection('massage');
+                        console.log('마사지 섹션 로드');
                         break;
                         
-                    case 'tour':
-                        mainGallery.classList.add('hidden');
-                        mainContent.classList.remove('hidden');
-                        this.showSection('tour');
+                    case 'freeboard':
+                        console.log('자유게시판 로드');
                         break;
                         
-                    case 'restaurant':
-                        mainGallery.classList.add('hidden');
-                        mainContent.classList.remove('hidden');
-                        this.showSection('restaurant');
+                    case 'favorites':
+                        console.log('찜목록 로드');
                         break;
-                }
-            }
-
-            showSection(sectionId) {
-                // 모든 섹션 숨기기
-                document.querySelectorAll('.content-section').forEach(section => {
-                    section.classList.remove('active');
-                });
-                
-                // 선택된 섹션 보이기
-                const targetSection = document.getElementById(sectionId);
-                if (targetSection) {
-                    targetSection.classList.add('active');
                 }
             }
 
@@ -410,6 +490,21 @@
                     console.error('❌ 에코걸 갤러리 로드 실패:', error);
                 }
             }
+
+            async loadKaraokeSection() {
+                try {
+                    if (this.karaokeSection) {
+                        this.karaokeSection.destroy();
+                    }
+                    
+                    this.karaokeSection = new KaraokeSection('karaokeSection');
+                    await this.karaokeSection.init();
+                    
+                    console.log('✅ 가라오케 섹션 로드 완료');
+                } catch (error) {
+                    console.error('❌ 가라오케 섹션 로드 실패:', error);
+                }
+            }
         }
 
         // 🚀 앱 시작
@@ -422,112 +517,5 @@
             }
         });
     </script>
-</body>
-</html>
-                <h2 class="section-title">다낭 투어</h2>
-                <p class="section-subtitle">다낭의 아름다운 명소들을 편안하게 둘러보세요</p>
-            </div>
-            <div class="coming-soon">
-                <h3>준비 중입니다</h3>
-                <p>곧 다양한 투어 상품을 만나보실 수 있습니다.</p>
-            </div>
-        </section>
-
-        <section class="content-section" id="poolvilla">
-            <div class="section-header">
-                <h2 class="section-title">풀빌라</h2>
-                <p class="section-subtitle">프라이빗한 공간에서 특별한 휴식을 즐기세요</p>
-            </div>
-            <div class="coming-soon">
-                <h3>준비 중입니다</h3>
-                <p>곧 다양한 풀빌라를 만나보실 수 있습니다.</p>
-            </div>
-        </section>
-
-        <section class="content-section" id="golf">
-            <div class="section-header">
-                <h2 class="section-title">골프</h2>
-                <p class="section-subtitle">아름다운 다낭에서 골프를 즐겨보세요</p>
-            </div>
-            <div class="coming-soon">
-                <h3>준비 중입니다</h3>
-                <p>곧 골프 코스 정보를 제공해드립니다.</p>
-            </div>
-        </section>
-
-        <section class="content-section" id="restaurant">
-            <div class="section-header">
-                <h2 class="section-title">맛집</h2>
-                <p class="section-subtitle">다낭의 맛있는 음식점들을 소개해드립니다</p>
-            </div>
-            <div class="coming-soon">
-                <h3>준비 중입니다</h3>
-                <p>곧 다양한 맛집 정보를 제공해드립니다.</p>
-            </div>
-        </section>
-    </main>
-
-    <!-- 찜 목록 패널 -->
-    <div class="favorites-panel" id="favoritesPanel">
-        <div class="favorites-header">
-            <h3>찜한 항목</h3>
-            <button class="close-favorites" onclick="toggleFavorites()">×</button>
-        </div>
-        <div class="favorites-content" id="favoritesList">
-            <p class="empty-message">찜한 항목이 없습니다.</p>
-        </div>
-    </div>
-
-    <!-- 모달들 -->
-    <div class="modal" id="messengerModal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModal('messenger')">×</button>
-            <h3>문의하기</h3>
-            <p>빠른 문의를 원하시면 아래 연락처로 연락해주세요:</p>
-            <div class="contact-info">
-                <div class="contact-item">
-                    <strong>카카오톡:</strong> dnred_danang
-                </div>
-                <div class="contact-item">
-                    <strong>텔레그램:</strong> @dnred_official
-                </div>
-                <div class="contact-item">
-                    <strong>위챗:</strong> dnred2024
-                </div>
-                <div class="contact-item">
-                    <strong>전화:</strong> +84-XXX-XXX-XXXX
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal" id="bookingModal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModal('booking')">×</button>
-            <h3>예약 문의</h3>
-            <form class="booking-form" id="bookingForm">
-                <div class="form-group">
-                    <label for="name">이름</label>
-                    <input type="text" id="name" name="name" required>
-                </div>
-                <div class="form-group">
-                    <label for="phone">연락처</label>
-                    <input type="tel" id="phone" name="phone" required>
-                </div>
-                <div class="form-group">
-                    <label for="date">희망 날짜</label>
-                    <input type="date" id="date" name="date" required>
-                </div>
-                <div class="form-group">
-                    <label for="message">요청사항</label>
-                    <textarea id="message" name="message" rows="3" placeholder="추가 요청사항을 입력해주세요."></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary btn-full">예약 문의하기</button>
-            </form>
-        </div>
-    </div>
-
-    <script src="script.js"></script>
-    <script src="3d-gallery-fixed.js"></script>
 </body>
 </html>

@@ -1,0 +1,76 @@
+{
+  "ads": [
+    {
+      "id": 1,
+      "name": "벤츠 가라오케",
+      "description": "뉴민 프라자 5층, 다낭 최고 인기",
+      "location": "팜반동 한인촌",
+      "address": "뉴민 프라자 호텔 5층",
+      "price": "맥주세트 110$ / 소주세트 130$",
+      "contact": "카톡 dnred_ad",
+      "link": "/karaoke/benz",
+      "image": "karaoke-benz.jpg",
+      "featured": true
+    },
+    {
+      "id": 2,
+      "name": "원오페라 가라오케",  
+      "description": "다낭 최대 규모 30개 룸",
+      "location": "하이쩌우 무엉탄 호텔",
+      "address": "무엉탄 호텔 내",
+      "price": "1인 기본 70$ / 2인 기본 110$",
+      "contact": "카톡 dnca23",
+      "link": "/karaoke/oneopera",
+      "image": "karaoke-oneopera.jpg",
+      "featured": true
+    },
+    {
+      "id": 3,
+      "name": "업타운 가라오케",
+      "description": "40개 이상 대형룸 완비",
+      "location": "바닷가 근처",
+      "address": "다낭 시내",
+      "price": "맥주세트 110$ / 소주세트 130$",
+      "contact": "카톡 dnred_ad",
+      "link": "/karaoke/uptown", 
+      "image": "karaoke-uptown.jpg",
+      "featured": true
+    },
+    {
+      "id": 4,
+      "name": "강남 가라오케",
+      "description": "고급진 인테리어, 최고 수질",
+      "location": "해변가 럭셔리 호텔 옆",
+      "address": "55 Trần Bạch Đằng, Ngũ Hành Sơn",
+      "price": "맥주/소주/양주세트 동일가격",
+      "contact": "카톡 dn7979",
+      "link": "/karaoke/gangnam",
+      "image": "karaoke-gangnam.jpg",
+      "featured": false
+    },
+    {
+      "id": 5,
+      "name": "텐프로 가라오케", 
+      "description": "한국식 주점 스타일",
+      "location": "하이쩌우 로컬 지역",
+      "address": "다낭 시내",
+      "price": "맥주세트 110$ / 소주세트 130$",
+      "contact": "카톡 dnred_ad",
+      "link": "/karaoke/tenpro",
+      "image": "karaoke-tenpro.jpg",
+      "featured": false
+    },
+    {
+      "id": 6,
+      "name": "빅뱅 가라오케",
+      "description": "데몰리션 노래방 스타일",
+      "location": "팜반동",
+      "address": "팜반동 내",
+      "price": "맥주세트 110$ / 소주세트 130$",
+      "contact": "카톡 dnred_ad", 
+      "link": "/karaoke/bigbang",
+      "image": "karaoke-bigbang.jpg",
+      "featured": false
+    }
+  ]
+}
