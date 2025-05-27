@@ -232,9 +232,9 @@ function setupMouseEvents(canvas) {
             // 드래그 거리 누적
             dragDistance += Math.abs(deltaX) + Math.abs(deltaY);
             
-            // 마우스 방향과 동일하게 수정
-            targetRotation.y += deltaX * 0.01;  // 다시 원래 방향
-            targetRotation.x += deltaY * 0.01;  // 다시 원래 방향
+            // 이미지를 직접 잡고 끄는 느낌 (드래그 방향과 반대로 회전)
+            targetRotation.y -= deltaX * 0.01;  // 이미지 끌기 느낌
+            targetRotation.x -= deltaY * 0.01;  // 이미지 끌기 느낌
             
             // X축 회전 제한 (더 자유롭게 회전 가능)
             targetRotation.x = Math.max(-Math.PI/2, Math.min(Math.PI/2, targetRotation.x));
@@ -263,9 +263,9 @@ function setupMouseEvents(canvas) {
             const deltaX = touch.clientX - mouse.x;
             const deltaY = touch.clientY - mouse.y;
             
-            // 마우스와 동일한 방향으로 수정
-            targetRotation.y += deltaX * 0.01;  // 다시 원래 방향
-            targetRotation.x += deltaY * 0.01;  // 다시 원래 방향
+            // 이미지를 직접 잡고 끄는 느낌
+            targetRotation.y -= deltaX * 0.01;  // 이미지 끌기 느낌
+            targetRotation.x -= deltaY * 0.01;  // 이미지 끌기 느낌
             
             targetRotation.x = Math.max(-Math.PI/2, Math.min(Math.PI/2, targetRotation.x));
             
