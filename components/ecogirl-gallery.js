@@ -1,4 +1,4 @@
-// 🌟 에코걸 3D 갤러리 모듈
+// 🌟 에코걸 3D 갤러리 모듈 - 완전 수정 버전
 class EcogirlGallery {
     constructor(containerId) {
         this.containerId = containerId;
@@ -47,7 +47,7 @@ class EcogirlGallery {
         }
     }
 
-    // 🎲 랜덤 이미지 선택
+    // 🎲 랜덤 이미지 선택 (20개)
     getRandomImages(count = 20) {
         console.log(`🎲 에코걸 ${this.availableImages.length}개 중에서 ${count}개 랜덤 선택`);
         
@@ -87,19 +87,11 @@ class EcogirlGallery {
             return;
         }
 
-        // 컨테이너 크기 확인 및 강제 설정
-        console.log(`📏 컨테이너 크기: ${container.clientWidth} x ${container.clientHeight}`);
-        
+        // 컨테이너 크기 확인
         let width = container.clientWidth || 800;
         let height = container.clientHeight || 600;
         
-        if (width === 0 || height === 0) {
-            console.warn('⚠️ 컨테이너 크기가 0입니다. 기본값 사용');
-            width = 800;
-            height = 600;
-            container.style.width = width + 'px';
-            container.style.height = height + 'px';
-        }
+        console.log(`📏 컨테이너 크기: ${width} x ${height}`);
 
         // 캔버스 생성
         const canvas = document.createElement('canvas');
@@ -139,8 +131,9 @@ class EcogirlGallery {
         console.log('✅ 에코걸 3D 갤러리 초기화 완료!');
     }
 
-    // 🎲 랜덤 이미지 선택
-    getRandomImages(count = 20) {
+    // 🖼️ 이미지 로드 및 3D 배치
+    async loadImages() {
+        console.log('📸 에코걸 이미지 로딩 시작...');
         
         await this.loadImageList();
         const selectedImages = this.getRandomImages(20);
@@ -148,234 +141,192 @@ class EcogirlGallery {
         
         const loader = new THREE.TextureLoader();
         const radius = 3;
-        let loadedCount = 0;
-
-        selectedImages.forEach((imageData, index) => {
+        
+        for (let i = 0; i < selectedImages.length; i++) {
+            const imageData = selectedImages[i];
             const imageUrl = this.getImageUrl(imageData);
             
-            loader.load(imageUrl, 
-                (texture) => {
-                    console.log(`✅ 에코걸 ${imageData.filename} 로드 성공`);
-                    
-                    const spriteMaterial = new THREE.SpriteMaterial({ 
-                        map: texture,
-                        transparent: false,
-                        opacity: 1.0
-                    });
-                    
-                    const sprite = new THREE.Sprite(spriteMaterial);
-                    
-                    // 원통형 배치
-                    const angle = (index / selectedImages.length) * Math.PI * 2;
-                    const height = (index % 3 - 1) * 1.5;
-                    
-                    const x = radius * Math.cos(angle);
-                    const y = height;
-                    const z = radius * Math.sin(angle);
-                    
-                    sprite.position.set(x, y, z);
-                    
-                    // 고정 크기
-                    const fixedWidth = 1.2;
-                    const fixedHeight = 1.7;
-                    sprite.scale.set(fixedWidth, fixedHeight, 1);
-                    
-                    sprite.lookAt(this.camera.position);
-                    
-                    this.scene.add(sprite);
-                    this.imageSprites.push({
-                        sprite: sprite,
-                        originalPosition: { x, y, z },
-                        imageData: imageData
-                    });
-                    
-                    loadedCount++;
-                    console.log(`📊 에코걸 진행률: ${loadedCount}/${selectedImages.length}`);
-                },
-                undefined,
-                (error) => {
-                    console.error(`❌ 에코걸 ${imageData.filename} 로드 실패:`, error);
-                    loadedCount++;
-                }
-            );
-        });
-    }
-
-    // 🖱️📱 마우스 및 터치 이벤트 설정
-    setupMouseEvents(canvas) {
-        // 마우스 이벤트
-        canvas.addEventListener('mousedown', (event) => {
-            this.handlePointerDown(event.clientX, event.clientY);
-            canvas.style.cursor = 'grabbing';
-        });
-
-        canvas.addEventListener('mouseup', (event) => {
-            this.handlePointerUp(event.clientX, event.clientY, event);
-            canvas.style.cursor = 'grab';
-        });
-
-        canvas.addEventListener('mouseleave', () => {
-            this.isMouseDown = false;
-            canvas.style.cursor = 'grab';
-        });
-
-        canvas.addEventListener('mousemove', (event) => {
-            if (this.isMouseDown) {
-                this.handlePointerMove(event.clientX, event.clientY);
+            try {
+                const texture = await this.loadTexture(loader, imageUrl);
+                const material = new THREE.SpriteMaterial({ map: texture });
+                const sprite = new THREE.Sprite(material);
+                
+                // 3D 구형 배치
+                const phi = Math.acos(2 * Math.random() - 1);
+                const theta = 2 * Math.PI * Math.random();
+                
+                sprite.position.x = radius * Math.sin(phi) * Math.cos(theta);
+                sprite.position.y = radius * Math.sin(phi) * Math.sin(theta);
+                sprite.position.z = radius * Math.cos(phi);
+                
+                sprite.scale.set(1, 1.4, 1);
+                sprite.userData = { imageData: imageData, originalScale: { x: 1, y: 1.4, z: 1 } };
+                
+                this.scene.add(sprite);
+                this.imageSprites.push(sprite);
+                
+                console.log(`✅ 에코걸 이미지 로드: ${imageData.filename}`);
+            } catch (error) {
+                console.error(`❌ 에코걸 이미지 로드 실패: ${imageUrl}`, error);
             }
-        });
-
-        // 터치 이벤트 (모바일)
-        canvas.addEventListener('touchstart', (event) => {
-            event.preventDefault();
-            const touch = event.touches[0];
-            this.handlePointerDown(touch.clientX, touch.clientY);
-        });
-
-        canvas.addEventListener('touchend', (event) => {
-            event.preventDefault();
-            if (event.changedTouches.length > 0) {
-                const touch = event.changedTouches[0];
-                this.handlePointerUp(touch.clientX, touch.clientY, event);
-            }
-        });
-
-        canvas.addEventListener('touchmove', (event) => {
-            event.preventDefault();
-            if (this.isMouseDown && event.touches.length > 0) {
-                const touch = event.touches[0];
-                this.handlePointerMove(touch.clientX, touch.clientY);
-            }
-        });
-    }
-
-    // 🖱️ 포인터 다운 (마우스/터치 공통)
-    handlePointerDown(x, y) {
-        this.isMouseDown = true;
-        this.dragDistance = 0;
-        this.mouseDownTime = Date.now();
-        this.mouse.x = x;
-        this.mouse.y = y;
-    }
-
-    // 🖱️ 포인터 업 (마우스/터치 공통)
-    handlePointerUp(x, y, event) {
-        const clickDuration = Date.now() - this.mouseDownTime;
-        
-        if (this.dragDistance < 10 && clickDuration < 300) {
-            this.handleImageClick(event);
         }
         
-        this.isMouseDown = false;
+        console.log(`🎉 에코걸 3D 갤러리 ${this.imageSprites.length}개 이미지 배치 완료!`);
     }
 
-    // 🖱️ 포인터 이동 (마우스/터치 공통)
-    handlePointerMove(x, y) {
-        const deltaX = x - this.mouse.x;
-        const deltaY = y - this.mouse.y;
-                
-        this.dragDistance += Math.abs(deltaX) + Math.abs(deltaY);
-        
-        const speed = 0.01;
-        this.targetRotation.y -= deltaX * speed;
-        this.targetRotation.x += deltaY * speed;
-        
-        this.mouse.x = x;
-        this.mouse.y = y;
+    // 🖼️ 텍스처 로드 (Promise 기반)
+    loadTexture(loader, url) {
+        return new Promise((resolve, reject) => {
+            loader.load(url, resolve, undefined, reject);
+        });
     }
 
-        canvas.addEventListener('touchend', () => {
+    // 🖱️ 마우스 이벤트 설정
+    setupMouseEvents(canvas) {
+        const handleStart = (clientX, clientY) => {
+            this.isMouseDown = true;
+            this.mouse.x = clientX;
+            this.mouse.y = clientY;
+            this.dragDistance = 0;
+            this.mouseDownTime = Date.now();
+        };
+
+        const handleMove = (clientX, clientY) => {
+            if (!this.isMouseDown) return;
+
+            const deltaX = clientX - this.mouse.x;
+            const deltaY = clientY - this.mouse.y;
+            
+            this.dragDistance += Math.abs(deltaX) + Math.abs(deltaY);
+            
+            this.targetRotation.y += deltaX * 0.01;
+            this.targetRotation.x += deltaY * 0.01;
+            
+            this.mouse.x = clientX;
+            this.mouse.y = clientY;
+        };
+
+        const handleEnd = (clientX, clientY) => {
+            if (!this.isMouseDown) return;
+            
+            const clickDuration = Date.now() - this.mouseDownTime;
+            
+            if (this.dragDistance < 5 && clickDuration < 200) {
+                this.handleClick(clientX, clientY, canvas);
+            }
+            
             this.isMouseDown = false;
+        };
+
+        // 마우스 이벤트
+        canvas.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            handleStart(e.clientX, e.clientY);
         });
 
-        canvas.addEventListener('touchmove', (event) => {
-            if (this.isMouseDown && event.touches.length === 1) {
-                const touch = event.touches[0];
-                const deltaX = touch.clientX - this.mouse.x;
+        canvas.addEventListener('mousemove', (e) => {
+            handleMove(e.clientX, e.clientY);
+        });
+
+        canvas.addEventListener('mouseup', (e) => {
+            handleEnd(e.clientX, e.clientY);
+        });
+
+        // 터치 이벤트
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            handleStart(touch.clientX, touch.clientY);
+        });
+
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            handleMove(touch.clientX, touch.clientY);
+        });
+
+        canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            if (e.changedTouches.length > 0) {
+                const touch = e.changedTouches[0];
+                handleEnd(touch.clientX, touch.clientY);
+            }
+        });
+    }
+
+    // 🖱️ 클릭 감지 및 처리
+    handleClick(clientX, clientY, canvas) {
+        const rect = canvas.getBoundingClientRect();
+        const mouse = new THREE.Vector2();
+        mouse.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+
+        const raycaster = new THREE.Raycaster();
+        raycaster.setFromCamera(mouse, this.camera);
+
+        const intersects = raycaster.intersectObjects(this.imageSprites);
+        
+        if (intersects.length > 0) {
+            const clickedSprite = intersects[0].object;
+            const imageData = clickedSprite.userData.imageData;
+            
+            console.log(`🖱️ 에코걸 이미지 클릭:`, imageData);
+            
+            // 상세 페이지로 이동
+            const url = `ecogirl-detail.html?id=${imageData.id}&filename=${encodeURIComponent(imageData.filename)}&title=${encodeURIComponent(imageData.title)}`;
+            window.open(url, '_blank');
+        }
     }
 
     // 🎬 애니메이션 루프
     animate() {
         requestAnimationFrame(() => this.animate());
-
+        
+        // 부드러운 회전
         this.currentRotation.x += (this.targetRotation.x - this.currentRotation.x) * 0.05;
         this.currentRotation.y += (this.targetRotation.y - this.currentRotation.y) * 0.05;
-
-        if (Math.abs(this.targetRotation.y - this.currentRotation.y) < 0.001) {
-            this.targetRotation.y += 0.002;
-        }
-
-        this.imageSprites.forEach((item) => {
-            const sprite = item.sprite;
-            const originalPos = item.originalPosition;
-            
-            const rotatedX = originalPos.x * Math.cos(this.currentRotation.y) - originalPos.z * Math.sin(this.currentRotation.y);
-            const rotatedZ = originalPos.x * Math.sin(this.currentRotation.y) + originalPos.z * Math.cos(this.currentRotation.y);
-            const rotatedY = originalPos.y * Math.cos(this.currentRotation.x) - rotatedZ * Math.sin(this.currentRotation.x);
-            const finalZ = originalPos.y * Math.sin(this.currentRotation.x) + rotatedZ * Math.cos(this.currentRotation.x);
-            
-            sprite.position.set(rotatedX, rotatedY, finalZ);
-            
-            const distance = sprite.position.distanceTo(this.camera.position);
-            const perspectiveScale = Math.max(0.8, 1.2 - distance * 0.05);
-            
-            const fixedWidth = 1.2;
-            const fixedHeight = 1.7;
-            sprite.scale.set(fixedWidth * perspectiveScale, fixedHeight * perspectiveScale, 1);
-        });
-
+        
+        // 자동 회전 (천천히)
+        this.targetRotation.y += 0.001;
+        
+        // 씬 회전 적용
+        this.scene.rotation.x = this.currentRotation.x;
+        this.scene.rotation.y = this.currentRotation.y;
+        
         this.renderer.render(this.scene, this.camera);
     }
 
-    // 🖱️ 이미지 클릭 처리
-    handleImageClick(event) {
-        const rect = this.renderer.domElement.getBoundingClientRect();
-        const mouseVector = new THREE.Vector2();
-        
-        mouseVector.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-        mouseVector.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-        
-        const raycaster = new THREE.Raycaster();
-        raycaster.setFromCamera(mouseVector, this.camera);
-        
-        const sprites = this.imageSprites.map(item => item.sprite);
-        const intersects = raycaster.intersectObjects(sprites);
-        
-        if (intersects.length > 0) {
-            const clickedSprite = intersects[0].object;
-            const clickedItem = this.imageSprites.find(item => item.sprite === clickedSprite);
-            
-            if (clickedItem && clickedItem.imageData) {
-                console.log(`✅ 에코걸 이미지 클릭됨:`, clickedItem.imageData);
-                const imageId = clickedItem.imageData.id;
-                window.location.href = `ecogirl-detail.html?id=${imageId}`;
-            }
-        }
-    }
-
-    // 📱 윈도우 리사이즈 처리
+    // 🔧 윈도우 리사이즈 처리
     onWindowResize(container) {
-        const width = container.clientWidth || 800;
-        const height = container.clientHeight || 600;
+        const width = container.clientWidth;
+        const height = container.clientHeight;
         
         this.camera.aspect = width / height;
         this.camera.updateProjectionMatrix();
         this.renderer.setSize(width, height);
+        
+        console.log(`📏 에코걸 갤러리 크기 조정: ${width} x ${height}`);
     }
 
-    // 🗑️ 갤러리 정리
+    // 🗑️ 정리 메서드
     destroy() {
         if (this.renderer) {
             this.renderer.dispose();
         }
-        this.imageSprites.forEach(item => {
-            this.scene.remove(item.sprite);
+        
+        this.imageSprites.forEach(sprite => {
+            if (sprite.material.map) {
+                sprite.material.map.dispose();
+            }
+            sprite.material.dispose();
         });
-        this.imageSprites = [];
+        
+        const container = document.getElementById(this.containerId);
+        if (container) {
+            container.innerHTML = '';
+        }
+        
         this.isInitialized = false;
         console.log('🗑️ 에코걸 갤러리 정리 완료');
     }
 }
-
-// 전역으로 내보내기
-window.EcogirlGallery = EcogirlGallery;
