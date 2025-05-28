@@ -154,6 +154,25 @@
             width: 100%;
             height: 100%;
             position: relative;
+            overflow: visible;
+        }
+
+        #ecogirlGalleryContainer {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 3;
+        }
+
+        /* 3D 캔버스는 위에 */
+        #ecogirlGalleryContainer canvas {
+            position: relative;
+            z-index: 5;
+            display: block;
+            width: 100% !important;
+            height: 100% !important;
         }
 
         /* 3D 갤러리 내부 배경 텍스트 */
@@ -409,7 +428,7 @@
             </div>
             
             <!-- 3D 갤러리 -->
-            <div id="ecogirlGalleryContainer" class="gallery-container"></div>
+            <div id="ecogirlGalleryContainer"></div>
         </div>
     </section>
 
