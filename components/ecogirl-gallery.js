@@ -189,8 +189,8 @@ class EcogirlGallery {
                 const center = new THREE.Vector3(0, 0, 0);
                 const dist = sprite.position.distanceTo(center);
                 const maxDistance = 5; 
-                const maxScale = 1.8;
-                const minScale = 0.6;
+                const maxScale = 2.5;  // 1.8 → 2.5
+                const minScale = 1.0;  // 0.6 → 1.0
 
              // 거리 기반 크기 조절
                 const scale = Math.max(minScale, maxScale - (dist / maxDistance) * (maxScale - minScale));
