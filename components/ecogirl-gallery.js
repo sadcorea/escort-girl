@@ -132,7 +132,7 @@ class EcogirlGallery {
         window.currentSelectedEcogirlImages = selectedImages;
         
         const loader = new THREE.TextureLoader();
-        const radius = 5;
+        const radius = 4;  // 공 크기 결정
         let loadedCount = 0;
 
         selectedImages.forEach((imageData, index) => {
@@ -161,9 +161,8 @@ class EcogirlGallery {
                     sprite.position.set(x, y, z);
                     
                     // 고정 크기 (나중에 거리별로 조절됨)
-                    const fixedWidth = 1.06;
-                    const fixedHeight = 1.5;
-                    sprite.scale.set(fixedWidth, fixedHeight, 1);
+                    this.fixedWidth = 0.6;  // 그림크기 결정
+                    this.fixedHeight = 0.9;
                     
                     sprite.lookAt(this.camera.position);
                     
@@ -284,11 +283,8 @@ class EcogirlGallery {
             
             // 🎯 가운데는 적당히, 주변은 매우 작게
             const distance = sprite.position.distanceTo(this.camera.position);
-            const perspectiveScale = Math.max(0.2, 2.0 - distance * 0.3);  // 0.2~2.0 - 0.2~5.0큼 0.5, 4.0 왕따시 0.2, 4.0
-            
-            const fixedWidth = 1.2;
-            const fixedHeight = 1.7;
-            sprite.scale.set(fixedWidth * perspectiveScale, fixedHeight * perspectiveScale, 1);
+            const perspectiveScale = Math.max(2.0, 3.0 - distance * 0.3);  // 0.2~2.0 멀가중 크기결정
+            sprite.scale.set(this.fixedWidth * perspectiveScale, this.fixedHeight * perspectiveScale, 1);
         });
 
         this.renderer.render(this.scene, this.camera);
