@@ -15,9 +15,9 @@ class EcogirlGallery {
         this.availableImages = [];
         this.isInitialized = false;
         
-        // 🎯 3단 원기둥 좌표 (21개 위치) - 7.7.7 구성
+        // 🎯 3단 원기둥 좌표 (24개 위치) - 8.8.8 구성
         this.fixedPositions = [
-            // 위층 (y=2) - 7개
+            // 위층 (y=2) - 8개
             { x: 3, y: 2, z: 0 },
             { x: 2.1, y: 2, z: 2.1 },
             { x: 0, y: 2, z: 3 },
@@ -25,8 +25,9 @@ class EcogirlGallery {
             { x: -3, y: 2, z: 0 },
             { x: -2.1, y: 2, z: -2.1 },
             { x: 0, y: 2, z: -3 },
+            { x: 2.1, y: 2, z: -2.1 },
             
-            // 중층 (y=0) - 7개
+            // 중층 (y=0) - 8개
             { x: 3, y: 0, z: 0 },
             { x: 2.1, y: 0, z: 2.1 },
             { x: 0, y: 0, z: 3 },
@@ -34,15 +35,17 @@ class EcogirlGallery {
             { x: -3, y: 0, z: 0 },
             { x: -2.1, y: 0, z: -2.1 },
             { x: 0, y: 0, z: -3 },
+            { x: 2.1, y: 0, z: -2.1 },
             
-            // 아래층 (y=-2) - 7개
+            // 아래층 (y=-2) - 8개
             { x: 3, y: -2, z: 0 },
             { x: 2.1, y: -2, z: 2.1 },
             { x: 0, y: -2, z: 3 },
             { x: -2.1, y: -2, z: 2.1 },
             { x: -3, y: -2, z: 0 },
             { x: -2.1, y: -2, z: -2.1 },
-            { x: 0, y: -2, z: -3 }
+            { x: 0, y: -2, z: -3 },
+            { x: 2.1, y: -2, z: -2.1 }
         ];
     }
 
@@ -181,7 +184,7 @@ class EcogirlGallery {
         
         // 카메라 생성
         this.camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-        this.camera.position.z = 7;
+        this.camera.position.z = 6.5;
 
         // 렌더러 생성
         this.renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
@@ -211,7 +214,7 @@ class EcogirlGallery {
         console.log('📸 에코걸 이미지 로딩 시작...');
         
         await this.scanImagesFolder();
-        const selectedImages = this.getRandomImages(21);
+        const selectedImages = this.getRandomImages(24);
         window.currentSelectedEcogirlImages = selectedImages;
         
         const loader = new THREE.TextureLoader();
