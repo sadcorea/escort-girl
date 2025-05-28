@@ -48,7 +48,7 @@ class EcogirlGallery {
     }
 
     // 🎲 랜덤 이미지 선택
-    getRandomImages(count = 12) {
+    getRandomImages(count = 20) {
         console.log(`🎲 에코걸 ${this.availableImages.length}개 중에서 ${count}개 랜덤 선택`);
         
         if (this.availableImages.length === 0) {
@@ -87,6 +87,20 @@ class EcogirlGallery {
             return;
         }
 
+        // 컨테이너 크기 확인 및 강제 설정
+        console.log(`📏 컨테이너 크기: ${container.clientWidth} x ${container.clientHeight}`);
+        
+        let width = container.clientWidth || 800;
+        let height = container.clientHeight || 600;
+        
+        if (width === 0 || height === 0) {
+            console.warn('⚠️ 컨테이너 크기가 0입니다. 기본값 사용');
+            width = 800;
+            height = 600;
+            container.style.width = width + 'px';
+            container.style.height = height + 'px';
+        }
+
         // 캔버스 생성
         const canvas = document.createElement('canvas');
         canvas.id = 'ecogirlGallery3D';
@@ -99,13 +113,15 @@ class EcogirlGallery {
         this.scene = new THREE.Scene();
         
         // 카메라 생성
-        this.camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+        this.camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
         this.camera.position.z = 5;
 
         // 렌더러 생성
         this.renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
-        this.renderer.setSize(container.clientWidth, container.clientHeight);
+        this.renderer.setSize(width, height);
         this.renderer.setClearColor(0x000000, 0);
+
+        console.log(`🎬 렌더러 크기 설정: ${width} x ${height}`);
 
         // 이미지 로드 및 배치
         await this.loadImages();
@@ -123,9 +139,8 @@ class EcogirlGallery {
         console.log('✅ 에코걸 3D 갤러리 초기화 완료!');
     }
 
-    // 🖼️ 이미지 로드 및 3D 배치
-    async loadImages() {
-        console.log('📸 에코걸 이미지 로딩 시작...');
+    // 🎲 랜덤 이미지 선택
+    getRandomImages(count = 20) {
         
         await this.loadImageList();
         const selectedImages = this.getRandomImages(20);
