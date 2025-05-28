@@ -1,5 +1,4 @@
-// 🌟 에코걸 3D 갤러리 모듈 - 완전 수정 버전
-if (typeof window.EcogirlGallery === 'undefined') {
+// 🌟 에코걸 3D 갤러리 모듈 - 간단 버전
 class EcogirlGallery {
     constructor(containerId) {
         this.containerId = containerId;
@@ -16,7 +15,7 @@ class EcogirlGallery {
         this.availableImages = [];
         this.isInitialized = false;
         
-        // 🎯 3단 원기둥 좌표 (24개 위치) - 8.8.8 구성
+        // 🎯 3단 원기둥 좌표 (24개)
         this.fixedPositions = [
             // 위층 (y=2) - 8개
             { x: 3, y: 2, z: 0 },
@@ -50,12 +49,9 @@ class EcogirlGallery {
         ];
     }
 
-    // 📁 폴더에서 이미지 파일 스캔
+    // 이미지 목록 생성
     async scanImagesFolder() {
         try {
-            console.log('📁 에코걸 이미지 폴더 스캔 시작...');
-            
-            // 폴더의 모든 이미지 파일 감지 (실제로는 알려진 파일들 사용)
             const imageFiles = [
                 '250524-14-52_00005_.png',
                 '250524-15-02_00001_.png', 
@@ -99,7 +95,6 @@ class EcogirlGallery {
                 '250527-02-14_00006_.png'
             ];
             
-            // 파일명을 이미지 객체로 변환
             this.availableImages = imageFiles.map((filename, index) => ({
                 id: index + 1,
                 filename: filename.replace('.png', ''),
@@ -107,121 +102,80 @@ class EcogirlGallery {
                 fullPath: `images/profiles/${filename}`
             }));
             
-            console.log(`✅ 에코걸 폴더에서 ${this.availableImages.length}개 이미지 스캔 완료`);
+            console.log(`✅ 에코걸 ${this.availableImages.length}개 이미지 스캔 완료`);
             return this.availableImages;
-            
         } catch (error) {
-            console.error('❌ 에코걸 이미지 폴더 스캔 실패:', error);
-            
-            // 실패 시 기본 이미지 사용
-            this.availableImages = [
-                { id: 1, filename: '250524-15-10_00002_', title: 'EcoGirl 1', fullPath: 'images/profiles/250524-15-10_00002_.png' },
-                { id: 2, filename: '250524-15-38_00003_', title: 'EcoGirl 2', fullPath: 'images/profiles/250524-15-38_00003_.png' },
-                { id: 3, filename: '250524-16-13_00001_', title: 'EcoGirl 3', fullPath: 'images/profiles/250524-16-13_00001_.png' },
-                { id: 4, filename: '250524-16-13_00008_', title: 'EcoGirl 4', fullPath: 'images/profiles/250524-16-13_00008_.png' },
-                { id: 5, filename: '250524-16-37_00001_', title: 'EcoGirl 5', fullPath: 'images/profiles/250524-16-37_00001_.png' }
-            ];
-            console.log(`🔄 에코걸 기본 이미지 ${this.availableImages.length}개 사용`);
-            return this.availableImages;
+            console.error('❌ 이미지 스캔 실패:', error);
+            return [];
         }
     }
 
-    // 🎲 랜덤 이미지 선택 (20개)
-    getRandomImages(count = 20) {
-        console.log(`🎲 에코걸 ${this.availableImages.length}개 중에서 ${count}개 랜덤 선택`);
-        
-        if (this.availableImages.length === 0) {
-            console.warn('⚠️ 에코걸 이미지 목록이 비어있습니다.');
-            return [];
-        }
-        
+    // 랜덤 이미지 선택
+    getRandomImages(count = 24) {
         const selected = [];
         for (let i = 0; i < count; i++) {
             const randomIndex = Math.floor(Math.random() * this.availableImages.length);
-            const selectedImage = this.availableImages[randomIndex];
-            selected.push(selectedImage);
+            selected.push(this.availableImages[randomIndex]);
         }
-        
-        console.log(`✅ 에코걸 ${selected.length}개 랜덤 이미지 선택 완료`);
         return selected;
     }
 
-    // 🖼️ 이미지 URL 생성
+    // 이미지 URL 생성
     getImageUrl(imageData) {
         return imageData.fullPath || `images/profiles/${imageData.filename}.png`;
     }
 
-    // 🎮 3D 갤러리 초기화
+    // 초기화
     async init() {
-        if (this.isInitialized) {
-            console.log('⚠️ 에코걸 갤러리 이미 초기화됨');
-            return;
-        }
+        if (this.isInitialized) return;
 
         console.log('🚀 에코걸 3D 갤러리 초기화 시작...');
         
         const container = document.getElementById(this.containerId);
         if (!container) {
-            console.error(`❌ ${this.containerId} 컨테이너를 찾을 수 없습니다.`);
+            console.error(`❌ 컨테이너 ${this.containerId} 없음`);
             return;
         }
 
-        // 컨테이너 크기 확인
         let width = container.clientWidth || 800;
         let height = container.clientHeight || 600;
-        
-        console.log(`📏 컨테이너 크기: ${width} x ${height}`);
 
         // 캔버스 생성
         const canvas = document.createElement('canvas');
-        canvas.id = 'ecogirlGallery3D';
         canvas.style.width = '100%';
         canvas.style.height = '100%';
-        canvas.style.display = 'block';
         container.appendChild(canvas);
 
-        // 씬 생성
+        // 3D 씬 설정
         this.scene = new THREE.Scene();
-        
-        // 카메라 생성
         this.camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
         this.camera.position.z = 6.5;
-
-        // 렌더러 생성
         this.renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
         this.renderer.setSize(width, height);
         this.renderer.setClearColor(0x000000, 0);
 
-        console.log(`🎬 렌더러 크기 설정: ${width} x ${height}`);
-
-        // 이미지 로드 및 배치
+        // 이미지 로드
         await this.loadImages();
-
-        // 마우스 이벤트 설정
+        
+        // 마우스 이벤트
         this.setupMouseEvents(canvas);
-
-        // 윈도우 리사이즈 이벤트
-        window.addEventListener('resize', () => this.onWindowResize(container), false);
-
+        
         // 애니메이션 시작
         this.animate();
         
         this.isInitialized = true;
-        console.log('✅ 에코걸 3D 갤러리 초기화 완료!');
+        console.log('✅ 에코걸 갤러리 초기화 완료!');
     }
 
-    // 🖼️ 이미지 로드 및 3D 배치
+    // 이미지 로드
     async loadImages() {
-        console.log('📸 에코걸 이미지 로딩 시작...');
-        
         await this.scanImagesFolder();
         const selectedImages = this.getRandomImages(24);
-        window.currentSelectedEcogirlImages = selectedImages;
         
         const loader = new THREE.TextureLoader();
         
-        // 🚀 로딩 최적화: 병렬 처리
-        const loadPromises = selectedImages.map(async (imageData, i) => {
+        for (let i = 0; i < selectedImages.length; i++) {
+            const imageData = selectedImages[i];
             const imageUrl = this.getImageUrl(imageData);
             
             try {
@@ -229,40 +183,31 @@ class EcogirlGallery {
                 const material = new THREE.SpriteMaterial({ map: texture });
                 const sprite = new THREE.Sprite(material);
                 
-                // 고정 좌표 배치
                 const position = this.fixedPositions[i] || { x: 0, y: 0, z: 3 };
-                sprite.position.x = position.x;
-                sprite.position.y = position.y;
-                sprite.position.z = position.z;
-                
+                sprite.position.set(position.x, position.y, position.z);
                 sprite.scale.set(1.2, 1.6, 1);
-                sprite.userData = { imageData: imageData, originalScale: { x: 1.2, y: 1.6, z: 1 } };
+                sprite.userData = { imageData: imageData };
                 
                 this.scene.add(sprite);
                 this.imageSprites.push(sprite);
                 
-                console.log(`✅ 에코걸 이미지 로드: ${imageData.filename}`);
-                return sprite;
+                console.log(`✅ 이미지 로드: ${imageData.filename}`);
             } catch (error) {
-                console.error(`❌ 에코걸 이미지 로드 실패: ${imageUrl}`, error);
-                return null;
+                console.error(`❌ 이미지 로드 실패: ${imageUrl}`, error);
             }
-        });
+        }
         
-        // 모든 이미지 로딩 완료 대기
-        await Promise.all(loadPromises);
-        
-        console.log(`🎉 에코걸 3D 갤러리 ${this.imageSprites.length}개 이미지 배치 완료!`);
+        console.log(`🎉 ${this.imageSprites.length}개 이미지 배치 완료!`);
     }
 
-    // 🖼️ 텍스처 로드 (Promise 기반)
+    // 텍스처 로드
     loadTexture(loader, url) {
         return new Promise((resolve, reject) => {
             loader.load(url, resolve, undefined, reject);
         });
     }
 
-    // 🖱️ 마우스 이벤트 설정
+    // 마우스 이벤트
     setupMouseEvents(canvas) {
         const handleStart = (clientX, clientY) => {
             this.isMouseDown = true;
@@ -335,7 +280,7 @@ class EcogirlGallery {
         });
     }
 
-    // 🖱️ 클릭 감지 및 처리
+    // 클릭 처리
     handleClick(clientX, clientY, canvas) {
         const rect = canvas.getBoundingClientRect();
         const mouse = new THREE.Vector2();
@@ -351,47 +296,32 @@ class EcogirlGallery {
             const clickedSprite = intersects[0].object;
             const imageData = clickedSprite.userData.imageData;
             
-            console.log(`🖱️ 에코걸 이미지 클릭:`, imageData);
+            console.log(`🖱️ 이미지 클릭:`, imageData);
             
-            // 상세 페이지로 이동
             const url = `ecogirl-detail.html?id=${imageData.id}&filename=${encodeURIComponent(imageData.filename)}&title=${encodeURIComponent(imageData.title)}`;
             window.open(url, '_blank');
         }
     }
 
-    // 🎬 애니메이션 루프
+    // 애니메이션
     animate() {
         requestAnimationFrame(() => this.animate());
         
-        // 부드러운 회전
         this.currentRotation.x += (this.targetRotation.x - this.currentRotation.x) * 0.05;
         this.currentRotation.y += (this.targetRotation.y - this.currentRotation.y) * 0.05;
         
-        // 자동 회전 (드래그 중이 아닐 때만)
+        // 드래그 중이 아닐 때만 자동 회전
         if (!this.isMouseDown) {
             this.targetRotation.y += 0.001;
         }
         
-        // 씬 회전 적용
         this.scene.rotation.x = this.currentRotation.x;
         this.scene.rotation.y = this.currentRotation.y;
         
         this.renderer.render(this.scene, this.camera);
     }
 
-    // 🔧 윈도우 리사이즈 처리
-    onWindowResize(container) {
-        const width = container.clientWidth;
-        const height = container.clientHeight;
-        
-        this.camera.aspect = width / height;
-        this.camera.updateProjectionMatrix();
-        this.renderer.setSize(width, height);
-        
-        console.log(`📏 에코걸 갤러리 크기 조정: ${width} x ${height}`);
-    }
-
-    // 🗑️ 정리 메서드
+    // 정리
     destroy() {
         if (this.renderer) {
             this.renderer.dispose();
@@ -413,6 +343,3 @@ class EcogirlGallery {
         console.log('🗑️ 에코걸 갤러리 정리 완료');
     }
 }
-
-// 전역에서 사용 가능하도록 설정
-window.EcogirlGallery = EcogirlGallery;
