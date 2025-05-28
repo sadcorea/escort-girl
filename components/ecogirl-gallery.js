@@ -132,7 +132,7 @@ class EcogirlGallery {
         window.currentSelectedEcogirlImages = selectedImages;
         
         const loader = new THREE.TextureLoader();
-        const radius = 3;
+        const radius = 5;
         let loadedCount = 0;
 
         selectedImages.forEach((imageData, index) => {
