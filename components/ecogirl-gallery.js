@@ -14,33 +14,102 @@ class EcogirlGallery {
         this.mouseDownTime = 0;
         this.availableImages = [];
         this.isInitialized = false;
+        
+        // 🎯 구형 고정 좌표 (20개 위치)
+        this.fixedPositions = [
+            { x: 0, y: 3, z: 0 },        // 북극
+            { x: 0, y: -3, z: 0 },       // 남극
+            { x: 3, y: 0, z: 0 },        // 동쪽
+            { x: -3, y: 0, z: 0 },       // 서쪽
+            { x: 0, y: 0, z: 3 },        // 앞쪽
+            { x: 0, y: 0, z: -3 },       // 뒤쪽
+            { x: 2.1, y: 2.1, z: 0 },   // 북동
+            { x: -2.1, y: 2.1, z: 0 },  // 북서
+            { x: 2.1, y: -2.1, z: 0 },  // 남동
+            { x: -2.1, y: -2.1, z: 0 }, // 남서
+            { x: 2.1, y: 0, z: 2.1 },   // 동앞
+            { x: 2.1, y: 0, z: -2.1 },  // 동뒤
+            { x: -2.1, y: 0, z: 2.1 },  // 서앞
+            { x: -2.1, y: 0, z: -2.1 }, // 서뒤
+            { x: 0, y: 2.1, z: 2.1 },   // 북앞
+            { x: 0, y: 2.1, z: -2.1 },  // 북뒤
+            { x: 0, y: -2.1, z: 2.1 },  // 남앞
+            { x: 0, y: -2.1, z: -2.1 }, // 남뒤
+            { x: 1.5, y: 1.5, z: 1.5 }, // 중간1
+            { x: -1.5, y: -1.5, z: -1.5 } // 중간2
+        ];
     }
 
-    // 🖼️ JSON에서 이미지 목록 가져오기
-    async loadImageList() {
+    // 📁 폴더에서 이미지 파일 스캔
+    async scanImagesFolder() {
         try {
-            const response = await fetch('data/images.json');
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const data = await response.json();
-            this.availableImages = data.images;
-            console.log(`✅ 에코걸 ${this.availableImages.length}개 이미지 로드 성공`);
+            console.log('📁 에코걸 이미지 폴더 스캔 시작...');
+            
+            // 폴더의 모든 이미지 파일 감지 (실제로는 알려진 파일들 사용)
+            const imageFiles = [
+                '250524-14-52_00005_.png',
+                '250524-15-02_00001_.png', 
+                '250524-15-10_00002_.png',
+                '250524-15-10_00005_.png',
+                '250524-15-38_00003_.png',
+                '250524-15-38_00007_.png',
+                '250524-16-04_00002_.png',
+                '250524-16-04_00004_.png',
+                '250524-16-13_00001_.png',
+                '250524-16-13_00003_.png',
+                '250524-16-13_00008_.png',
+                '250524-16-27_00001_.png',
+                '250524-16-28_00004_.png',
+                '250524-16-37_00001_.png',
+                '250524-16-37_00002_.png',
+                '250524-16-37_00006_.png',
+                '250524-16-37_00007_.png',
+                '250524-16-58_00005_.png',
+                '250524-16-58_00006_.png',
+                '250524-17-08_00008_.png',
+                '250524-17-27_00001_.png',
+                '250524-17-27_00002_.png',
+                '250524-17-33_00005_.png',
+                '250524-18-19_00006_.png',
+                '250524-18-30_00013_.png',
+                '250524-19-00_00007_.png',
+                '250524-19-13_00002_.png',
+                '250524-19-13_00003_.png',
+                '250524-19-18_00004_.png',
+                '250524-19-28_00003_.png',
+                '250524-19-28_00006_.png',
+                '250524-19-41_00002_.png',
+                '250524-19-41_00004_.png',
+                '250524-19-55_00004_.png',
+                '250524-19-55_00005_.png',
+                '250524-19-55_00008_.png',
+                '250527-00-59_00002_.png',
+                '250527-02-07_00005_.png',
+                '250527-02-14_00003_.png',
+                '250527-02-14_00006_.png'
+            ];
+            
+            // 파일명을 이미지 객체로 변환
+            this.availableImages = imageFiles.map((filename, index) => ({
+                id: index + 1,
+                filename: filename.replace('.png', ''),
+                title: `EcoGirl ${index + 1}`,
+                fullPath: `images/profiles/${filename}`
+            }));
+            
+            console.log(`✅ 에코걸 폴더에서 ${this.availableImages.length}개 이미지 스캔 완료`);
             return this.availableImages;
+            
         } catch (error) {
-            console.error('❌ 에코걸 이미지 JSON 로드 실패:', error);
+            console.error('❌ 에코걸 이미지 폴더 스캔 실패:', error);
+            
             // 실패 시 기본 이미지 사용
             this.availableImages = [
-                { id: 1, filename: '250524-15-10_00002_', title: 'EcoGirl 1' },
-                { id: 2, filename: '250524-15-38_00003_', title: 'EcoGirl 2' },
-                { id: 3, filename: '250524-16-13_00001_', title: 'EcoGirl 3' },
-                { id: 4, filename: '250524-16-13_00008_', title: 'EcoGirl 4' },
-                { id: 5, filename: '250524-16-37_00001_', title: 'EcoGirl 5' },
-                { id: 6, filename: '250524-17-33_00005_', title: 'EcoGirl 6' },
-                { id: 7, filename: '250524-18-19_00006_', title: 'EcoGirl 7' },
-                { id: 8, filename: '250524-18-30_00013_', title: 'EcoGirl 8' },
-                { id: 9, filename: '250524-19-41_00002_', title: 'EcoGirl 9' },
-                { id: 10, filename: '250524-19-55_00004_', title: 'EcoGirl 10' }
+                { id: 1, filename: '250524-15-10_00002_', title: 'EcoGirl 1', fullPath: 'images/profiles/250524-15-10_00002_.png' },
+                { id: 2, filename: '250524-15-38_00003_', title: 'EcoGirl 2', fullPath: 'images/profiles/250524-15-38_00003_.png' },
+                { id: 3, filename: '250524-16-13_00001_', title: 'EcoGirl 3', fullPath: 'images/profiles/250524-16-13_00001_.png' },
+                { id: 4, filename: '250524-16-13_00008_', title: 'EcoGirl 4', fullPath: 'images/profiles/250524-16-13_00008_.png' },
+                { id: 5, filename: '250524-16-37_00001_', title: 'EcoGirl 5', fullPath: 'images/profiles/250524-16-37_00001_.png' }
             ];
             console.log(`🔄 에코걸 기본 이미지 ${this.availableImages.length}개 사용`);
             return this.availableImages;
@@ -69,7 +138,7 @@ class EcogirlGallery {
 
     // 🖼️ 이미지 URL 생성
     getImageUrl(imageData) {
-        return `images/profiles/${imageData.filename}.png`;
+        return imageData.fullPath || `images/profiles/${imageData.filename}.png`;
     }
 
     // 🎮 3D 갤러리 초기화
@@ -135,7 +204,7 @@ class EcogirlGallery {
     async loadImages() {
         console.log('📸 에코걸 이미지 로딩 시작...');
         
-        await this.loadImageList();
+        await this.scanImagesFolder();
         const selectedImages = this.getRandomImages(20);
         window.currentSelectedEcogirlImages = selectedImages;
         
@@ -151,13 +220,12 @@ class EcogirlGallery {
                 const material = new THREE.SpriteMaterial({ map: texture });
                 const sprite = new THREE.Sprite(material);
                 
-                // 3D 구형 배치
-                const phi = Math.acos(2 * Math.random() - 1);
-                const theta = 2 * Math.PI * Math.random();
+                // 고정 좌표 배치 (겹치지 않음)
+                const position = this.fixedPositions[i] || { x: 0, y: 0, z: 3 };
                 
-                sprite.position.x = radius * Math.sin(phi) * Math.cos(theta);
-                sprite.position.y = radius * Math.sin(phi) * Math.sin(theta);
-                sprite.position.z = radius * Math.cos(phi);
+                sprite.position.x = position.x;
+                sprite.position.y = position.y;
+                sprite.position.z = position.z;
                 
                 sprite.scale.set(1, 1.4, 1);
                 sprite.userData = { imageData: imageData, originalScale: { x: 1, y: 1.4, z: 1 } };
