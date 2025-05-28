@@ -355,9 +355,12 @@ class EcogirlGallery {
 
     // 📱 윈도우 리사이즈 처리
     onWindowResize(container) {
-        this.camera.aspect = container.clientWidth / container.clientHeight;
+        const width = container.clientWidth || 800;
+        const height = container.clientHeight || 600;
+        
+        this.camera.aspect = width / height;
         this.camera.updateProjectionMatrix();
-        this.renderer.setSize(container.clientWidth, container.clientHeight);
+        this.renderer.setSize(width, height);
     }
 
     // 🗑️ 갤러리 정리
