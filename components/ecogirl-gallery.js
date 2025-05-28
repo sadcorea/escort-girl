@@ -1,4 +1,5 @@
 // 🌟 에코걸 3D 갤러리 모듈 - 완전 수정 버전
+if (typeof window.EcogirlGallery === 'undefined') {
 class EcogirlGallery {
     constructor(containerId) {
         this.containerId = containerId;
@@ -412,3 +413,6 @@ class EcogirlGallery {
         console.log('🗑️ 에코걸 갤러리 정리 완료');
     }
 }
+
+// 전역에서 사용 가능하도록 설정
+window.EcogirlGallery = EcogirlGallery;
