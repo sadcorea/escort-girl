@@ -161,8 +161,8 @@ class EcogirlGallery {
                     sprite.position.set(x, y, z);
                     
                     // 고정 크기 (나중에 거리별로 조절됨)
-                    const fixedWidth = 1.2;
-                    const fixedHeight = 1.7;
+                    const fixedWidth = 1.06;
+                    const fixedHeight = 1.5;
                     sprite.scale.set(fixedWidth, fixedHeight, 1);
                     
                     sprite.lookAt(this.camera.position);
