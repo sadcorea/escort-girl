@@ -284,7 +284,7 @@ class EcogirlGallery {
             
             // 🎯 가운데는 적당히, 주변은 매우 작게
             const distance = sprite.position.distanceTo(this.camera.position);
-            const perspectiveScale = Math.max(0.2, 4.0 - distance * 0.3);  // 0.2~2.0 - 0.2~5.0큼 0.5, 4.0 왕따시 0.2, 4.0
+            const perspectiveScale = Math.max(0.2, 3.0 - distance * 0.3);  // 0.2~2.0 - 0.2~5.0큼 0.5, 4.0 왕따시 0.2, 4.0
             
             const fixedWidth = 1.2;
             const fixedHeight = 1.7;
