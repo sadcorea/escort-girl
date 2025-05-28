@@ -175,7 +175,7 @@ class EcogirlGallery {
         
         // 카메라 생성
         this.camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-        this.camera.position.z = 8;
+        this.camera.position.z = 6;5
 
         // 렌더러 생성
         this.renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
