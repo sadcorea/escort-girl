@@ -282,9 +282,9 @@ class EcogirlGallery {
             
             sprite.position.set(rotatedX, rotatedY, finalZ);
             
-            // 🎯 원뿔형 크기 조절 - 거리별로 크기 변경
+            // 🎯 가운데는 적당히, 주변은 매우 작게
             const distance = sprite.position.distanceTo(this.camera.position);
-            const perspectiveScale = Math.max(1.0, 2.5 - distance * 0.1);  // 1.0~2.5로 크게
+            const perspectiveScale = Math.max(0.2, 2.0 - distance * 0.3);  // 0.2~2.0
             
             const fixedWidth = 1.2;
             const fixedHeight = 1.7;
