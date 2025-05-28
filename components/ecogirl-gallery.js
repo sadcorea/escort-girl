@@ -185,7 +185,7 @@ class EcogirlGallery {
                 
                 const position = this.fixedPositions[i] || { x: 0, y: 0, z: 3 };
                 sprite.position.set(position.x, position.y, position.z);
-                sprite.scale.set(1.2, 1.6, 1);
+                sprite.scale.set(1.22, 1.63, 1);
                 sprite.userData = { imageData: imageData };
                 
                 this.scene.add(sprite);
