@@ -15,7 +15,7 @@ class EcogirlGallery {
         this.availableImages = [];
         this.isInitialized = false;
         
-        // 🎯 3단 원기둥 좌표 (20개 위치)
+        // 🎯 3단 원기둥 좌표 (21개 위치) - 7.7.7 구성
         this.fixedPositions = [
             // 위층 (y=2) - 7개
             { x: 3, y: 2, z: 0 },
@@ -35,13 +35,14 @@ class EcogirlGallery {
             { x: -2.1, y: 0, z: -2.1 },
             { x: 0, y: 0, z: -3 },
             
-            // 아래층 (y=-2) - 6개
+            // 아래층 (y=-2) - 7개
             { x: 3, y: -2, z: 0 },
-            { x: 1.5, y: -2, z: 2.6 },
-            { x: -1.5, y: -2, z: 2.6 },
+            { x: 2.1, y: -2, z: 2.1 },
+            { x: 0, y: -2, z: 3 },
+            { x: -2.1, y: -2, z: 2.1 },
             { x: -3, y: -2, z: 0 },
-            { x: -1.5, y: -2, z: -2.6 },
-            { x: 1.5, y: -2, z: -2.6 }
+            { x: -2.1, y: -2, z: -2.1 },
+            { x: 0, y: -2, z: -3 }
         ];
     }
 
@@ -180,7 +181,7 @@ class EcogirlGallery {
         
         // 카메라 생성
         this.camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-        this.camera.position.z = 7.5;
+        this.camera.position.z = 7;
 
         // 렌더러 생성
         this.renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
@@ -210,14 +211,13 @@ class EcogirlGallery {
         console.log('📸 에코걸 이미지 로딩 시작...');
         
         await this.scanImagesFolder();
-        const selectedImages = this.getRandomImages(20);
+        const selectedImages = this.getRandomImages(21);
         window.currentSelectedEcogirlImages = selectedImages;
         
         const loader = new THREE.TextureLoader();
-        const radius = 3;
         
-        for (let i = 0; i < selectedImages.length; i++) {
-            const imageData = selectedImages[i];
+        // 🚀 로딩 최적화: 병렬 처리
+        const loadPromises = selectedImages.map(async (imageData, i) => {
             const imageUrl = this.getImageUrl(imageData);
             
             try {
@@ -225,9 +225,8 @@ class EcogirlGallery {
                 const material = new THREE.SpriteMaterial({ map: texture });
                 const sprite = new THREE.Sprite(material);
                 
-                // 고정 좌표 배치 (겹치지 않음)
+                // 고정 좌표 배치
                 const position = this.fixedPositions[i] || { x: 0, y: 0, z: 3 };
-                
                 sprite.position.x = position.x;
                 sprite.position.y = position.y;
                 sprite.position.z = position.z;
@@ -239,10 +238,15 @@ class EcogirlGallery {
                 this.imageSprites.push(sprite);
                 
                 console.log(`✅ 에코걸 이미지 로드: ${imageData.filename}`);
+                return sprite;
             } catch (error) {
                 console.error(`❌ 에코걸 이미지 로드 실패: ${imageUrl}`, error);
+                return null;
             }
-        }
+        });
+        
+        // 모든 이미지 로딩 완료 대기
+        await Promise.all(loadPromises);
         
         console.log(`🎉 에코걸 3D 갤러리 ${this.imageSprites.length}개 이미지 배치 완료!`);
     }
