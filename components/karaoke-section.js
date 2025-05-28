@@ -697,34 +697,32 @@ class KaraokeSection {
         }
     }
 
-    // 🎭 스크롤 애니메이션 설정
+    // 🎭 스크롤 애니메이션 설정 (개선된 버전)
     setupScrollAnimation() {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
+                const target = entry.target;
+                const ratio = entry.intersectionRatio;
+                
                 if (entry.isIntersecting) {
-                    entry.target.classList.add('animate-in');
+                    // 화면에 들어올 때
+                    target.classList.add('animate-in');
+                    target.style.opacity = Math.min(1, ratio + 0.2);
+                    target.style.transform = `translateY(${20 * (1 - ratio)}px)`;
+                } else {
+                    // 화면에서 벗어날 때 - 부드럽게 흐려지기
+                    target.style.opacity = Math.max(0.3, ratio);
+                    target.style.transform = `translateY(${20 * (1 - ratio)}px)`;
                     
-                    // 지도도 애니메이션과 함께 나타나게
-                    setTimeout(() => {
-                        const mapContainer = entry.target.querySelector('.map-container');
-                        if (mapContainer) {
-                            mapContainer.style.opacity = '0';
-                            mapContainer.style.transform = 'scale(0.95)';
-                            mapContainer.style.transition = 'all 0.6s ease 0.3s';
-                            
-                            setTimeout(() => {
-                                mapContainer.style.opacity = '1';
-                                mapContainer.style.transform = 'scale(1)';
-                            }, 100);
-                        }
-                    }, 200);
-                    
-                    observer.unobserve(entry.target);
+                    // 완전히 벗어나면 애니메이션 클래스 제거
+                    if (ratio === 0) {
+                        target.classList.remove('animate-in');
+                    }
                 }
             });
         }, {
-            threshold: 0.2,
-            rootMargin: '0px 0px -50px 0px'
+            threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+            rootMargin: '-50px 0px -50px 0px'
         });
 
         const karaokeSection = this.container.querySelector('.karaoke-section');

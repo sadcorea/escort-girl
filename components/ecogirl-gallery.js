@@ -186,25 +186,16 @@ class EcogirlGallery {
         });
     }
 
-    // 🖱️ 마우스 이벤트 설정
+    // 🖱️📱 마우스 및 터치 이벤트 설정
     setupMouseEvents(canvas) {
+        // 마우스 이벤트
         canvas.addEventListener('mousedown', (event) => {
-            this.isMouseDown = true;
-            this.dragDistance = 0;
-            this.mouseDownTime = Date.now();
-            this.mouse.x = event.clientX;
-            this.mouse.y = event.clientY;
+            this.handlePointerDown(event.clientX, event.clientY);
             canvas.style.cursor = 'grabbing';
         });
 
         canvas.addEventListener('mouseup', (event) => {
-            const clickDuration = Date.now() - this.mouseDownTime;
-            
-            if (this.dragDistance < 10 && clickDuration < 300) {
-                this.handleImageClick(event);
-            }
-            
-            this.isMouseDown = false;
+            this.handlePointerUp(event.clientX, event.clientY, event);
             canvas.style.cursor = 'grab';
         });
 
@@ -215,28 +206,68 @@ class EcogirlGallery {
 
         canvas.addEventListener('mousemove', (event) => {
             if (this.isMouseDown) {
-                const deltaX = event.clientX - this.mouse.x;
-                const deltaY = event.clientY - this.mouse.y;
-                
-                this.dragDistance += Math.abs(deltaX) + Math.abs(deltaY);
-                
-                const speed = 0.01;
-                this.targetRotation.y -= deltaX * speed;
-                this.targetRotation.x += deltaY * speed;
+                this.handlePointerMove(event.clientX, event.clientY);
             }
-            
-            this.mouse.x = event.clientX;
-            this.mouse.y = event.clientY;
         });
 
-        // 터치 이벤트
+        // 터치 이벤트 (모바일)
         canvas.addEventListener('touchstart', (event) => {
-            this.isMouseDown = true;
-            const touch = event.touches[0];
-            this.mouse.x = touch.clientX;
-            this.mouse.y = touch.clientY;
             event.preventDefault();
+            const touch = event.touches[0];
+            this.handlePointerDown(touch.clientX, touch.clientY);
         });
+
+        canvas.addEventListener('touchend', (event) => {
+            event.preventDefault();
+            if (event.changedTouches.length > 0) {
+                const touch = event.changedTouches[0];
+                this.handlePointerUp(touch.clientX, touch.clientY, event);
+            }
+        });
+
+        canvas.addEventListener('touchmove', (event) => {
+            event.preventDefault();
+            if (this.isMouseDown && event.touches.length > 0) {
+                const touch = event.touches[0];
+                this.handlePointerMove(touch.clientX, touch.clientY);
+            }
+        });
+    }
+
+    // 🖱️ 포인터 다운 (마우스/터치 공통)
+    handlePointerDown(x, y) {
+        this.isMouseDown = true;
+        this.dragDistance = 0;
+        this.mouseDownTime = Date.now();
+        this.mouse.x = x;
+        this.mouse.y = y;
+    }
+
+    // 🖱️ 포인터 업 (마우스/터치 공통)
+    handlePointerUp(x, y, event) {
+        const clickDuration = Date.now() - this.mouseDownTime;
+        
+        if (this.dragDistance < 10 && clickDuration < 300) {
+            this.handleImageClick(event);
+        }
+        
+        this.isMouseDown = false;
+    }
+
+    // 🖱️ 포인터 이동 (마우스/터치 공통)
+    handlePointerMove(x, y) {
+        const deltaX = x - this.mouse.x;
+        const deltaY = y - this.mouse.y;
+                
+        this.dragDistance += Math.abs(deltaX) + Math.abs(deltaY);
+        
+        const speed = 0.01;
+        this.targetRotation.y -= deltaX * speed;
+        this.targetRotation.x += deltaY * speed;
+        
+        this.mouse.x = x;
+        this.mouse.y = y;
+    }
 
         canvas.addEventListener('touchend', () => {
             this.isMouseDown = false;
@@ -246,17 +277,6 @@ class EcogirlGallery {
             if (this.isMouseDown && event.touches.length === 1) {
                 const touch = event.touches[0];
                 const deltaX = touch.clientX - this.mouse.x;
-                const deltaY = touch.clientY - this.mouse.y;
-                
-                const speed = 0.01;
-                this.targetRotation.y -= deltaX * speed;
-                this.targetRotation.x += deltaY * speed;
-                
-                this.mouse.x = touch.clientX;
-                this.mouse.y = touch.clientY;
-            }
-            event.preventDefault();
-        });
     }
 
     // 🎬 애니메이션 루프
