@@ -150,17 +150,13 @@ class EcogirlGallery {
                     
                     const sprite = new THREE.Sprite(spriteMaterial);
                     
-                    // 3단 원통형 배치 (8.8.8)
-                    const layerSize = 8;
-                    const layer = Math.floor(index / layerSize);
-                    const posInLayer = index % layerSize;
+                    // 구형 배치 (24개 균등 분산)
+                    const phi = Math.acos(1 - 2 * (index / selectedImages.length));
+                    const theta = Math.sqrt(selectedImages.length * Math.PI) * phi;
                     
-                    const angle = (posInLayer / layerSize) * Math.PI * 2;
-                    const height = (layer - 1) * 2; // -2, 0, 2
-                    
-                    const x = radius * Math.cos(angle);
-                    const y = height;
-                    const z = radius * Math.sin(angle);
+                    const x = radius * Math.sin(phi) * Math.cos(theta);
+                    const y = radius * Math.sin(phi) * Math.sin(theta);
+                    const z = radius * Math.cos(phi);
                     
                     sprite.position.set(x, y, z);
                     
