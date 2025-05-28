@@ -175,7 +175,7 @@ class EcogirlGallery {
         
         // 카메라 생성
         this.camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-        this.camera.position.z = 7;
+        this.camera.position.z = 7.5;
 
         // 렌더러 생성
         this.renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
@@ -354,8 +354,10 @@ class EcogirlGallery {
         this.currentRotation.x += (this.targetRotation.x - this.currentRotation.x) * 0.05;
         this.currentRotation.y += (this.targetRotation.y - this.currentRotation.y) * 0.05;
         
-        // 자동 회전 (천천히)
-        this.targetRotation.y += 0.001;
+        // 자동 회전 (드래그 중이 아닐 때만)
+        if (!this.isMouseDown) {
+            this.targetRotation.y += 0.001;
+        }
         
         // 씬 회전 적용
         this.scene.rotation.x = this.currentRotation.x;
