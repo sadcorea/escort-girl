@@ -185,7 +185,17 @@ class EcogirlGallery {
                 
                 const position = this.fixedPositions[i] || { x: 0, y: 0, z: 3 };
                 sprite.position.set(position.x, position.y, position.z);
-                sprite.scale.set(1.5, 2, 1);
+             // 가운데 기준 거리 계산
+                const center = new THREE.Vector3(0, 0, 0);
+                const dist = sprite.position.distanceTo(center);
+                const maxDistance = 5; 
+                const maxScale = 1.8;
+                const minScale = 0.6;
+
+             // 거리 기반 크기 조절
+                const scale = Math.max(minScale, maxScale - (dist / maxDistance) * (maxScale - minScale));
+                sprite.scale.set(scale, scale * 1.3, 1);
+
                 sprite.userData = { imageData: imageData };
                 
                 this.scene.add(sprite);
