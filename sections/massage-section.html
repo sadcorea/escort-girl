@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마사지 섹션 - EchoPal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fff;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* 💆 마사지 섹션 스타일 */
+        .massage-section {
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+            padding: 4rem 2rem;
+            border-bottom: 1px solid #ffe0e0;
+        }
+
+        .massage-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .massage-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .massage-header h2 {
+            font-size: 2.5rem;
+            color: #d63384;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .massage-header p {
+            font-size: 1.2rem;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .massage-content {
+            display: flex;
+            justify-content: center;
+        }
+
+        .massage-intro {
+            display: flex;
+            gap: 4rem;
+            align-items: center;
+            max-width: 1000px;
+        }
+
+        .massage-text {
+            flex: 2;
+            text-align: left;
+        }
+
+        .massage-text h3 {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .massage-text p {
+            font-size: 1.1rem;
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+
+        .massage-btn {
+            background: linear-gradient(45deg, #d63384, #dc3545);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(214, 51, 132, 0.3);
+        }
+
+        .massage-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(214, 51, 132, 0.4);
+            background: linear-gradient(45deg, #c02a6b, #bb2d3b);
+        }
+
+        .massage-preview {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        .massage-images {
+            width: 300px;
+            height: 200px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 
+                0 20px 40px rgba(0,0,0,0.15),
+                0 8px 16px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.8);
+            transition: all 0.3s ease;
+        }
+
+        .massage-images:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 25px 50px rgba(0,0,0,0.2),
+                0 12px 20px rgba(0,0,0,0.15);
+        }
+
+        .image-loading {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(45deg, #f8d7da, #f5c2c7);
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .massage-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 20px;
+        }
+
+        .massage-image-placeholder {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #f8d7da, #f5c2c7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed #d63384;
+        }
+
+        .placeholder-text {
+            text-align: center;
+            color: #d63384;
+        }
+
+        .placeholder-text p {
+            margin: 0.2rem 0;
+            font-weight: 500;
+        }
+
+        .placeholder-text p:first-child {
+            font-size: 2rem;
+        }
+
+        /* 📱 마사지 섹션 모바일 반응형 */
+        @media (max-width: 768px) {
+            .massage-section {
+                padding: 2rem 1rem;
+            }
+
+            .massage-header h2 {
+                font-size: 1.8rem;
+                margin-bottom: 0.8rem;
+            }
+
+            .massage-header p {
+                font-size: 1rem;
+            }
+
+            .massage-intro {
+                flex-direction: column;
+                gap: 2rem;
+                text-align: center;
+            }
+
+            .massage-text h3 {
+                font-size: 1.4rem;
+                margin-bottom: 1rem;
+            }
+
+            .massage-text p {
+                font-size: 0.95rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .massage-btn {
+                padding: 0.8rem 1.5rem;
+                font-size: 1rem;
+            }
+
+            .massage-images {
+                width: 250px;
+                height: 160px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 💆 마사지 섹션 -->
+    <section class="massage-section">
+        <div class="massage-container">
+            <div class="massage-header">
+                <h2>다낭 최고의 마사지</h2>
+                <p>검증된 곳에서 받는 프리미엄 힐링</p>
+            </div>
+            
+            <div class="massage-content">
+                <div class="massage-intro">
+                    <div class="massage-text">
+                        <p>무엇을 상상하든, 그 이상을 경험하게 되실 겁니다.</p>
+                        
+                        <p>실력과 위생, 분위기까지 모두 고려해 편하게 선택하시도록<br>
+                        최대한 신중하게 모아봤습니다.</p>
+                        
+                        <p>원하시는 코스를 선택하시고, 즐거운 시간 되시기를 바랍니다.</p>
+                        
+                        <button class="massage-btn" onclick="location.href='../massage/index.html'">
+                            마사지 전체보기
+                        </button>
+                    </div>
+                    
+                    <div class="massage-preview">
+                        <div class="massage-images" id="massageImageContainer">
+                            <!-- 노션에서 마사지 이미지 로드 -->
+                            <div class="image-loading">
+                                <p>이미지 로딩 중...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 마사지 이미지 로드 스크립트 -->
+    <script>
+        // 마사지 노션 DB에서 이미지 로드 (에코걸 방식 참고)
+        async function loadMassageImage() {
+            try {
+                console.log('🔄 마사지 이미지 로드 시작...');
+                
+                // 노션 API 프록시 호출 (에코걸과 동일한 방식)
+                const response = await fetch('http://localhost:8080/api/notion', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        api_key: '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',
+                        database_id: '203e5f74c72e815d8f39d2946ee85c0a' // 마사지 DB ID (슬래시 제거)
+                    })
+                });
+
+                console.log('📡 마사지 API 응답 상태:', response.status);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('❌ 마사지 API 응답 오류:', errorText);
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+
+                const data = await response.json();
+                console.log('📄 마사지 노션 응답 데이터:', data);
+                
+                if (data.error) {
+                    throw new Error(`Notion Error: ${data.error}`);
+                }
+                
+                if (data && data.results && data.results.length > 0) {
+                    console.log('📋 전체 결과 데이터:', data.results);
+                    
+                    // ID가 0인 기본 이미지 찾기
+                    const defaultImageRow = data.results.find(item => {
+                        const idValue = item.properties?.ID?.number;
+                        console.log(`🔍 체크 중 - ID: ${idValue}, 찾는 값: 0`);
+                        return idValue === 0;
+                    });
+                    
+                    console.log('🎯 ID 0 검색 결과:', defaultImageRow);
+                    
+                    if (defaultImageRow) {
+                        // 모든 속성 확인
+                        console.log('📝 모든 속성:', Object.keys(defaultImageRow.properties));
+                        
+                        // 마사지 DB의 실제 이미지 필드명들 체크
+                        const possibleImageFields = ['업체사진', '이미지', 'Image', 'Files', 'Attachment', '사진'];
+                        let imageProperty = null;
+                        let usedFieldName = '';
+                        
+                        for (const fieldName of possibleImageFields) {
+                            const prop = defaultImageRow.properties[fieldName];
+                            console.log(`🔍 필드 체크: ${fieldName} =`, prop);
+                            if (prop && prop.files && prop.files.length > 0) {
+                                imageProperty = prop;
+                                usedFieldName = fieldName;
+                                break;
+                            }
+                        }
+                        
+                        console.log(`🖼️ 사용된 필드명: "${usedFieldName}"`);
+                        console.log('🖼️ 이미지 속성:', imageProperty);
+                        
+                        if (imageProperty && imageProperty.files && imageProperty.files.length > 0) {
+                            const imageFile = imageProperty.files[0];
+                            console.log('📄 이미지 파일 객체:', imageFile);
+                            
+                            // 다양한 URL 형태 시도
+                            let imageUrl = null;
+                            
+                            if (imageFile.file?.url) {
+                                imageUrl = imageFile.file.url;
+                                console.log('✅ file.url 사용:', imageUrl);
+                            } else if (imageFile.external?.url) {
+                                imageUrl = imageFile.external.url;
+                                console.log('✅ external.url 사용:', imageUrl);
+                            } else if (imageFile.url) {
+                                imageUrl = imageFile.url;
+                                console.log('✅ 직접 url 사용:', imageUrl);
+                            }
+                            
+                            if (imageUrl) {
+                                // 기본 이미지 표시
+                                document.getElementById('massageImageContainer').innerHTML = `
+                                    <img src="${imageUrl}" 
+                                         alt="다낭 마사지" 
+                                         class="massage-image"
+                                         onload="console.log('✅ 이미지 로드 성공:', '${imageUrl}')"
+                                         onerror="console.error('❌ 이미지 로드 실패:', '${imageUrl}'); showFallbackImage()">
+                                `;
+                                console.log('✅ 마사지 기본 이미지 표시 시도 완료');
+                                return;
+                            } else {
+                                console.log('❌ 유효한 이미지 URL을 찾을 수 없음');
+                            }
+                        } else {
+                            console.log('❌ 이미지 속성 또는 파일이 없음');
+                        }
+                    } else {
+                        console.log('⚠️ ID 0인 기본 이미지 행을 찾을 수 없음');
+                        console.log('📋 사용 가능한 ID들:', data.results.map(item => item.properties?.ID?.number));
+                    }
+                }
+                
+                // 실패 시 백업 이미지
+                showFallbackImage();
+                
+            } catch (error) {
+                console.error('❌ 마사지 이미지 로드 실패:', error);
+                showFallbackImage();
+            }
+        }
+
+        // 백업 이미지 표시
+        function showFallbackImage() {
+            document.getElementById('massageImageContainer').innerHTML = `
+                <div class="image-loading">
+                    <div style="text-align: center;">
+                        <p style="font-size: 2rem; margin-bottom: 0.5rem;">💆‍♀️</p>
+                        <p>마사지 이미지</p>
+                        <p style="font-size: 0.8rem; opacity: 0.7;">(로딩 중)</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 마사지 섹션 로드 시 이미지 로드 실행
+        function initMassageSection() {
+            loadMassageImage();
+        }
+
+        // 글로벌 함수로 내보내기 (메인 홈페이지에서 호출용)
+        window.initMassageImage = function() {
+            console.log('🎯 메인에서 마사지 이미지 로드 요청됨');
+            loadMassageImage();
+        };
+
+        // 즉시 실행
+        initMassageSection();
+        
+        // 추가: 3초 후 강제 재실행 (디버깅용)
+        setTimeout(() => {
+            console.log('🔄 마사지 3초 후 강제 재실행...');
+            loadMassageImage();
+        }, 3000);
+    </script>
+</body>
+</html>

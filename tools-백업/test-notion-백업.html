@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>노션 API 테스트</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .profile-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            background: #fafafa;
+        }
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .profile-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff98a8, #ffd6e9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 20px;
+        }
+        .profile-info h3 {
+            margin: 0 0 5px 0;
+            color: #333;
+        }
+        .profile-info p {
+            margin: 0;
+            color: #666;
+        }
+        .tags {
+            margin: 10px 0;
+        }
+        .tag {
+            display: inline-block;
+            background: #007bff;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin: 2px;
+        }
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+        .error {
+            background: #ffe6e6;
+            border: 1px solid #ffcccc;
+            color: #cc0000;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌟 노션 에코걸 프로필 테스트</h1>
+        
+        <div style="text-align: center; margin-bottom: 20px;">
+            <button class="btn" onclick="loadProfiles()">프로필 로드</button>
+            <button class="btn" onclick="testSingleProfile()">개별 프로필 테스트</button>
+        </div>
+        
+        <div id="result">
+            <div class="loading">버튼을 클릭해서 노션 데이터를 불러오세요!</div>
+        </div>
+    </div>
+
+    <!-- 노션 API 스크립트 (프록시 버전) -->
+    <script src="assets/js/notion-api-proxy.js"></script>
+    
+    <script>
+        let notionAPI = null;
+        
+        // 페이지 로드 시 API 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                notionAPI = new NotionAPI();
+                console.log('✅ 노션 API 초기화 완료');
+            } catch (error) {
+                console.error('❌ 노션 API 초기화 실패:', error);
+                showError('노션 API 초기화에 실패했습니다.');
+            }
+        });
+        
+        // 모든 프로필 로드
+        async function loadProfiles() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<div class="loading">노션에서 데이터를 불러오는 중...</div>';
+            
+            try {
+                console.log('🔄 노션 프로필 로드 시작...');
+                const profiles = await notionAPI.getAllProfiles();
+                console.log('📄 로드된 프로필:', profiles);
+                
+                if (profiles.length === 0) {
+                    resultDiv.innerHTML = '<div class="error">활성 상태의 프로필이 없습니다.</div>';
+                    return;
+                }
+                
+                let html = `<h3>총 ${profiles.length}개의 프로필을 찾았습니다!</h3>`;
+                
+                profiles.forEach(profile => {
+                    html += createProfileCard(profile);
+                });
+                
+                resultDiv.innerHTML = html;
+                
+            } catch (error) {
+                console.error('❌ 프로필 로드 실패:', error);
+                showError(`프로필 로드 실패: ${error.message}`);
+            }
+        }
+        
+        // 개별 프로필 테스트
+        async function testSingleProfile() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<div class="loading">ID 1번 프로필을 불러오는 중...</div>';
+            
+            try {
+                const profile = await notionAPI.getProfile(1);
+                console.log('👤 개별 프로필:', profile);
+                
+                if (!profile) {
+                    resultDiv.innerHTML = '<div class="error">ID 1번 프로필을 찾을 수 없습니다.</div>';
+                    return;
+                }
+                
+                let html = '<h3>개별 프로필 테스트 (ID: 1)</h3>';
+                html += createProfileCard(profile);
+                
+                resultDiv.innerHTML = html;
+                
+            } catch (error) {
+                console.error('❌ 개별 프로필 로드 실패:', error);
+                showError(`개별 프로필 로드 실패: ${error.message}`);
+            }
+        }
+        
+        // 프로필 카드 HTML 생성
+        function createProfileCard(profile) {
+            const languages = profile.languages.map(lang => `<span class="tag">${lang}</span>`).join('');
+            const hobbies = profile.hobbies.map(hobby => `<span class="tag">${hobby}</span>`).join('');
+            const skills = profile.skills.map(skill => `<span class="tag">${skill}</span>`).join('');
+            const personality = profile.personality.map(p => `<span class="tag">${p}</span>`).join('');
+            
+            return `
+                <div class="profile-card">
+                    <div class="profile-header">
+                        <div class="profile-image">
+                            ${profile.name}
+                        </div>
+                        <div class="profile-info">
+                            <h3>${profile.name} (${profile.age}세)</h3>
+                            <p>ID: ${profile.id} | 상태: ${profile.status}</p>
+                            <p>연락처: ${profile.contact}</p>
+                            ${profile.phone ? `<p>전화: ${profile.phone}</p>` : ''}
+                        </div>
+                    </div>
+                    
+                    ${profile.introduction ? `<p><strong>소개:</strong> ${profile.introduction}</p>` : ''}
+                    
+                    <div class="tags">
+                        <strong>언어:</strong> ${languages || '<span class="tag">없음</span>'}
+                    </div>
+                    
+                    <div class="tags">
+                        <strong>취미:</strong> ${hobbies || '<span class="tag">없음</span>'}
+                    </div>
+                    
+                    <div class="tags">
+                        <strong>성향:</strong> ${personality || '<span class="tag">없음</span>'}
+                    </div>
+                    
+                    <div class="tags">
+                        <strong>특기:</strong> ${skills || '<span class="tag">없음</span>'}
+                    </div>
+                    
+                    ${profile.mainImage ? `<p><strong>프로필 이미지:</strong> <a href="${profile.mainImage}" target="_blank">보기</a></p>` : ''}
+                    
+                    <button class="btn" onclick="goToDetail(${profile.id})">상세 페이지로 이동</button>
+                </div>
+            `;
+        }
+        
+        // 에러 표시
+        function showError(message) {
+            document.getElementById('result').innerHTML = `<div class="error">${message}</div>`;
+        }
+        
+        // 상세 페이지로 이동
+        function goToDetail(profileId) {
+            window.open(`ecogirl/detail.html?id=${profileId}`, '_blank');
+        }
+    </script>
+</body>
+</html>
