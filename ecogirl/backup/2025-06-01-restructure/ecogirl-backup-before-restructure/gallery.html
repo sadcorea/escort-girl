@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>에코걸 전체보기 - EchoPal</title>
+    <link rel="stylesheet" href="../assets/css/gallery.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- 상단 고정 메뉴바 -->
+    <div class="top-menu-bar">
+        <div class="menu-container">
+            <button class="menu-btn home" onclick="goToHome()">
+                🏠 홈
+            </button>
+            <span class="menu-separator">|</span>
+            <span class="menu-label">예약문의 :</span>
+            <button class="menu-btn kakao" onclick="handleKakaoContact()">
+                💬 카카오톡문의 EchoPal_vip
+            </button>
+            <button class="menu-btn phone" onclick="handlePhoneContact()">
+                📞 전화문의 +84-905-123-456
+            </button>
+        </div>
+    </div>
+
+    <!-- 메인 콘텐츠 -->
+    <div class="main-content">
+        <!-- 헤더 섹션 -->
+        <section class="header-section">
+            <div class="container">
+                <h1 class="page-title">👩 에코걸 전체보기</h1>
+                <p class="page-subtitle">다낭의 아름다운 에코걸들을 만나보세요</p>
+            </div>
+        </section>
+
+        <!-- 필터 섹션 -->
+        <section class="filter-section">
+            <div class="container">
+                <div class="filter-container">
+                    <div class="filter-group">
+                        <label>나이대</label>
+                        <div class="filter-buttons">
+                            <button class="filter-btn active" data-filter="age" data-value="all">전체</button>
+                            <button class="filter-btn" data-filter="age" data-value="20-24">20-24세</button>
+                            <button class="filter-btn" data-filter="age" data-value="25-29">25-29세</button>
+                            <button class="filter-btn" data-filter="age" data-value="30+">30세+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>언어</label>
+                        <div class="filter-buttons">
+                            <button class="filter-btn active" data-filter="language" data-value="all">전체</button>
+                            <button class="filter-btn" data-filter="language" data-value="korean">한국어</button>
+                            <button class="filter-btn" data-filter="language" data-value="english">영어</button>
+                            <button class="filter-btn" data-filter="language" data-value="japanese">일본어</button>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>성향</label>
+                        <div class="filter-buttons">
+                            <button class="filter-btn active" data-filter="personality" data-value="all">전체</button>
+                            <button class="filter-btn" data-filter="personality" data-value="active">활발함</button>
+                            <button class="filter-btn" data-filter="personality" data-value="calm">차분함</button>
+                            <button class="filter-btn" data-filter="personality" data-value="warm">따뜻함</button>
+                            <button class="filter-btn" data-filter="personality" data-value="bright">밝음</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 갤러리 섹션 -->
+        <section class="gallery-section">
+            <div class="container">
+                <!-- 결과 통계 -->
+                <div class="results-info">
+                    <div class="results-count">
+                        <span id="currentPageInfo">1페이지</span>
+                    </div>
+                    <div class="items-per-page">
+                        <select id="itemsPerPageSelect">
+                            <option value="24">24개씩 보기</option>
+                            <option value="30">30개씩 보기</option>
+                            <option value="48">48개씩 보기</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="profiles-grid" id="profilesGrid">
+                    <!-- 프로필 카드들이 동적으로 추가됩니다 -->
+                </div>
+                
+                <!-- 페이지네이션 -->
+                <div class="pagination-container" id="paginationContainer">
+                    <div class="pagination">
+                        <button class="pagination-btn prev" id="prevPageBtn" disabled>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M15 18l-6-6 6-6"/>
+                            </svg>
+                            이전
+                        </button>
+                        
+                        <div class="pagination-pages" id="paginationPages">
+                            <!-- 페이지 번호들이 동적으로 추가됩니다 -->
+                        </div>
+                        
+                        <button class="pagination-btn next" id="nextPageBtn">
+                            다음
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 18l6-6-6-6"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="loading" id="loadingIndicator">
+                    <div class="spinner"></div>
+                    <p>로딩 중...</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="../assets/js/notion-api-proxy.js"></script>
+    <script src="js/gallery-new.js"></script>
+    <script>
+        // 전역 함수들
+        function goToHome() {
+            window.location.href = '../index.html';
+        }
+        
+        function handleKakaoContact() {
+            if (navigator.userAgent.match(/KAKAOTALK/i)) {
+                window.location.href = 'kakaotalk://open/profile/EchoPal_vip';
+            } else {
+                navigator.clipboard.writeText('EchoPal_vip').then(() => {
+                    alert('카카오톡 ID가 복사되었습니다: EchoPal_vip');
+                });
+            }
+        }
+        
+        function handlePhoneContact() {
+            window.location.href = 'tel:+84905123456';
+        }
+    </script>
+</body>
+</html>

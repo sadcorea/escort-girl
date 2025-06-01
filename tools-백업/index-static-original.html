@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EchoPal.net - 다낭 종합 가이드</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fff;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* 🎨 삼성 스타일 헤더 */
+        .samsung-header {
+            background: #fff;
+            border-bottom: 1px solid #e0e0e0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-top {
+            background: #f8f9fa;
+            padding: 0.5rem 2rem;
+            font-size: 0.85rem;
+            text-align: right;
+            color: #666;
+        }
+
+        .header-main {
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .main-nav {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-item {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #333;
+            cursor: pointer;
+            padding: 0.5rem 0;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .nav-item:hover {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        /* 에코걸 메뉴만 빨간색 */
+        .ecogirl-nav {
+            color: #ff4757 !important;
+            font-weight: 600;
+        }
+
+        .ecogirl-nav:hover {
+            color: #ff3742 !important;
+            border-bottom-color: #ff4757 !important;
+        }
+
+        /* 준비중 메뉴는 회색 */
+        .nav-coming-soon {
+            color: #999 !important;
+            cursor: not-allowed;
+        }
+
+        .nav-coming-soon:hover {
+            color: #999 !important;
+            border-bottom-color: transparent !important;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-input {
+            padding: 0.6rem 2rem 0.6rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            width: 250px;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .search-input:disabled {
+            background: #f5f5f5;
+            color: #999;
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: not-allowed;
+            font-size: 1rem;
+            color: #999;
+        }
+
+        /* 💰 광고 배너 섹션 */
+        .ad-banner {
+            height: 200px;
+            background: #f8f9fa;
+            border: 2px dashed #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: #666;
+            font-size: 1.1rem;
+            margin: 2rem 0;
+        }
+
+        .ad-info {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .ad-contact {
+            color: #667eea;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        .ad-price {
+            background: #667eea;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        /* 🎨 콘텐츠 섹션 */
+        .content-sections {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .section {
+            margin: 4rem 0;
+            text-align: center;
+        }
+
+        .section h2 {
+            font-size: 2.2rem;
+            margin-bottom: 2rem;
+            color: #333;
+        }
+
+        .section p {
+            font-size: 1.1rem;
+            color: #666;
+            line-height: 1.8;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* 📱 모바일 반응형 */
+        @media (max-width: 768px) {
+            .header-main {
+                padding: 0.5rem 1rem;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .main-nav {
+                gap: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .nav-item {
+                font-size: 0.85rem;
+                padding: 0.3rem 0;
+            }
+
+            .search-input {
+                width: 180px;
+            }
+
+            .ad-banner {
+                height: 120px;
+                margin: 1rem 0;
+            }
+
+            /* 에코걸 안내 섹션 모바일에서 축소 */
+            .ecogirl-intro-top {
+                padding: 1.5rem 1rem;
+            }
+
+            .intro-container h2 {
+                font-size: 1.5rem;
+                margin-bottom: 0.8rem;
+            }
+
+            .intro-container p {
+                font-size: 0.9rem;
+                line-height: 1.6;
+            }
+
+            /* 3D 갤러리 높이 대폭 축소 */
+            .main-gallery {
+                height: 40vh;
+            }
+
+            .gallery-background-title {
+                font-size: 2rem;
+            }
+
+            .gallery-background-subtitle {
+                font-size: 0.9rem;
+            }
+
+            .gallery-click-notice {
+                bottom: 10px;
+                padding: 0.4rem 0.8rem;
+                border-radius: 12px;
+            }
+
+            .gallery-click-notice p {
+                font-size: 0.8rem;
+            }
+
+            /* 📱 마사지 섹션 모바일 반응형 */
+            .massage-section {
+                padding: 2rem 1rem;
+            }
+
+            .massage-header h2 {
+                font-size: 1.8rem;
+                margin-bottom: 0.8rem;
+            }
+
+            .massage-header p {
+                font-size: 1rem;
+            }
+
+            .massage-intro {
+                flex-direction: column;
+                gap: 2rem;
+                text-align: center;
+            }
+
+            .massage-text h3 {
+                font-size: 1.4rem;
+                margin-bottom: 1rem;
+            }
+
+            .massage-text p {
+                font-size: 0.95rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .massage-btn {
+                padding: 0.8rem 1.5rem;
+                font-size: 1rem;
+            }
+
+            .massage-images {
+                width: 250px;
+                height: 160px;
+            }
+        }
+
+        /* 🌟 상단 에코걸 안내 섹션 */
+        .ecogirl-intro-top {
+            background: linear-gradient(135deg, #f8f9ff 0%, #e8f0ff 100%);
+            padding: 3rem 2rem;
+            border-bottom: 1px solid #e0e8ff;
+        }
+
+        .intro-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .intro-container h2 {
+            font-size: 2.2rem;
+            color: #333;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .intro-container p {
+            font-size: 1.1rem;
+            color: #666;
+            line-height: 1.8;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* 🎨 메인 3D 갤러리 섹션 */
+        .main-gallery {
+            height: 60vh;
+            position: relative;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+        }
+
+        .gallery-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: visible;
+        }
+
+        #ecogirlGalleryContainer {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 3;
+        }
+
+        #ecogirlGalleryContainer canvas {
+            position: relative;
+            z-index: 5;
+            display: block;
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .gallery-background-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            color: rgba(255, 255, 255, 0.1);
+            text-align: center;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .gallery-background-title {
+            font-size: 4rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 20px rgba(0, 0, 0, 0.3);
+            line-height: 1.2;
+        }
+
+        .gallery-background-subtitle {
+            font-size: 1.5rem;
+            opacity: 0.8;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .gallery-click-notice {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            color: white;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 0.5rem 1rem;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+            text-align: center;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .gallery-click-notice p {
+            font-size: 1rem;
+            margin: 0;
+            font-weight: 500;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+            white-space: nowrap;
+        }
+
+        /* 💆 마사지 섹션 스타일 */
+        .massage-section {
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+            padding: 4rem 2rem;
+            border-bottom: 1px solid #ffe0e0;
+        }
+
+        .massage-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .massage-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .massage-header h2 {
+            font-size: 2.5rem;
+            color: #d63384;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .massage-header p {
+            font-size: 1.2rem;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .massage-content {
+            display: flex;
+            justify-content: center;
+        }
+
+        .massage-intro {
+            display: flex;
+            gap: 3rem;
+            align-items: flex-start;
+            max-width: 1000px;
+        }
+
+        .massage-text {
+            flex: 1.2;
+            text-align: left;
+        }
+
+        .massage-text h3 {
+            font-size: 1.6rem;
+            color: #333;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .massage-text p {
+            font-size: 1rem;
+            color: #666;
+            line-height: 1.7;
+            margin-bottom: 2rem;
+        }
+
+        .massage-btn {
+            background: linear-gradient(45deg, #d63384, #dc3545);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(214, 51, 132, 0.3);
+        }
+
+        .massage-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(214, 51, 132, 0.4);
+            background: linear-gradient(45deg, #c02a6b, #bb2d3b);
+        }
+
+        .massage-preview {
+            flex: 0.8;
+            display: flex;
+            justify-content: center;
+        }
+
+        .massage-images {
+            width: 280px;
+            height: 180px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-placeholder {
+            color: #999;
+            font-size: 0.9rem;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        /* 섹션 임베드 스타일 */
+        .section-embed {
+            width: 100%;
+            border: none;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- 🎨 삼성 스타일 헤더 -->
+    <header class="samsung-header">
+        <div class="header-top">
+            고객지원 | 비즈니스 | 법인상담 | 자주가는페이지
+        </div>
+        
+        <div class="header-main">
+            <a href="index.html" class="logo">EchoPal.net</a>
+            
+            <nav class="main-nav">
+                <a href="ecogirl/gallery.html" class="nav-item ecogirl-nav">에코걸</a>
+                <a href="massage/index.html" class="nav-item">마사지</a>
+                <span class="nav-item nav-coming-soon" onclick="alert('가라오케 섹션 준비중입니다')">가라오케</span>
+                <span class="nav-item nav-coming-soon" onclick="alert('풀빌라 섹션 준비중입니다')">풀빌라</span>
+                <span class="nav-item nav-coming-soon" onclick="alert('골프 섹션 준비중입니다')">골프</span>
+            </nav>
+            
+            <div class="header-actions">
+                <div class="search-box">
+                    <input type="text" class="search-input" placeholder="검색 기능 준비중..." disabled>
+                    <button class="search-btn" disabled>🔍</button>
+                </div>
+                <span class="nav-item nav-coming-soon" onclick="alert('찜목록 기능 준비중입니다')">♥ 찜목록</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- 🌟 에코걸 섹션 (정적) -->
+    <section class="ecogirl-intro-top">
+        <div class="intro-container">
+            <h2>에코걸과 함께하는 다낭 여행</h2>
+            <p>현지 문화를 아는 친절한 가이드와 함께 특별한 다낭을 경험하세요.</p>
+        </div>
+    </section>
+
+    <section class="main-gallery">
+        <div class="gallery-container">
+            <div class="gallery-background-text">
+                <h1 class="gallery-background-title">다낭 최고의 에코걸</h1>
+                <p class="gallery-background-subtitle">3D 갤러리를 돌려보며<br>다양한 에코걸들을 만나보세요</p>
+            </div>
+            
+            <div class="gallery-click-notice">
+                <p>클릭하면 상세보기로 이동</p>
+            </div>
+            
+            <div id="ecogirlGalleryContainer"></div>
+        </div>
+    </section>
+
+    <!-- 💰 메인 광고 배너 -->
+    <div class="ad-banner">
+        <div>🎯 프리미엄 광고 공간 🎯</div>
+        <div class="ad-info">
+            <div>크기: 1200×200px (반응형)</div>
+            <div class="ad-contact">광고 문의: 카톡 EchoPal_ad</div>
+            <div class="ad-price">월 50만원 (메인 배너)</div>
+        </div>
+    </div>
+
+    <!-- 마사지 섹션 (정적) -->
+    <section class="massage-section">
+        <div class="massage-container">
+            <div class="massage-header">
+                <h2>다낭 최고의 마사지</h2>
+                <p>검증된 업체에서 받는 프리미엄 힐링 서비스</p>
+            </div>
+            
+            <div class="massage-content">
+                <div class="massage-intro">
+                    <div class="massage-text">
+                        <h3>다낭 최고의 마사지<br>검증된 곳에서 받는 프리미엄 힐링</h3>
+                        <p>무엇을 상상하든, 그 이상을 경험하게 되실 겁니다.</p>
+                        <p>실력과 위생, 분위기까지 모두 고려해 편하게 선택하시도록 최대한 신중하게 모아봤습니다.</p>
+                        <p>원하시는 코스를 선택하시고, 즐거운 시간 되시기를 바랍니다.</p>
+                        
+                        <button class="massage-btn" onclick="location.href='massage/index.html'">
+                            마사지 전체보기
+                        </button>
+                    </div>
+                    
+                    <div class="massage-preview">
+                        <div class="massage-images">
+                            <div class="image-placeholder">
+                                마사지 이미지<br>
+                                (이미지 준비중)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 🎨 콘텐츠 섹션 -->
+    <div class="content-sections">
+        <!-- 💰 중간 광고 배너 -->
+        <div class="ad-banner">
+            <div>🎯 중간 광고 공간 🎯</div>
+            <div class="ad-info">
+                <div>크기: 1200×200px</div>
+                <div class="ad-contact">광고 문의: 카톡 EchoPal_ad</div>
+                <div class="ad-price">월 30만원 (중간 배너)</div>
+            </div>
+        </div>
+
+        <section class="section" id="serviceIntro">
+            <h2>프리미엄 서비스</h2>
+            <p>에코걸, 마사지, 가라오케, 풀빌라, 골프 등 다낭의 모든 즐거움을 한 곳에서 경험하세요. 검증된 파트너들과 함께 안전하고 품격 있는 서비스를 제공합니다.</p>
+        </section>
+
+        <section class="section" id="contactSection">
+            <h2>연락처</h2>
+            <p>카카오톡: EchoPal_danang | 텔레그램: @EchoPal_official<br>
+            빠른 상담과 예약을 원하시면 언제든 연락주세요.</p>
+        </section>
+    </div>
+
+    <!-- 💰 하단 광고 배너 -->
+    <div class="ad-banner">
+        <div>🎯 하단 광고 공간 🎯</div>
+        <div class="ad-info">
+            <div>크기: 1200×200px</div>
+            <div class="ad-contact">광고 문의: 카톡 EchoPal_ad</div>
+            <div class="ad-price">월 40만원 (하단 배너)</div>
+        </div>
+    </div>
+
+    <!-- Three.js 및 에코걸 갤러리 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="assets/js/notion-api-proxy.js"></script>
+    <script src="components/ecogirl-gallery.js"></script>
+    
+    <!-- 3D 갤러리 초기화 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('🚀 EchoPal.net 메인 페이지 로드 완료');
+            
+            // 3D 갤러리 초기화
+            if (typeof THREE !== 'undefined' && typeof EcogirlGallery !== 'undefined') {
+                try {
+                    const gallery = new EcogirlGallery('ecogirlGalleryContainer');
+                    await gallery.init();
+                    console.log('✅ 에코걸 3D 갤러리 초기화 완료');
+                } catch (error) {
+                    console.error('❌ 에코걸 3D 갤러리 초기화 실패:', error);
+                }
+            } else {
+                console.error('❌ Three.js 또는 EcogirlGallery 로드 실패');
+            }
+        });
+    </script>
+</body>
+</html>
