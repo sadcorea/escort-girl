@@ -1,6 +1,6 @@
 git status
 git add -u
-git commit -m "테스트용 메모장"
+git commit -m "마사지 완료 폴더 구조화 완료"
 git push
 
 
