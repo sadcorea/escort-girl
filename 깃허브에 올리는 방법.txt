@@ -29,11 +29,11 @@ git pull
 git clone https://github.com/sadcorea/escort-girl.git
 
 [파일 수정 여부 확인 방법]
-git status  
+git status
    - 수정된 파일, 새로 추가된 파일, 삭제된 파일 모두 보여줘요.  
    - 예) "modified: 파일명" (수정됨), "deleted: 파일명" (삭제됨)
 
-git diff  
+git diff
    - 수정된 부분을 자세히 보여줘요.  
 
 요약:  

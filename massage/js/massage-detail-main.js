@@ -46,12 +46,12 @@ class MassageDetailMain {
     async loadModules() {
         try {
             // 사진 모듈 로드
-            const imageResponse = await fetch('shop-image.html');
+            const imageResponse = await fetch('modules/shop-image.html');
             const imageHTML = await imageResponse.text();
             document.getElementById('imageModule').innerHTML = imageHTML;
 
             // 설명 모듈 로드
-            const infoResponse = await fetch('shop-info.html');
+            const infoResponse = await fetch('modules/shop-info.html');
             const infoHTML = await infoResponse.text();
             document.getElementById('infoModule').innerHTML = infoHTML;
 

@@ -3,6 +3,49 @@
 
 ## 🎯 **개발 우선순위**
 
+### **🔧 표준 템플릿 복사 프로세스**
+
+#### **1단계: 폴더 구조 복사**
+```bash
+# 기본 복사
+cp -r massage/ karaoke/
+
+# 파일명 일괄 변경
+cd karaoke/js/
+mv massage-detail-data.js karaoke-detail-data.js
+mv massage-detail-ui.js karaoke-detail-ui.js
+mv massage-detail-main.js karaoke-detail-main.js
+
+# HTML 제목 변경
+sed -i 's/마사지/가라오케/g' index.html
+sed -i 's/massage/karaoke/g' detail.html
+```
+
+#### **2단계: JavaScript 클래스명 변경**
+```javascript
+// 기존: MassageDataLoader → 새로운: KaraokeDataLoader
+class KaraokeDataLoader {
+    constructor() {
+        this.databaseId = '[새 노션 DB ID]';
+    }
+}
+
+// 기존: MassageDetailUI → 새로운: KaraokeDetailUI
+class KaraokeDetailUI {
+    constructor() {
+        this.containerSelector = '.karaoke-detail-container';
+    }
+}
+```
+
+#### **3단계: 노션 데이터베이스 생성**
+```
+1. 마사지 DB 구조 전체 복사
+2. 업체군별 특화 필드 추가
+3. 테스트 데이터 3-5개 입력
+4. API 연동 테스트
+```
+
 ### **📅 단기 계획 (3개월 내)**
 
 #### **🎤 가라오케 시스템 (1순위)**
