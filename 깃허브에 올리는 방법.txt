@@ -1,3 +1,9 @@
+git status  
+git add -u
+git commit -m "변경 내용 간단히 적기"
+git push
+
+
 # 깃 기본 업데이트 작업 순서
 
 1. 변경된 파일 모두 스테이지에 올리기  
