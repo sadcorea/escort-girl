@@ -11,6 +11,9 @@
     
     <!-- 마사지 전용 스타일 -->
     <link rel="stylesheet" href="massage-style.css">
+    
+    <!-- 플로팅 연락 버튼 공용 스크립트 -->
+    <script src="../../shared/js/floating-contact.js"></script>
 </head>
 <body>
     <!-- 공용 헤더 include -->
@@ -123,6 +126,14 @@
             } catch (error) {
                 console.error('푸터 로드 실패:', error);
             }
+            
+            // 페이지가 완전히 로드된 후 플로팅 버튼 추가
+            setTimeout(async () => {
+                await loadFloatingContact({
+                    kakaoId: 'echopaldanang',  // 기본 카카오톡 ID
+                    phone: '+84123456789'      // 기본 전화번호
+                });
+            }, 100);
         });
     </script>
     <script src="massage-script.js"></script>

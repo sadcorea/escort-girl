@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사진 투어 - Ecogirl.vn</title>
+    <link rel="icon" type="image/png" href="../../shared/images/logo/favicon.png">
+    
+    <!-- 공용 스타일 -->
+    <link rel="stylesheet" href="../../shared/styles/colors.css">
+    <link rel="stylesheet" href="../../shared/styles/common-styles.css">
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--background);
+        }
+
+        /* 헤더 영역 */
+        .tour-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            z-index: 100;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .back-btn:hover {
+            color: var(--primary);
+        }
+
+        .shop-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .close-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+
+        .close-btn:hover {
+            background: var(--background-secondary);
+        }
+
+        /* Pinterest 그리드 컨테이너 */
+        .pinterest-container {
+            max-width: 1200px;
+            margin: 80px auto 2rem;
+            padding: 0 1rem;
+        }
+
+        .pinterest-grid {
+            columns: 3;
+            column-gap: 1rem;
+            width: 100%;
+        }
+
+        .photo-item {
+            break-inside: avoid;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+            overflow: hidden;
+            border-radius: 8px;
+            background: var(--background-secondary);
+        }
+
+        .photo-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .photo-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .no-image-item {
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--background-secondary);
+            color: var(--text-secondary);
+            font-size: 3rem;
+        }
+
+        /* 라이트박스 모달 */
+        .lightbox-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 200;
+        }
+
+        .lightbox-content {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lightbox-image {
+            max-width: 90%;
+            max-height: 90vh;
+            object-fit: contain;
+        }
+
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            font-size: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lightbox-nav:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .lightbox-prev {
+            left: 2rem;
+        }
+
+        .lightbox-next {
+            right: 2rem;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s;
+        }
+
+        .lightbox-close:hover {
+            opacity: 0.7;
+        }
+
+        .lightbox-counter {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+        }
+
+        /* 로딩 상태 */
+        .loading {
+            text-align: center;
+            padding: 4rem;
+            color: var(--text-secondary);
+        }
+
+        /* 반응형 */
+        @media (max-width: 1024px) {
+            .pinterest-grid {
+                columns: 2;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .tour-header {
+                padding: 0 1rem;
+            }
+
+            .shop-title {
+                font-size: 1rem;
+            }
+
+            .pinterest-grid {
+                columns: 1;
+            }
+
+            .lightbox-nav {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+            }
+
+            .lightbox-prev {
+                left: 1rem;
+            }
+
+            .lightbox-next {
+                right: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 헤더 -->
+    <header class="tour-header">
+        <a href="#" class="back-btn" onclick="goBack()">
+            ← 돌아가기
+        </a>
+        <h1 class="shop-title" id="shopTitle">사진 투어</h1>
+        <button class="close-btn" onclick="goBack()">
+            ✕
+        </button>
+    </header>
+
+    <!-- Pinterest 그리드 -->
+    <div class="pinterest-container">
+        <div id="pinterest-grid" class="pinterest-grid loading">
+            <p>로딩 중...</p>
+        </div>
+    </div>
+
+    <!-- 라이트박스 모달 -->
+    <div id="lightbox" class="lightbox-modal">
+        <div class="lightbox-content">
+            <img id="lightbox-image" class="lightbox-image" src="" alt="">
+            <button class="lightbox-nav lightbox-prev" onclick="prevImage()">‹</button>
+            <button class="lightbox-nav lightbox-next" onclick="nextImage()">›</button>
+            <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+            <div class="lightbox-counter">
+                <span id="current-index">1</span> / <span id="total-images">9</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let shopData = null;
+        let images = [];
+        let currentIndex = 0;
+
+        // URL에서 ID 파라미터 가져오기
+        function getShopId() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('id');
+        }
+
+        // 뒤로가기
+        function goBack() {
+            const shopId = getShopId();
+            window.location.href = `massage-detail.html?id=${shopId}`;
+        }
+
+        // 노션에서 데이터 가져오기
+        async function fetchShopData(shopId) {
+            try {
+                const response = await fetch('http://localhost:8080/api/notion', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        database_id: '203e5f74c72e815d8f39d2946ee85c0a',
+                        api_key: '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',
+                        sorts: [
+                            {
+                                property: "ID",
+                                direction: "ascending"
+                            }
+                        ]
+                    })
+                });
+
+                if (!response.ok) throw new Error('데이터 로드 실패');
+
+                const data = await response.json();
+                if (data.results && data.results.length > 0) {
+                    // ID로 필터링
+                    const shop = data.results.find(item => {
+                        const itemId = item.properties.ID?.number;
+                        return itemId === parseInt(shopId);
+                    });
+                    
+                    if (shop) {
+                        return shop;
+                    } else {
+                        throw new Error('업체를 찾을 수 없습니다');
+                    }
+                } else {
+                    throw new Error('데이터가 없습니다');
+                }
+            } catch (error) {
+                console.error('데이터 로드 에러:', error);
+                throw error;
+            }
+        }
+
+        // 이미지 수집 (최대 9장)
+        function collectImages(properties) {
+            const imgs = [];
+            
+            // 마사지로고를 메인 이미지로
+            if (properties['마사지로고']?.files) {
+                properties['마사지로고'].files.forEach(file => {
+                    if (file.type === 'file' && imgs.length < 9) {
+                        imgs.push({
+                            url: file.file.url,
+                            name: '메인 이미지'
+                        });
+                    }
+                });
+            }
+            
+            // 마사지사진 필드에서 추가 이미지 수집
+            if (properties['마사지사진']?.files) {
+                properties['마사지사진'].files.forEach(file => {
+                    if (file.type === 'file' && imgs.length < 9) {
+                        imgs.push({
+                            url: file.file.url,
+                            name: file.name
+                        });
+                    }
+                });
+            }
+
+            // 기본 이미지 설정 (로컬)
+            const defaultImage = {
+                url: '../../shared/images/logo/default.png',
+                name: '기본 이미지'
+            };
+
+            // 이미지가 없으면 9장 모두 기본 이미지로
+            if (imgs.length === 0) {
+                for (let i = 0; i < 9; i++) {
+                    imgs.push(defaultImage);
+                }
+            } else {
+                // 9장이 안 되면 기본 이미지로 채우기
+                while (imgs.length < 9) {
+                    imgs.push(defaultImage);
+                }
+            }
+
+            return imgs;
+        }
+
+        // Pinterest 그리드 렌더링
+        function renderPinterestGrid() {
+            const grid = document.getElementById('pinterest-grid');
+            grid.classList.remove('loading');
+            
+            grid.innerHTML = images.map((img, index) => `
+                <div class="photo-item" onclick="openLightbox(${index})">
+                    ${img.url ? 
+                        `<img src="${img.url}" alt="${img.name}">` : 
+                        '<div class="no-image-item">💆‍♀️</div>'
+                    }
+                </div>
+            `).join('');
+        }
+
+        // 라이트박스 열기
+        function openLightbox(index) {
+            if (images[index] && images[index].url) {
+                currentIndex = index;
+                const lightbox = document.getElementById('lightbox');
+                const lightboxImage = document.getElementById('lightbox-image');
+                
+                lightboxImage.src = images[index].url;
+                document.getElementById('current-index').textContent = index + 1;
+                document.getElementById('total-images').textContent = images.length;
+                
+                lightbox.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        // 라이트박스 닫기
+        function closeLightbox() {
+            document.getElementById('lightbox').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        // 이전 이미지
+        function prevImage() {
+            let newIndex = currentIndex - 1;
+            if (newIndex < 0) newIndex = images.length - 1;
+            
+            // 유효한 이미지 찾기
+            while (!images[newIndex].url && newIndex !== currentIndex) {
+                newIndex--;
+                if (newIndex < 0) newIndex = images.length - 1;
+            }
+            
+            if (images[newIndex].url) {
+                openLightbox(newIndex);
+            }
+        }
+
+        // 다음 이미지
+        function nextImage() {
+            let newIndex = currentIndex + 1;
+            if (newIndex >= images.length) newIndex = 0;
+            
+            // 유효한 이미지 찾기
+            while (!images[newIndex].url && newIndex !== currentIndex) {
+                newIndex++;
+                if (newIndex >= images.length) newIndex = 0;
+            }
+            
+            if (images[newIndex].url) {
+                openLightbox(newIndex);
+            }
+        }
+
+        // 페이지 초기화
+        async function init() {
+            const shopId = getShopId();
+            if (!shopId) {
+                document.getElementById('pinterest-grid').innerHTML = 
+                    '<div class="error">잘못된 접근입니다.</div>';
+                return;
+            }
+
+            try {
+                shopData = await fetchShopData(shopId);
+                const properties = shopData.properties;
+                const shopName = properties['마사지명']?.title[0]?.plain_text || '업체명 없음';
+                
+                document.getElementById('shopTitle').textContent = `${shopName} - 사진 투어`;
+                
+                images = collectImages(properties);
+                renderPinterestGrid();
+                
+            } catch (error) {
+                document.getElementById('pinterest-grid').innerHTML = 
+                    `<div class="error">데이터를 불러올 수 없습니다.<br>${error.message}</div>`;
+            }
+        }
+
+        // 키보드 이벤트
+        document.addEventListener('keydown', (e) => {
+            if (document.getElementById('lightbox').style.display === 'block') {
+                if (e.key === 'Escape') closeLightbox();
+                if (e.key === 'ArrowLeft') prevImage();
+                if (e.key === 'ArrowRight') nextImage();
+            }
+        });
+
+        // 라이트박스 배경 클릭 시 닫기
+        document.getElementById('lightbox').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget || e.target.classList.contains('lightbox-content')) {
+                closeLightbox();
+            }
+        });
+
+        // 페이지 로드 시 실행
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

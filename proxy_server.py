@@ -134,8 +134,9 @@ if __name__ == '__main__':
     print("🚀 프록시 서버 시작: http://localhost:8080")
     print("📁 파일 서버도 함께 실행됩니다.") 
     print("🔗 홈페이지: http://localhost:8080/index.html")
-    print("🔗 마사지 상세:  http://localhost:8080/massage/detail.html?id=1")
     print("🔗 마사지 업체 전체: http://localhost:8080/modules/massage/massage-section.html")
+    print("🔗 마사지 상세:  http://localhost:8080/modules/massage/massage-detail.html?id=1")
+
     print("🔗 마사지: http://localhost:8080/sections/massage-section.html")
     print("🔗 풀빌라 전체: http://localhost:8080/poolvilla/index.html")
     print("🔗 풀빌라 상세: http://localhost:8080/poolvilla/detail.html?id=1")    

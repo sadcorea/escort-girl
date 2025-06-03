@@ -368,8 +368,8 @@ function contactMassage(id, event) {
 // 상세 보기 함수
 function viewDetail(id, event) {
     event.stopPropagation();
-    // 상세 페이지 구현 예정
-    console.log('상세 보기:', id);
+    // 마사지 상세 페이지로 이동
+    window.location.href = `massage-detail.html?id=${id}`;
 }
 
 // 필터 리스너 설정
