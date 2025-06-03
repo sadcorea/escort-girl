@@ -1,7 +1,7 @@
 git status
 git add -u
 git add .
-git commit -m "마사지 완료 폴더 구조화 완료"
+git commit -m "옆구리 조금, 마사지 상세"
 git push
 
 

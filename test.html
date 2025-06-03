@@ -43,6 +43,9 @@
     <!-- 푸터 -->
     <div id="footer-container"></div>
     
+    <!-- 플로팅 연락 버튼 -->
+    <div id="floating-contact-container"></div>
+    
     <!-- JavaScript -->
     <script src="/shared/js/config.js"></script>
     <script src="/shared/js/header.js"></script>
@@ -61,6 +64,18 @@
         fetch('/shared/components/footer.html')
             .then(res => res.text())
             .then(html => document.getElementById('footer-container').innerHTML = html);
+            
+        // 플로팅 버튼 로드
+        fetch('/shared/components/floating-contact.html')
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('floating-contact-container').innerHTML = html;
+                
+                // 플로팅 버튼 스크립트 로드
+                const floatingScript = document.createElement('script');
+                floatingScript.src = '/shared/js/floating-contact.js';
+                document.body.appendChild(floatingScript);
+            });
     </script>
 </body>
 </html>

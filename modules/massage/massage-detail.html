@@ -254,6 +254,56 @@
             overflow: hidden;
             margin-bottom: 1.5rem;
         }
+        
+        /* 가격 선택 체크박스 */
+        .price-checkbox {
+            margin-right: 0.75rem;
+        }
+        
+        /* 선택 요약 카드 */
+        .selection-summary {
+            position: sticky;
+            top: 100px;
+            background: var(--background);
+            border: 1px solid var(--primary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            box-shadow: 0 2px 8px rgba(14, 165, 233, 0.1);
+        }
+        
+        .selection-summary h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+        
+        .selected-items {
+            margin-bottom: 1rem;
+        }
+        
+        .selected-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px dashed var(--border);
+            font-size: 0.9rem;
+        }
+        
+        .selected-item:last-child {
+            border-bottom: none;
+        }
+        
+        .total-price {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 2px solid var(--border);
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--primary);
+            display: flex;
+            justify-content: space-between;
+        }
 
         .accordion-item {
             border-bottom: 1px solid var(--border);
@@ -738,8 +788,15 @@
                                                             <div class="price-list">
                                                                 ${prices.map(price => `
                                                                     <div class="price-item">
-                                                                        <span>${price.duration}</span>
-                                                                        <strong>${price.price}</strong>
+                                                                        <label style="display: flex; align-items: center; width: 100%; cursor: pointer;">
+                                                                            <input type="checkbox" class="price-checkbox" 
+                                                                                data-service="${service}" 
+                                                                                data-duration="${price.duration}" 
+                                                                                data-price="${price.price}"
+                                                                                onchange="updateSelection()">
+                                                                            <span style="flex: 1;">${price.duration}</span>
+                                                                            <strong>${price.price}</strong>
+                                                                        </label>
                                                                     </div>
                                                                 `).join('')}
                                                             </div>
@@ -784,6 +841,20 @@
                                         </button>
                                     </div>
                                 </div>
+                                
+                                <!-- 선택 요약 카드 -->
+                                <div class="selection-summary" id="selectionSummary">
+                                    <h3>선택한 서비스</h3>
+                                    <div class="selected-items" id="selectedItems">
+                                        <p style="color: var(--text-secondary); text-align: center; padding: 1rem 0;">
+                                            서비스를 선택해주세요
+                                        </p>
+                                    </div>
+                                    <div class="total-price">
+                                        <span>합계</span>
+                                        <span id="totalPrice">₫0</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -826,6 +897,48 @@
         function toggleAccordion(header) {
             const item = header.parentElement;
             item.classList.toggle('active');
+        }
+        
+        // 가격 선택 업데이트
+        function updateSelection() {
+            const checkboxes = document.querySelectorAll('.price-checkbox:checked');
+            const selectedItemsDiv = document.getElementById('selectedItems');
+            const totalPriceSpan = document.getElementById('totalPrice');
+            
+            if (checkboxes.length === 0) {
+                selectedItemsDiv.innerHTML = `
+                    <p style="color: var(--text-secondary); text-align: center; padding: 1rem 0;">
+                        서비스를 선택해주세요
+                    </p>
+                `;
+                totalPriceSpan.textContent = '₫0';
+                return;
+            }
+            
+            selectedItemsDiv.innerHTML = '';
+            let total = 0;
+            
+            checkboxes.forEach(checkbox => {
+                const service = checkbox.dataset.service;
+                const duration = checkbox.dataset.duration;
+                const priceText = checkbox.dataset.price;
+                
+                // 가격에서 숫자만 추출
+                const priceNumber = parseInt(priceText.replace(/[^0-9]/g, ''));
+                total += priceNumber;
+                
+                // 선택 항목 표시
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'selected-item';
+                itemDiv.innerHTML = `
+                    <span>${service} ${duration}</span>
+                    <span>${priceText}</span>
+                `;
+                selectedItemsDiv.appendChild(itemDiv);
+            });
+            
+            // 합계 표시
+            totalPriceSpan.textContent = `₫${total.toLocaleString()}`;
         }
 
         // 페이지 초기화

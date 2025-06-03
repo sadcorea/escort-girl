@@ -30,6 +30,16 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
+.floating-btn img {
+    width: 24px;
+    height: 24px;
+    filter: brightness(0) invert(1); /* 흰색으로 변경 */
+}
+
+.btn-kakao img {
+    filter: none; /* 카카오톡은 원본 색상 유지 */
+}
+
 .btn-grab {
     background: #00B14F;
 }
