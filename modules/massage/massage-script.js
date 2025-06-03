@@ -27,17 +27,35 @@ let activeFilters = {
 };
 let selectedForCompare = []; // 비교를 위해 선택된 업체 ID들
 
-// 초기화
-document.addEventListener('DOMContentLoaded', function() {
-    loadMassageData();
-    setupFilterListeners();
+// API 캐싱
+const API_CACHE_KEY = 'massage_data_cache';
+const CACHE_DURATION = 5 * 60 * 1000; // 5분
+
+function getCachedData() {
+    const cached = sessionStorage.getItem(API_CACHE_KEY);
+    if (!cached) return null;
     
-    // 헤더 스크롤 이벤트 강제 초기화
-    setTimeout(() => {
-        window.dispatchEvent(new Event('scroll'));
-        console.log('스크롤 이벤트 수동 트리거');
-    }, 500);
-});
+    const { data, timestamp } = JSON.parse(cached);
+    const now = Date.now();
+    
+    // 캐시 만료 체크
+    if (now - timestamp > CACHE_DURATION) {
+        sessionStorage.removeItem(API_CACHE_KEY);
+        return null;
+    }
+    
+    return data;
+}
+
+function setCachedData(data) {
+    const cacheObject = {
+        data: data,
+        timestamp: Date.now()
+    };
+    sessionStorage.setItem(API_CACHE_KEY, JSON.stringify(cacheObject));
+}
+
+
 
 // 노션 데이터 로드
 async function loadMassageData() {
@@ -45,6 +63,23 @@ async function loadMassageData() {
     spinner.classList.add('active');
     
     try {
+        // 캐시 확인
+        const cachedData = getCachedData();
+        if (cachedData) {
+            console.log('캐시된 데이터 사용');
+            massageData = cachedData.massageData;
+            filteredData = cachedData.filteredData;
+            
+            // 필터 생성
+            generateFilters();
+            
+            // 카드 렌더링
+            renderCards();
+            spinner.classList.remove('active');
+            return;
+        }
+        
+        console.log('API에서 새 데이터 로드');
         const response = await fetch('http://localhost:8080/api/notion', {
             method: 'POST',
             headers: {
@@ -85,6 +120,12 @@ async function loadMassageData() {
         massageData = processMassageData(data.results, defaultImage);
         filteredData = [...massageData];
         
+        // 캐시에 저장
+        setCachedData({
+            massageData: massageData,
+            filteredData: filteredData
+        });
+        
         console.log('처리된 마사지 데이터:', massageData);
         
         // 필터 생성
@@ -107,6 +148,22 @@ function getDefaultPrice(services) {
         return PRICE_CONFIG.defaultPrices[services[0]] || 500000;
     }
     return 500000; // 기본값
+}
+
+// 노션 이미지 URL 최적화
+function optimizeNotionImage(url, width = 400) {
+    if (!url || !url.includes('amazonaws.com')) return url;
+    
+    // 노션 이미지는 이미 최적화되어 있으므로 원본 사용
+    // width 파라미터가 작동하지 않을 수 있음
+    return url;
+}
+
+// 이미지 로드 에러 처리
+function handleImageError(img) {
+    console.error('이미지 로드 실패:', img.src);
+    img.onerror = null; // 무한 루프 방지
+    img.src = '/shared/images/logo/default.png';
 }
 
 // 데이터 처리
@@ -289,10 +346,13 @@ function createMassageCard(massage) {
     const hasDiscount = massage.benefit && massage.benefit.includes('%');
     
     // 이미지 선택 (로고 또는 첫 번째 사진)
-    const displayImage = massage.logo || 
-                        (massage.photos && massage.photos[0]?.file?.url) || 
-                        (massage.photos && massage.photos[0]?.external?.url) ||
-                        '/shared/images/default-massage.jpg';
+    const rawImage = massage.logo || 
+                    (massage.photos && massage.photos[0]?.file?.url) || 
+                    (massage.photos && massage.photos[0]?.external?.url) ||
+                    '/shared/images/logo/default.png';
+    
+    // 썸네일용 최적화 (400px)
+    const displayImage = optimizeNotionImage(rawImage, 400);
     
     // 카드 HTML
     card.innerHTML = `
@@ -306,7 +366,8 @@ function createMassageCard(massage) {
         <div class="card-image">
             <img src="${displayImage}" 
                  alt="${massage.name}" 
-                 loading="lazy">
+                 loading="lazy"
+                 onerror="handleImageError(this)">
             ${hasDiscount ? `<div class="discount-badge">할인 중</div>` : ''}
         </div>
         
@@ -622,3 +683,15 @@ window.closeComparison = closeComparison;
 window.clearCompareSelection = clearCompareSelection;
 window.contactMassage = contactMassage;
 window.viewDetail = viewDetail;
+
+// 초기화
+document.addEventListener('DOMContentLoaded', function() {
+    loadMassageData();
+    setupFilterListeners();
+    
+    // 헤더 스크롤 이벤트 강제 초기화
+    setTimeout(() => {
+        window.dispatchEvent(new Event('scroll'));
+        console.log('스크롤 이벤트 수동 트리거');
+    }, 500);
+});

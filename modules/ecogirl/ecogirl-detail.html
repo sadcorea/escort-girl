@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>에코걸 상세 - Ecogirl.vn</title>
+    <link rel="icon" type="image/png" href="../../shared/images/logo/favicon.png">
+    
+    <!-- 공용 스타일 -->
+    <link rel="stylesheet" href="../../shared/styles/colors.css">
+    <link rel="stylesheet" href="../../shared/styles/common-styles.css">
+    <link rel="stylesheet" href="../../shared/styles/grid.css">
+    <link rel="stylesheet" href="../../shared/styles/header.css">
+    
+    <!-- 에코걸 상세 전용 스타일 -->
+    <style>
+        /* 전체 페이지 레이아웃 */
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 메인 콘텐츠 */
+        .detail-container {
+            width: 100%;
+            margin-top: 80px; /* 헤더 높이만큼 */
+        }
+
+        /* 이미지 섹션 - 독립적인 영역 */
+        .image-section {
+            width: 100%;
+            background: var(--background-secondary);
+            padding: 2rem 0; /* 위아래 여백 증가 */
+        }
+
+        /* 이미지 갤러리 컨테이너 */
+        .gallery-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* 이미지 갤러리 - 5장 레이아웃 */
+        .image-gallery {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 50:50으로 변경 */
+            gap: 8px; /* 간격 살짝 늘림 */
+            height: 500px; /* 높이 증가 */
+            box-sizing: border-box;
+        }
+
+        /* 메인 이미지 */
+        .main-image {
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            border-radius: 8px;
+            height: 100%; /* 명시적 높이 */
+        }
+
+        .main-image.card-image img,
+        .thumbnail.card-image img {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        /* 썸네일 그리드 - 2x2 정사각형 */
+        .thumbnail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 8px;
+            height: 100%; /* 부모 높이 상속 */
+            aspect-ratio: 1; /* 정사각형 비율 유지 */
+        }
+
+        .thumbnail {
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: opacity 0.2s;
+            height: 100%; /* 높이 유지 */
+        }
+
+        .thumbnail:hover {
+            opacity: 0.8;
+        }
+
+        /* 사진 더보기 버튼 */
+        .view-photos-btn {
+            position: absolute;
+            bottom: 0.5rem;
+            right: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            z-index: 10;
+        }
+
+        .view-photos-btn:hover {
+            background: var(--background-secondary);
+        }
+
+        /* 정보 컨테이너 - 이미지 아래 독립 영역 */
+        .info-container {
+            position: relative;
+            max-width: 1200px;
+            width: 100%;
+            margin: 4rem auto 0; /* 이미지와 간격 더 증가 */
+            padding: 3rem 2rem; /* 내부 여백 증가 */
+            background: white;
+            min-height: 500px;
+        }
+
+        /* 빵부스러기 */
+        .breadcrumb {
+            margin-bottom: 2rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .breadcrumb a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--primary);
+        }
+
+        /* 정보 섹션 - 2열 그리드 */
+        .info-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 3rem;
+        }
+
+        .main-info {
+            /* 왼쪽 주요 정보 */
+        }
+
+        .side-info {
+            /* 오른쪽 보조 정보 */
+        }
+
+        .shop-name {
+            font-size: 2.5rem; /* 크기 증가 */
+            font-weight: bold;
+            color: var(--text-primary);
+            margin-bottom: 3rem; /* 여백 증가 */
+            text-align: center;
+        }
+
+        /* 서비스 종류 카드 */
+        .service-card {
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .service-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .service-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .service-tag {
+            padding: 0.4rem 1.2rem;
+            border-radius: 20px;
+            font-size: 1rem; /* 폰트 크기 증가 */
+            color: white;
+        }
+
+        /* 취미/성향별 태그 색상 - 에코걸용으로 변경 */
+        .tag-dance { background-color: #EC4899; }
+        .tag-singing { background-color: #9333EA; }
+        .tag-cheerful { background-color: #F59E0B; }
+        .tag-calm { background-color: #0EA5E9; }
+        .tag-sexy { background-color: #EF4444; }
+        .tag-cute { background-color: #10B981; }
+
+        /* 정보 카드 */
+        .info-card {
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .info-item span {
+            margin-left: 0.5rem;
+        }
+
+        /* 기존 연락 버튼 제거 */
+        .contact-buttons {
+            display: none;
+        }
+
+        /* 모바일 반응형 */
+        @media (max-width: 768px) {
+            .header-spacer {
+                height: 60px;
+            }
+            
+            .image-gallery {
+                grid-template-columns: 1fr;
+                height: 300px;
+            }
+            
+            .thumbnail-grid {
+                display: none; /* 모바일에서는 메인 이미지만 */
+            }
+            
+            .gallery-container {
+                padding: 0 0.5rem;
+            }
+
+            .thumbnail-grid {
+                display: none;
+            }
+
+            .view-photos-btn {
+                bottom: 0.5rem;
+                right: 0.5rem;
+            }
+
+            .info-section {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .info-container {
+                padding: 0 1rem 3rem;
+            }
+
+            .shop-name {
+                font-size: 1.5rem;
+            }
+
+            .floating-contact {
+                bottom: 1rem;
+                right: 1rem;
+            }
+
+            .floating-btn {
+                width: 48px;
+                height: 48px;
+                font-size: 1.25rem;
+            }
+        }
+
+        /* 이미지 없을 때 기본 스타일 */
+        .no-image {
+            background: var(--background-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 3rem;
+        }
+
+        /* 로딩 상태 */
+        .loading {
+            text-align: center;
+            padding: 4rem;
+            color: var(--text-secondary);
+        }
+
+        .error {
+            text-align: center;
+            padding: 4rem;
+            color: var(--error);
+        }
+    </style>
+</head>
+<body>
+    <!-- 헤더 로드 -->
+    <div id="header-container"></div>
+
+    <!-- 메인 콘텐츠 -->
+    <main class="detail-container">
+        <div id="content-area" class="loading">
+            <p>로딩 중...</p>
+        </div>
+    </main>
+
+    <!-- 푸터 로드 -->
+    <div id="footer-container"></div>
+
+    <!-- 스크립트 -->
+    <script src="../../shared/js/config.js"></script>
+    <script src="../../shared/js/floating-contact.js"></script>
+    <script>
+        // 전역 변수
+        let girlData = null;
+        let currentImageIndex = 0;
+        let images = [];
+
+        // URL에서 ID 파라미터 가져오기
+        function getGirlId() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('id');
+        }
+
+        // 헤더와 푸터 로드
+        async function loadComponents() {
+            try {
+                const headerResponse = await fetch('../../shared/components/header.html');
+                document.getElementById('header-container').innerHTML = await headerResponse.text();
+                
+                const footerResponse = await fetch('../../shared/components/footer.html');
+                document.getElementById('footer-container').innerHTML = await footerResponse.text();
+
+                // 헤더 스크립트 실행
+                const headerScript = document.createElement('script');
+                headerScript.src = '../../shared/js/header.js';
+                document.body.appendChild(headerScript);
+                
+                // 에코걸 링크 수정
+                setTimeout(() => {
+                    const ecogirlLink = document.querySelector('a[href="#ecogirl"]');
+                    if (ecogirlLink) {
+                        ecogirlLink.href = 'ecogirl-section.html';
+                    }
+                }, 100);
+            } catch (error) {
+                console.error('컴포넌트 로드 실패:', error);
+            }
+        }
+
+        // 노션에서 데이터 가져오기
+        async function fetchGirlData(girlId) {
+            try {
+                const response = await fetch('http://localhost:8080/api/notion', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        database_id: '202e5f74c72e8188aeabf3176e9cb61c',
+                        api_key: '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',
+                        filter: {
+                            property: "상태",
+                            select: {
+                                equals: "활성"
+                            }
+                        },
+                        sorts: [
+                            {
+                                property: "ID",
+                                direction: "ascending"
+                            }
+                        ]
+                    })
+                });
+
+                if (!response.ok) throw new Error('데이터 로드 실패');
+
+                const data = await response.json();
+                if (data.results && data.results.length > 0) {
+                    // ID로 필터링
+                    const girl = data.results.find(item => {
+                        const itemId = item.properties.ID?.number;
+                        return itemId === parseInt(girlId);
+                    });
+                    
+                    if (girl) {
+                        return girl;
+                    } else {
+                        throw new Error('프로필을 찾을 수 없습니다');
+                    }
+                } else {
+                    throw new Error('데이터가 없습니다');
+                }
+            } catch (error) {
+                console.error('데이터 로드 에러:', error);
+                throw error;
+            }
+        }
+
+        // 이미지 수집
+        function collectImages(properties) {
+            const imgs = [];
+            
+            // 프로필사진을 메인 이미지로
+            if (properties['프로필사진']?.files) {
+                properties['프로필사진'].files.forEach(file => {
+                    if (file.type === 'file') {
+                        imgs.push({
+                            url: file.file.url,
+                            name: '프로필 사진'
+                        });
+                    }
+                });
+            }
+            
+            // 갤러리사진 필드에서 추가 이미지 수집
+            if (properties['갤러리사진']?.files) {
+                properties['갤러리사진'].files.forEach(file => {
+                    if (file.type === 'file') {
+                        imgs.push({
+                            url: file.file.url,
+                            name: file.name
+                        });
+                    }
+                });
+            }
+
+            // 이미지가 없으면 빈 배열 반환
+            return imgs;
+        }
+
+        // 취미/성향에 따른 태그 클래스
+        function getTagClass(tag) {
+            const tagMap = {
+                '댄스': 'tag-dance',
+                '노래': 'tag-singing',
+                '발랄함': 'tag-cheerful',
+                '차분함': 'tag-calm',
+                '섹시함': 'tag-sexy',
+                '귀여움': 'tag-cute'
+            };
+            return tagMap[tag] || 'tag-cheerful';
+        }
+
+        // 상세 페이지 렌더링
+        async function renderDetailPage() {
+            const girlId = getGirlId();
+            if (!girlId) {
+                document.getElementById('content-area').innerHTML = 
+                    '<div class="error">잘못된 접근입니다.</div>';
+                return;
+            }
+
+            try {
+                // 메인 데이터 로드
+                girlData = await fetchGirlData(girlId);
+                const properties = girlData.properties;
+
+                // 기본 이미지 설정 (로컬)
+                const defaultImage = {
+                    url: '../../shared/images/logo/default.png',
+                    name: '기본 이미지'
+                };
+
+                // 이미지 수집
+                images = collectImages(properties);
+                
+                // 이미지가 없거나 5장 미만이면 기본 이미지로 채우기
+                if (images.length === 0) {
+                    // 이미지가 하나도 없으면 5장 모두 기본 이미지로
+                    for (let i = 0; i < 5; i++) {
+                        images.push(defaultImage);
+                    }
+                } else {
+                    // 5장이 안되면 나머지를 기본 이미지로 채우기
+                    while (images.length < 5) {
+                        images.push(defaultImage);
+                    }
+                }
+
+                // 기본 정보 추출
+                const girlName = properties['이름']?.title[0]?.plain_text || '이름 없음';
+                const age = properties['나이']?.number || '';
+                const hobbies = properties['취미']?.multi_select || [];
+                const personalities = properties['성향']?.multi_select || [];
+                const languages = properties['언어']?.multi_select || [];
+                const specialties = properties['특기']?.multi_select || [];
+                const introduction = properties['자기소개']?.rich_text[0]?.plain_text || '';
+                const kakaoId = properties['카카오톡ID']?.rich_text[0]?.plain_text || '';
+                const phone = properties['전화번호']?.phone_number || '';
+
+                // HTML 생성
+                let html = `
+                    <!-- 이미지 섹션 -->
+                    <div class="image-section">
+                        <div class="gallery-container">
+                            <div class="image-gallery">
+                                <div class="main-image card-image" onclick="goToPhotoTour('${girlId}')">
+                                    ${images[0].url ? 
+                                        `<img src="${images[0].url}" 
+                                             alt="${girlName}"
+                                             loading="lazy"
+                                             onerror="this.onerror=null; this.src='../../shared/images/logo/default.png';">` : 
+                                        '<div class="no-image">👩</div>'
+                                    }
+                                </div>
+                                <div class="thumbnail-grid">
+                                    ${images.slice(1, 5).map((img, idx) => `
+                                        <div class="thumbnail card-image" onclick="goToPhotoTour('${girlId}')">
+                                            ${img.url ? 
+                                                `<img src="${img.url}" 
+                                                     alt="이미지 ${idx + 2}"
+                                                     loading="lazy"
+                                                     onerror="this.onerror=null; this.src='../../shared/images/logo/default.png';">` : 
+                                                '<div class="no-image">👩</div>'
+                                            }
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 정보 컨테이너 -->
+                    <div class="info-container">
+                        <h1 class="shop-name">${girlName} ${age ? `(${age}세)` : ''}</h1>
+                        
+                        <!-- 정보 섹션 그리드 -->
+                        <div class="info-section">
+                            <!-- 왼쪽 메인 정보 -->
+                            <div class="main-info">
+                                <!-- 자기소개 카드 -->
+                                ${introduction ? `
+                                    <div class="info-card">
+                                        <h3>자기소개</h3>
+                                        <p style="margin: 0; color: var(--text-secondary); font-size: 1.1rem; line-height: 1.6;">${introduction}</p>
+                                    </div>
+                                ` : ''}
+
+                                <!-- 취미 및 성향 카드 -->
+                                ${(hobbies.length > 0 || personalities.length > 0) ? `
+                                    <div class="service-card">
+                                        <h3>취미 & 성향</h3>
+                                        <div class="service-tags">
+                                            ${hobbies.map(hobby => 
+                                                `<span class="service-tag ${getTagClass(hobby.name)}">${hobby.name}</span>`
+                                            ).join('')}
+                                            ${personalities.map(personality => 
+                                                `<span class="service-tag ${getTagClass(personality.name)}">${personality.name}</span>`
+                                            ).join('')}
+                                        </div>
+                                    </div>
+                                ` : ''}
+
+                                <!-- 특기 카드 -->
+                                ${specialties.length > 0 ? `
+                                    <div class="info-card">
+                                        <h3>특기</h3>
+                                        <div class="service-tags">
+                                            ${specialties.map(specialty => 
+                                                `<span class="service-tag tag-dance">${specialty.name}</span>`
+                                            ).join('')}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            </div>
+
+                            <!-- 오른쪽 보조 정보 -->
+                            <div class="side-info">
+                                <!-- 기본 정보 -->
+                                <div class="info-card">
+                                    <h3>기본 정보</h3>
+                                    <div class="info-item">
+                                        <span>나이: ${age || '비공개'}세</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span>언어: ${languages.map(l => l.name).join(', ') || '베트남어'}</span>
+                                    </div>
+                                </div>
+
+                                <!-- 특별 안내 -->
+                                <div class="info-card" style="background: #FFF3CD; border-color: #FFEAA7;">
+                                    <h3 style="color: #856404;">🎁 EchoPal 특별 혜택</h3>
+                                    <p style="color: #856404; margin: 0;">EchoPal을 통해 예약하시면 특별한 혜택이 제공됩니다!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 플로팅 연락 버튼은 동적으로 로드됨 -->
+                `;
+
+                document.getElementById('content-area').innerHTML = html;
+                document.getElementById('content-area').classList.remove('loading');
+
+                // 페이지가 완전히 로드된 후 플로팅 버튼 추가
+                // 에코걸은 항상 회사 공용 연락처 사용
+                setTimeout(async () => {
+                    await loadFloatingContact({
+                        kakaoId: window.CONFIG.CONTACTS.kakao.id,    // 공용 카카오톡
+                        phone: window.CONFIG.CONTACTS.phone.number   // 공용 전화번호
+                    });
+                }, 100);
+
+            } catch (error) {
+                document.getElementById('content-area').innerHTML = 
+                    `<div class="error">데이터를 불러올 수 없습니다.<br>${error.message}</div>`;
+            }
+        }
+
+        // 사진 투어 페이지로 이동
+        function goToPhotoTour(girlId) {
+            window.location.href = `ecogirl-photo-tour.html?id=${girlId}`;
+        }
+
+        // 페이지 초기화
+        async function init() {
+            await loadComponents();
+            await renderDetailPage();
+        }
+
+        // 페이지 로드 시 실행
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

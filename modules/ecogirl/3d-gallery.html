@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>에코걸 3D 갤러리 - Ecogirl.vn</title>
+    
+    <!-- 공용 스타일 -->
+    <link rel="stylesheet" href="../../shared/styles/colors.css">
+    <link rel="stylesheet" href="../../shared/styles/common-styles.css">
+    
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <style>
+        /* 3D 갤러리 전용 스타일 */
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--background);
+            overflow: hidden;
+        }
+        
+        #galleryContainer {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            background: var(--background);
+        }
+        
+        #ecogirlGallery3D {
+            cursor: grab;
+        }
+        
+        #ecogirlGallery3D:active {
+            cursor: grabbing;
+        }
+        
+        /* 배경 텍스트 */
+        .background-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.3;
+            color: var(--text-primary);
+        }
+        
+        .background-text h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin: 0 0 1rem 0;
+            line-height: 1.2;
+        }
+        
+        .background-text p {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin: 0.5rem 0;
+            line-height: 1.5;
+        }
+        
+        /* 컨트롤 힌트 */
+        .control-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            text-align: center;
+            pointer-events: none;
+            z-index: 2;
+        }
+        
+        /* 로딩 표시 */
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--primary);
+            font-size: 1.25rem;
+            z-index: 3;
+        }
+        
+        /* 캔버스 z-index */
+        #ecogirlGallery3D {
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .control-hint {
+                font-size: 0.75rem;
+                bottom: 10px;
+            }
+            
+            .background-text h1 {
+                font-size: 2rem;
+            }
+            
+            .background-text p {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="galleryContainer">
+        <!-- 배경 텍스트 -->
+        <div class="background-text">
+            <h1>여행의 모든 순간, 에코걸과 함께</h1>
+            <p>현지 문화와 함께하는 진정한 다낭 여행의 동반자</p>
+            <p>당신의 다낭 여행을 더욱 특별하게 만들어줄 친구들</p>
+        </div>
+        
+        <div class="loading">로딩 중...</div>
+        <div class="control-hint">
+            드래그하여 회전 • 클릭하여 상세보기
+        </div>
+    </div>
+    
+    <!-- 설정 -->
+    <script src="../../shared/js/config.js"></script>
+    
+    <!-- 노션 API -->
+    <script>
+        // 노션 API 프록시 클래스
+        class NotionAPI {
+            constructor() {
+                this.databaseId = '202e5f74c72e8188aeabf3176e9cb61c'; // 에코걸 DB ID
+                this.apiKey = window.CONFIG?.notion?.apiKey || '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';
+                this.proxyUrl = window.CONFIG?.api?.notionProxy || 'http://localhost:8080/api/notion';
+            }
+            
+            async getAllProfiles() {
+                try {
+                    const response = await fetch(this.proxyUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            database_id: this.databaseId,
+                            api_key: this.apiKey
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    
+                    if (data.results && data.results.length > 0) {
+                        // ID가 0인 기본 이미지 찾기
+                        const defaultItem = data.results.find(item => 
+                            item.properties.ID?.number === 0
+                        );
+                        
+                        let defaultImage = null;
+                        if (defaultItem?.properties['프로필사진']?.files?.length > 0) {
+                            const file = defaultItem.properties['프로필사진'].files[0];
+                            if (file.type === 'file') {
+                                defaultImage = file.file.url;
+                            } else if (file.type === 'external') {
+                                defaultImage = file.external.url;
+                            }
+                        }
+                        
+                        console.log('에코걸 기본 이미지:', defaultImage);
+                        
+                        // ID가 0이 아닌 프로필들만 반환
+                        return data.results
+                            .filter(item => item.properties.ID?.number !== 0)
+                            .map(item => this.parseProfile(item, defaultImage));
+                    }
+                    
+                    return [];
+                } catch (error) {
+                    console.error('노션 API 에러:', error);
+                    return [];
+                }
+            }
+            
+            parseProfile(item, defaultImage) {
+                const properties = item.properties;
+                
+                // 프로필 이미지 가져오기
+                let mainImage = null;
+                if (properties['프로필사진']?.files?.length > 0) {
+                    const file = properties['프로필사진'].files[0];
+                    if (file.type === 'file') {
+                        mainImage = file.file.url;
+                    } else if (file.type === 'external') {
+                        mainImage = file.external.url;
+                    }
+                }
+                
+                // 이미지가 없으면 기본 이미지 사용
+                if (!mainImage && defaultImage) {
+                    mainImage = defaultImage;
+                }
+                
+                return {
+                    id: properties.ID?.number || 0,
+                    name: properties['이름']?.title?.[0]?.plain_text || '에코걸',
+                    mainImage: mainImage,
+                    age: properties['나이']?.number || 20
+                };
+            }
+        }
+        
+        // 전역으로 등록
+        window.NotionAPI = NotionAPI;
+    </script>
+    
+    <!-- 3D 갤러리 스크립트 -->
+    <script src="js/ecogirl-gallery.js"></script>
+    
+    <script>
+        // 갤러리 초기화
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                const gallery = new EcogirlGallery('galleryContainer');
+                await gallery.init();
+                
+                // 로딩 완료 후 로딩 텍스트 제거
+                document.querySelector('.loading').style.display = 'none';
+            } catch (error) {
+                console.error('갤러리 초기화 실패:', error);
+                document.querySelector('.loading').textContent = '갤러리 로드 실패';
+            }
+        });
+    </script>
+</body>
+</html>

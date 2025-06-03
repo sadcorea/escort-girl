@@ -110,15 +110,15 @@ const CONFIG = {
     // 📱 연락 수단
     CONTACTS: {
         kakao: {
-            id: 'your_kakao_id',  // 나중에 실제 ID로 변경
+            id: 'Ecogirl.vn',  // 회사 카카오톡
             buttonText: '카카오톡 문의'
         },
         telegram: {
-            id: 'your_telegram_id',
+            id: 'Ecogirl.vn',  // 회사 텔레그램
             buttonText: '텔레그램 문의'
         },
         phone: {
-            number: '010-0000-0000',
+            number: '010-1234-1234',  // 회사 전화번호
             buttonText: '전화 문의'
         }
     },

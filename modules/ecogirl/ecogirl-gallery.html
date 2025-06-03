@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>에코걸 갤러리 - Ecogirl.vn</title>
+    <link rel="icon" type="image/png" href="../../shared/images/logo/favicon.png">
+    
+    <!-- 공용 스타일 -->
+    <link rel="stylesheet" href="../../shared/styles/colors.css">
+    <link rel="stylesheet" href="../../shared/styles/common-styles.css">
+    <link rel="stylesheet" href="../../shared/styles/header.css">
+    
+    <!-- 갤러리 전용 스타일 -->
+    <link rel="stylesheet" href="css/gallery-styles.css">
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--background);
+        }
+
+        /* 메인 콘텐츠 */
+        .main-content {
+            margin-top: 80px;
+            min-height: calc(100vh - 80px);
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                margin-top: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 헤더 -->
+    <div id="header-container"></div>
+
+    <!-- 메인 콘텐츠 -->
+    <main class="main-content">
+        <!-- 갤러리 헤더 -->
+        <div class="gallery-header">
+            <h1>에코걸 갤러리</h1>
+            <p>모든 에코걸의 사진을 한눈에 보실 수 있습니다</p>
+        </div>
+
+        <!-- Pinterest 그리드 -->
+        <div class="pinterest-container">
+            <div id="pinterest-grid" class="pinterest-grid">
+                <!-- 로딩 표시 -->
+                <div class="loading-container">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p class="loading-text">이미지를 불러오는 중...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 푸터 -->
+    <div id="footer-container"></div>
+
+    <!-- 스크립트 -->
+    <script src="../../shared/js/config.js"></script>
+    <script src="../../shared/js/floating-contact.js"></script>
+    <script src="js/pinterest-layout.js"></script>
+    <script>
+        // 전역 변수
+        let allPhotos = [];
+        let displayedPhotos = 0;
+        const PHOTOS_PER_LOAD = 30; // 한 번에 로드할 사진 수
+        let isLoading = false;
+        let favoriteGirls = JSON.parse(localStorage.getItem('favoriteGirls') || '[]');
+        let pinterestLayout = null; // Pinterest 레이아웃 매니저
+        
+        // 캐싱
+        const CACHE_KEY = 'ecogirl_gallery_cache';
+        const CACHE_DURATION = 5 * 60 * 1000; // 5분
+
+        // 헤더와 푸터 로드
+        async function loadComponents() {
+            try {
+                const headerResponse = await fetch('../../shared/components/header.html');
+                document.getElementById('header-container').innerHTML = await headerResponse.text();
+                
+                const footerResponse = await fetch('../../shared/components/footer.html');
+                document.getElementById('footer-container').innerHTML = await footerResponse.text();
+
+                // 헤더 스크립트 실행
+                const headerScript = document.createElement('script');
+                headerScript.src = '../../shared/js/header.js';
+                document.body.appendChild(headerScript);
+                
+                // 플로팅 연락 버튼 추가
+                setTimeout(async () => {
+                    await loadFloatingContact({
+                        kakaoId: 'echopaldanang',
+                        phone: '+84123456789'
+                    });
+                }, 100);
+            } catch (error) {
+                console.error('컴포넌트 로드 실패:', error);
+            }
+        }
+
+        // 캐시 체크
+        function getCachedData() {
+            const cached = sessionStorage.getItem(CACHE_KEY);
+            if (!cached) return null;
+            
+            const { data, timestamp } = JSON.parse(cached);
+            const now = Date.now();
+            
+            if (now - timestamp > CACHE_DURATION) {
+                sessionStorage.removeItem(CACHE_KEY);
+                return null;
+            }
+            
+            return data;
+        }
+
+        // 노션에서 모든 에코걸 데이터 가져오기
+        async function fetchAllGirlsData() {
+            try {
+                // 캐시 확인
+                const cachedData = getCachedData();
+                if (cachedData) {
+                    console.log('캐시된 데이터 사용');
+                    collectAllPhotos(cachedData);
+                    return;
+                }
+                
+                const response = await fetch('http://localhost:8080/api/notion', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        database_id: '202e5f74c72e8188aeabf3176e9cb61c',
+                        api_key: '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',
+                        filter: {
+                            property: "상태",
+                            select: {
+                                equals: "활성"
+                            }
+                        },
+                        sorts: [
+                            {
+                                property: "ID",
+                                direction: "ascending"
+                            }
+                        ]
+                    })
+                });
+
+                if (!response.ok) throw new Error('데이터 로드 실패');
+
+                const data = await response.json();
+                console.log('노션 데이터 로드 완료:', data.results.length + '명');
+                
+                // 캐시에 저장
+                sessionStorage.setItem(CACHE_KEY, JSON.stringify({
+                    data: data.results,
+                    timestamp: Date.now()
+                }));
+                
+                // 모든 사진 수집
+                collectAllPhotos(data.results);
+                
+            } catch (error) {
+                console.error('데이터 로드 에러:', error);
+                showError();
+            }
+        }
+
+        // 모든 사진 수집
+        function collectAllPhotos(results) {
+            allPhotos = [];
+            
+            results.forEach(item => {
+                const props = item.properties;
+                const girlId = props.ID?.number || 0;
+                const girlName = props['이름']?.title?.[0]?.plain_text || '이름 없음';
+                const girlAge = props['나이']?.number || null;
+                
+                // 프로필 사진 추가
+                if (props['프로필사진']?.files) {
+                    props['프로필사진'].files.forEach(file => {
+                        if (file.type === 'file') {
+                            allPhotos.push({
+                                url: file.file.url,
+                                girlId: girlId,
+                                girlName: girlName,
+                                girlAge: girlAge,
+                                isProfile: true
+                            });
+                        }
+                    });
+                }
+                
+                // 갤러리 사진 추가
+                if (props['갤러리사진']?.files) {
+                    props['갤러리사진'].files.forEach(file => {
+                        if (file.type === 'file') {
+                            allPhotos.push({
+                                url: file.file.url,
+                                girlId: girlId,
+                                girlName: girlName,
+                                girlAge: girlAge,
+                                isProfile: false
+                            });
+                        }
+                    });
+                }
+            });
+            
+            // 랜덤 정렬 (다양한 에코걸이 섞이도록)
+            allPhotos.sort(() => Math.random() - 0.5);
+            
+            console.log('총 사진 수:', allPhotos.length);
+            
+            // 초기 로딩 (처음 30장만)
+            renderInitialGallery();
+        }
+
+        // 초기 갤러리 렌더링
+        async function renderInitialGallery() {
+            const grid = document.getElementById('pinterest-grid');
+            
+            if (allPhotos.length === 0) {
+                grid.innerHTML = '<div class="error-message">표시할 사진이 없습니다.</div>';
+                return;
+            }
+            
+            // 로딩 표시 제거
+            grid.innerHTML = '';
+            
+            // Pinterest 레이아웃 매니저 초기화
+            pinterestLayout = new PinterestLayout({
+                container: '#pinterest-grid',
+                itemSelector: '.photo-item',
+                columnWidth: 250,
+                gutter: 16
+            });
+            
+            // 초기 사진들만 렌더링
+            const initialPhotos = allPhotos.slice(0, PHOTOS_PER_LOAD);
+            const photoHTML = renderPhotoItems(initialPhotos, 0);
+            
+            // DOM에 추가
+            grid.innerHTML = photoHTML;
+            
+            // 레이아웃 적용
+            await pinterestLayout.layout();
+            
+            displayedPhotos = PHOTOS_PER_LOAD;
+            
+            // 무한 스크롤 설정
+            setupInfiniteScroll();
+        }
+        
+        // 추가 사진 로드
+        async function loadMorePhotos() {
+            if (isLoading || displayedPhotos >= allPhotos.length) return;
+            
+            isLoading = true;
+            const grid = document.getElementById('pinterest-grid');
+            
+            // 다음 배치의 사진들
+            const nextPhotos = allPhotos.slice(displayedPhotos, displayedPhotos + PHOTOS_PER_LOAD);
+            const newHTML = renderPhotoItems(nextPhotos, displayedPhotos);
+            
+            // DOM에 추가
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = newHTML;
+            
+            const newItems = Array.from(tempDiv.children);
+            newItems.forEach(item => grid.appendChild(item));
+            
+            // Pinterest 레이아웃에 새 아이템 추가
+            pinterestLayout.addItems(newItems);
+            
+            displayedPhotos += nextPhotos.length;
+            
+            // 새로운 무한 스크롤 설정
+            setTimeout(() => {
+                setupInfiniteScroll();
+                isLoading = false;
+            }, 500);
+        }
+        
+        // 사진 아이템들 렌더링
+        function renderPhotoItems(photos, startIndex) {
+            return photos.map((photo, index) => {
+                const isFavorite = favoriteGirls.includes(photo.girlId);
+                const actualIndex = startIndex + index;
+                
+                return `
+                    <div class="photo-item" data-index="${actualIndex}">
+                        <button class="favorite-btn ${isFavorite ? 'active' : ''}" 
+                                onclick="toggleFavorite(${photo.girlId}, event)"
+                                title="찜하기">
+                            ${isFavorite ? '❤️' : '🤍'}
+                        </button>
+                        
+                        <img src="${photo.url}" 
+                             alt="${photo.girlName}"
+                             loading="lazy"
+                             onclick="viewDetail(${photo.girlId})"
+                             onerror="this.onerror=null; this.src='/shared/images/logo/default.png';">
+                        
+                        <div class="photo-info" onclick="viewDetail(${photo.girlId})">
+                            <p class="girl-name">${photo.girlName}</p>
+                            ${photo.girlAge ? `<p class="girl-age">${photo.girlAge}세</p>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // 무한 스크롤 설정
+        function setupInfiniteScroll() {
+            const options = {
+                root: null,
+                rootMargin: '200px',
+                threshold: 0.1
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        loadMorePhotos();
+                    }
+                });
+            }, options);
+            
+            // 모든 기존 observer 제거
+            document.querySelectorAll('.photo-item').forEach(item => {
+                observer.disconnect();
+            });
+            
+            // 마지막 몇 개 사진을 새로 관찰
+            const photoItems = document.querySelectorAll('.photo-item');
+            if (photoItems.length > 0) {
+                const lastItem = photoItems[photoItems.length - 1];
+                observer.observe(lastItem);
+            }
+        }
+
+        // 찜하기 토글
+        function toggleFavorite(girlId, event) {
+            event.stopPropagation();
+            
+            const index = favoriteGirls.indexOf(girlId);
+            if (index > -1) {
+                favoriteGirls.splice(index, 1);
+            } else {
+                favoriteGirls.push(girlId);
+            }
+            
+            // 로컬 스토리지에 저장
+            localStorage.setItem('favoriteGirls', JSON.stringify(favoriteGirls));
+            
+            // 현재 표시된 사진들 중 해당 에코걸의 모든 사진 버튼 업데이트
+            document.querySelectorAll('.photo-item').forEach((item) => {
+                const itemIndex = parseInt(item.dataset.index);
+                if (allPhotos[itemIndex] && allPhotos[itemIndex].girlId === girlId) {
+                    const btn = item.querySelector('.favorite-btn');
+                    if (favoriteGirls.includes(girlId)) {
+                        btn.classList.add('active');
+                        btn.innerHTML = '❤️';
+                    } else {
+                        btn.classList.remove('active');
+                        btn.innerHTML = '🤍';
+                    }
+                }
+            });
+        }
+
+        // 상세 페이지로 이동
+        function viewDetail(girlId) {
+            window.location.href = `ecogirl-detail.html?id=${girlId}`;
+        }
+
+        // 에러 표시
+        function showError() {
+            const grid = document.getElementById('pinterest-grid');
+            grid.innerHTML = `
+                <div class="error-message">
+                    <p>데이터를 불러오는데 실패했습니다.</p>
+                    <p>프록시 서버가 실행 중인지 확인해주세요.</p>
+                </div>
+            `;
+        }
+
+        // 페이지 초기화
+        async function init() {
+            await loadComponents();
+            await fetchAllGirlsData();
+        }
+
+        // 페이지 로드 시 실행
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

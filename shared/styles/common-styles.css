@@ -306,3 +306,25 @@ a:hover {
     -ms-user-drag: none;
     user-drag: none;
 }
+
+/* 🖼️ 간단한 이미지 스타일 */
+.card-image {
+    position: relative;
+    overflow: hidden;
+    background: var(--bg-light);
+}
+
+.card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* 일반 카드의 이미지는 absolute */
+.card .card-image img,
+.massage-card .card-image img {
+    position: absolute;
+    top: 0;
+    left: 0;
+}

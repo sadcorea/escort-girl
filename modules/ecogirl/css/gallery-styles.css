@@ -1,0 +1,187 @@
+/**
+ * 에코걸 갤러리 전용 스타일
+ */
+
+/* 갤러리 헤더 */
+.gallery-header {
+    text-align: center;
+    padding: 3rem 1rem 2rem;
+    background: white;
+    border-bottom: 1px solid var(--border);
+}
+
+.gallery-header h1 {
+    font-size: 2rem;
+    margin: 0 0 0.5rem 0;
+    color: var(--text-primary);
+}
+
+.gallery-header p {
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* Pinterest 그리드 컨테이너 */
+.pinterest-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.pinterest-grid {
+    position: relative;
+    width: 100%;
+    min-height: 500px; /* 최소 높이 보장 */
+}
+
+/* 컨테이너가 비어있을 때도 공간 확보 */
+.pinterest-container {
+    padding-bottom: 2rem; /* 푸터와의 간격 */
+}
+
+/* 사진 아이템 */
+.photo-item {
+    position: absolute;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    opacity: 0;
+}
+
+.photo-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+.photo-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+    cursor: pointer;
+}
+
+/* 찜하기 버튼 */
+.favorite-btn {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 2;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    font-size: 1.2rem;
+}
+
+.favorite-btn:hover {
+    background: white;
+    transform: scale(1.1);
+}
+
+.favorite-btn.active {
+    color: #EF4444;
+}
+
+/* 정보 오버레이 */
+.photo-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+    color: white;
+    padding: 1.5rem 0.75rem 0.75rem;
+    opacity: 0;
+    transition: opacity 0.2s;
+    cursor: pointer;
+}
+
+.photo-item:hover .photo-info {
+    opacity: 1;
+}
+
+.girl-name {
+    font-weight: 600;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.girl-age {
+    font-size: 0.875rem;
+    opacity: 0.9;
+}
+
+/* 로딩 스피너 */
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+    width: 100%;
+}
+
+.loading-spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #E5E7EB;
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.loading-text {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* 에러 메시지 */
+.error-message {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-medium);
+}
+
+/* 모바일 반응형 */
+@media (max-width: 768px) {
+    .gallery-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .photo-item {
+        margin-bottom: 0.5rem;
+    }
+    
+    /* 모바일에서는 항상 정보 표시 */
+    .photo-info {
+        opacity: 1;
+        padding: 1rem 0.5rem 0.5rem;
+    }
+    
+    .girl-name {
+        font-size: 0.875rem;
+    }
+    
+    .girl-age {
+        font-size: 0.75rem;
+    }
+}

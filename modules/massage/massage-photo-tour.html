@@ -397,7 +397,10 @@
             grid.innerHTML = images.map((img, index) => `
                 <div class="photo-item" onclick="openLightbox(${index})">
                     ${img.url ? 
-                        `<img src="${img.url}" alt="${img.name}">` : 
+                        `<img src="${img.url}" 
+                             alt="${img.name}"
+                             loading="lazy"
+                             onerror="this.onerror=null; this.src='../../shared/images/logo/default.png';">` : 
                         '<div class="no-image-item">💆‍♀️</div>'
                     }
                 </div>

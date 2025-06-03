@@ -134,6 +134,11 @@ if __name__ == '__main__':
     print("🚀 프록시 서버 시작: http://localhost:8080")
     print("📁 파일 서버도 함께 실행됩니다.") 
     print("🔗 홈페이지: http://localhost:8080/index.html")
+    print("🔗 에코3D 임베드 페이지: http://localhost:8080/modules/ecogirl/3d-gallery.html")
+    print("🔗 에코걸 전체 페이지: http://localhost:8080/modules/ecogirl/ecogirl-section.html")
+    print("🔗 에코걸 상세 페이지: http://localhost:8080/modules/ecogirl/ecogirl-detail.html?id=01")
+    print("🔗 에코걸 이미지 투어: URL: http://localhost:8080/modules/ecogirl/ecogirl-photo-tour.html?id=11")
+    print("🔗 에코걸 전체 갤러리: URL: http://localhost:8080/modules/ecogirl/ecogirl-gallery.html")    
     print("🔗 마사지 업체 전체: http://localhost:8080/modules/massage/massage-section.html")
     print("🔗 마사지 상세:  http://localhost:8080/modules/massage/massage-detail.html?id=1")
 

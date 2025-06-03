@@ -1,7 +1,7 @@
 git status
 git add -u
 git add .
-git commit -m "옆구리 조금, 마사지 상세"
+git commit -m "에코걸 일부 250603"
 git push
 
 

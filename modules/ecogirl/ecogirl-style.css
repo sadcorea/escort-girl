@@ -1,4 +1,4 @@
-/* 마사지 섹션 전용 스타일 */
+/* 에코걸 섹션 전용 스타일 */
 
 /* 레이아웃 */
 .content-wrapper {
@@ -96,8 +96,23 @@ body.header-compact .filter-sidebar {
     font-size: 0.875rem;
 }
 
-/* 마사지 카드 특화 스타일 - 세로형 디자인 */
-.massage-card {
+.cards-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.cards-controls .btn {
+    font-size: 0.875rem;
+}
+
+.cards-controls span {
+    color: var(--text-medium);
+    font-size: 0.875rem;
+}
+
+/* 에코걸 카드 특화 스타일 - 세로형 디자인 */
+.ecogirl-card {
     position: relative;
     overflow: hidden;
     display: flex;
@@ -105,35 +120,38 @@ body.header-compact .filter-sidebar {
     height: 100%;
 }
 
-/* 카드 이미지 영역 */
+/* 카드 이미지 영역 - 세로형 이미지를 위한 비율 조정 */
 .card-image {
     width: 100%;
     height: 0;
-    padding-bottom: 75%; /* 4:3 비율 */
+    padding-bottom: 133%; /* 3:4 비율 - 세로형 사진 */
     position: relative;
     overflow: hidden;
     background: #f3f4f6;
 }
 
-/* 마사지 카드 이미지만의 특별한 스타일 */
-.massage-card .card-image img {
+/* 에코걸 카드 이미지만의 특별한 스타일 */
+.ecogirl-card .card-image img {
     position: absolute;
     top: 0;
     left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top; /* 얼굴 부분이 잘 보이도록 */
 }
 
-/* 할인 뱃지 */
-.discount-badge {
+/* 나이 뱃지 */
+.age-badge {
     position: absolute;
     top: 10px;
     right: 10px;
-    background: #EF4444;
+    background: rgba(0, 0, 0, 0.7);
     color: white;
     padding: 0.25rem 0.75rem;
-    border-radius: 6px;
-    font-size: 0.75rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
     font-weight: 600;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 /* 카드 내용 영역 */
@@ -145,110 +163,79 @@ body.header-compact .filter-sidebar {
 }
 
 .card-title {
-    font-size: 1rem;
+    font-size: 1.125rem;
     font-weight: 600;
     margin: 0 0 0.5rem 0;
     line-height: 1.4;
+}
+
+/* 자기소개 */
+.intro-text {
+    font-size: 0.875rem;
+    color: var(--text-medium);
+    margin-bottom: 1rem;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
+    line-height: 1.5;
 }
 
-/* 서비스 태그 (파스텔톤) */
-.service-tags {
+/* 성향/취미 태그 (파스텔톤) */
+.personality-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
     margin-bottom: 1rem;
 }
 
-.service-tag {
+.personality-tag {
     padding: 0.25rem 0.75rem;
     border-radius: 20px;
     font-size: 0.75rem;
     font-weight: 500;
 }
 
-/* 파스텔 색상 */
-.tag-타이 {
-    background: #E6F7F1;
-    color: #059669;
-}
-
-.tag-오일 {
-    background: #E0F2FE;
-    color: #0284C7;
-}
-
-.tag-아로마 {
-    background: #F3E8FF;
-    color: #7C3AED;
-}
-
-.tag-아로마테라피 {
-    background: #F3E8FF;
-    color: #7C3AED;
-}
-
-.tag-스포츠 {
-    background: #FEE2E2;
-    color: #DC2626;
-}
-
-.tag-발 {
-    background: #FED7AA;
-    color: #EA580C;
-}
-
-.tag-커플 {
+/* 파스텔 색상 - 성향/취미별 */
+.tag-발랄함 {
     background: #FCE7F3;
     color: #DB2777;
 }
 
-/* 위치 정보 */
-.location-info {
-    font-size: 0.8125rem;
-    color: var(--text-medium);
-    margin-bottom: 0.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
+.tag-차분함 {
+    background: #E0F2FE;
+    color: #0284C7;
 }
 
-.location-info::before {
-    content: "📍";
+.tag-섹시함 {
+    background: #FEE2E2;
+    color: #DC2626;
 }
 
-/* 서비스 태그 - 한 줄로 제한 */
-.service-tags {
-    display: flex;
-    flex-wrap: nowrap;
-    gap: 0.375rem;
-    margin-bottom: 0.75rem;
-    overflow-x: auto;
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+.tag-귀여움 {
+    background: #F3E8FF;
+    color: #7C3AED;
 }
 
-.service-tags::-webkit-scrollbar {
-    display: none;  /* Chrome, Safari and Opera */
+.tag-댄스 {
+    background: #FCE7F3;
+    color: #EC4899;
 }
 
-.service-tag {
-    padding: 0.2rem 0.6rem;
-    border-radius: 20px;
-    font-size: 0.7rem;
-    font-weight: 500;
+.tag-노래 {
+    background: #F3E8FF;
+    color: #9333EA;
 }
 
-/* 가격 정보 */
-.price-info {
-    font-size: 0.9375rem;
-    font-weight: 600;
-    color: var(--text-dark);
-    margin-bottom: 0.75rem;
+.tag-요리 {
+    background: #FED7AA;
+    color: #EA580C;
+}
+
+.tag-운동 {
+    background: #E6F7F1;
+    color: #059669;
 }
 
 /* 언어 정보 */
@@ -261,18 +248,6 @@ body.header-compact .filter-sidebar {
 .language-korean {
     color: var(--primary);
     font-weight: 500;
-}
-
-/* 특별 혜택 */
-.benefit-info {
-    background: #FEF3C7;
-    color: #D97706;
-    padding: 0.4rem 0.6rem;
-    border-radius: 6px;
-    font-size: 0.8125rem;
-    font-weight: 500;
-    margin-top: auto;
-    margin-bottom: 0.75rem;
 }
 
 /* 액션 버튼 영역 */
@@ -391,12 +366,42 @@ body.header-compact .filter-sidebar {
     }
 }
 
+/* ========== 찜하기 기능 스타일 ========== */
+
+/* 찜하기 버튼 */
+.favorite-btn {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 2;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.favorite-btn:hover {
+    background: white;
+    transform: scale(1.1);
+}
+
+.favorite-btn.active {
+    color: #EF4444;
+}
+
 /* ========== 비교 기능 스타일 ========== */
 
 /* 비교 체크박스 */
 .compare-checkbox {
     position: absolute;
-    top: 10px;
+    bottom: 10px;
     right: 10px;
     z-index: 2;
     background: white;
@@ -408,12 +413,12 @@ body.header-compact .filter-sidebar {
 }
 
 /* PC에서 카드 호버 시 체크박스 표시 */
-.massage-card:hover .compare-checkbox {
+.ecogirl-card:hover .compare-checkbox {
     opacity: 1;
 }
 
 /* 선택된 카드는 항상 체크박스 표시 */
-.massage-card.selected-for-compare .compare-checkbox {
+.ecogirl-card.selected-for-compare .compare-checkbox {
     opacity: 1;
 }
 
@@ -534,17 +539,23 @@ body.header-compact .filter-sidebar {
     text-align: center;
 }
 
-.comparison-logo {
-    width: 80px;
-    height: 80px;
+.comparison-photo {
+    width: 120px;
+    height: 160px;
     object-fit: cover;
-    border-radius: 50%;
+    border-radius: 8px;
     margin: 0 auto 1rem;
 }
 
 .comparison-card h3 {
-    margin: 0 0 1.5rem 0;
+    margin: 0 0 0.5rem 0;
     color: var(--text-dark);
+}
+
+.comparison-age {
+    color: var(--text-medium);
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
 }
 
 .comparison-section {
@@ -569,11 +580,6 @@ body.header-compact .filter-sidebar {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-}
-
-.benefit-text {
-    color: var(--success);
-    font-weight: 500;
 }
 
 /* 모바일 반응형 */

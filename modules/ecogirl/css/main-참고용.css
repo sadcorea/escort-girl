@@ -1,0 +1,124 @@
+/* 에코걸 메인 페이지 CSS */
+
+/* 3D 갤러리 히어로 섹션 */
+.hero-3d {
+    height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.hero-content {
+    position: absolute;
+    top: 5%; /* 10% → 5%로 더 위로 */
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 10;
+    color: white;
+    background: rgba(0, 0, 0, 0.1); /* 반투명 배경 추가 */
+    padding: 1.5rem 2rem;
+    border-radius: 15px;
+    backdrop-filter: blur(10px); /* 블러 효과 */
+}
+
+.hero-title {
+    font-size: 3rem; /* 3.5rem → 3rem으로 약간 축소 */
+    font-weight: 700;
+    margin-bottom: 0.5rem; /* 1rem → 0.5rem으로 줄임 */
+    text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+    background: linear-gradient(45deg, #ffffff, #ffeaa7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero-subtitle {
+    font-size: 1rem; /* 1.2rem → 1rem으로 축소 */
+    opacity: 0.95;
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+    color: #f8f9fa; /* 더 밝은 색상 */
+}
+
+.gallery-3d-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+#gallery3D {
+    width: 100%;
+    height: 100%;
+    display: block;
+    cursor: grab;
+}
+
+#gallery3D:active {
+    cursor: grabbing;
+}
+
+.gallery-controls {
+    position: absolute;
+    bottom: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+}
+
+.control-hint {
+    color: white;
+    font-size: 0.9rem;
+    text-align: center;
+    opacity: 0.8;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+}
+
+.scroll-indicator {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    color: white;
+    z-index: 10;
+    animation: bounce 2s infinite;
+}
+
+.scroll-arrow {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateX(-50%) translateY(0);
+    }
+    40% {
+        transform: translateX(-50%) translateY(-10px);
+    }
+    60% {
+        transform: translateX(-50%) translateY(-5px);
+    }
+}
+
+/* 모바일 반응형 */
+@media (max-width: 768px) {
+    .hero-3d {
+        height: 60vh;
+    }
+    
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1rem;
+        padding: 0 1rem;
+    }
+}
