@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>마사지 DB 확인</title>
+</head>
+<body>
+    <h1>마사지 DB 데이터 확인 중...</h1>
+    <pre id="output"></pre>
+    
+    <script>
+    async function checkMassageDB() {
+        const output = document.getElementById('output');
+        
+        try {
+            const response = await fetch('http://localhost:8080/api/notion', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    database_id: '203e5f74-c72e-815d-8f39-d2946ee85c0a',
+                    sorts: [
+                        {
+                            property: 'ID',
+                            direction: 'ascending'
+                        }
+                    ]
+                })
+            });
+
+            const data = await response.json();
+            
+            let result = '=== 마사지 DB 분석 결과 ===\n\n';
+            
+            if (data.results && data.results.length > 0) {
+                // 첫 번째 업체 정보
+                const firstItem = data.results[0];
+                const props = firstItem.properties;
+                
+                result += '📋 필드 목록:\n';
+                result += Object.keys(props).join(', ') + '\n\n';
+                
+                result += '📊 첫 번째 업체 상세:\n';
+                
+                // ID 확인
+                if (props.ID) {
+                    result += `ID: ${props.ID.number || 'N/A'}\n`;
+                }
+                
+                // 이름/제목 찾기
+                const nameField = Object.keys(props).find(key => 
+                    props[key].type === 'title' || 
+                    key.includes('이름') || 
+                    key.includes('업체')
+                );
+                if (nameField) {
+                    const titleArray = props[nameField].title || props[nameField].rich_text || [];
+                    const name = titleArray[0]?.plain_text || 'N/A';
+                    result += `업체명 (${nameField}): ${name}\n`;
+                }
+                
+                // 이미지 필드 찾기
+                const imageFields = Object.keys(props).filter(key => 
+                    props[key].type === 'files' || 
+                    key.includes('사진') || 
+                    key.includes('이미지')
+                );
+                result += `\n🖼️ 이미지 필드: ${imageFields.join(', ')}\n`;
+                
+                // 텍스트 필드들
+                const textFields = Object.keys(props).filter(key => 
+                    props[key].type === 'rich_text' || 
+                    props[key].type === 'url' ||
+                    props[key].type === 'phone_number'
+                );
+                result += `\n📝 텍스트/URL/전화 필드:\n`;
+                textFields.forEach(field => {
+                    const value = props[field];
+                    let content = '';
+                    if (value.type === 'rich_text' && value.rich_text.length > 0) {
+                        content = value.rich_text[0].plain_text;
+                    } else if (value.type === 'url') {
+                        content = value.url || '';
+                    } else if (value.type === 'phone_number') {
+                        content = value.phone_number || '';
+                    }
+                    result += `  ${field}: ${content || 'N/A'}\n`;
+                });
+                
+                result += `\n📌 전체 업체 수: ${data.results.length}개\n`;
+                
+                // 모든 업체의 이름 목록
+                result += '\n📋 등록된 업체 목록:\n';
+                data.results.forEach((item, index) => {
+                    const itemProps = item.properties;
+                    const itemNameField = Object.keys(itemProps).find(key => 
+                        itemProps[key].type === 'title'
+                    );
+                    if (itemNameField && itemProps[itemNameField].title[0]) {
+                        result += `${index + 1}. ${itemProps[itemNameField].title[0].plain_text}\n`;
+                    }
+                });
+            }
+            
+            output.textContent = result;
+            
+            // 콘솔에도 출력
+            console.log('전체 데이터:', data);
+            
+        } catch (error) {
+            output.textContent = '에러 발생: ' + error.message;
+            console.error('에러:', error);
+        }
+    }
+    
+    // 페이지 로드 시 실행
+    checkMassageDB();
+    </script>
+</body>
+</html>

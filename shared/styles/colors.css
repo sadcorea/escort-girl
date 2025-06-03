@@ -1,0 +1,81 @@
+/**
+ * 🎨 EchoPal 색상 시스템
+ * CSS 변수로 정의 - 어디서든 var(--primary) 형태로 사용
+ */
+
+:root {
+    /* 🌊 메인 색상 */
+    --primary: #0EA5E9;           /* 다낭 바다색 */
+    --primary-hover: #0284C7;     /* 호버 시 더 진한 파랑 */
+    --primary-light: #E0F2FE;     /* 연한 배경용 */
+    
+    --secondary: #64748B;         /* 따뜻한 회색 */
+    --secondary-hover: #475569;   /* 호버 시 */
+    --secondary-light: #F1F5F9;   /* 연한 배경용 */
+    
+    /* 🏠 배경 색상 */
+    --bg-white: #FFFFFF;          /* 기본 흰색 */
+    --bg-light: #F8FAFC;          /* 섹션 구분용 연한 회색 */
+    --bg-dark: #1E293B;           /* 다크모드용 (나중에) */
+    
+    /* 📝 텍스트 색상 */
+    --text-dark: #334155;         /* 제목용 진한 회색 */
+    --text-medium: #64748B;       /* 본문용 중간 회색 */
+    --text-light: #94A3B8;        /* 캡션용 연한 회색 */
+    --text-white: #FFFFFF;        /* 버튼 등 흰색 텍스트 */
+    
+    /* ✅ 상태 색상 */
+    --success: #10B981;           /* 성공 - 초록 */
+    --success-light: #D1FAE5;
+    --warning: #F59E0B;           /* 경고 - 노랑 */
+    --warning-light: #FEF3C7;
+    --error: #EF4444;             /* 에러 - 빨강 */
+    --error-light: #FEE2E2;
+    
+    /* 🔲 경계선 & 그림자 */
+    --border: #E2E8F0;            /* 기본 경계선 */
+    --border-light: #F1F5F9;      /* 연한 경계선 */
+    
+    /* 그림자 (깊이감) */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+    --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.2);
+    
+    /* 🌈 그라데이션 (필요시 사용) */
+    --gradient-primary: linear-gradient(135deg, #0EA5E9 0%, #0284C7 100%);
+    --gradient-warm: linear-gradient(135deg, #F59E0B 0%, #EF4444 100%);
+    --gradient-cool: linear-gradient(135deg, #0EA5E9 0%, #6366F1 100%);
+    
+    /* 🏷️ 카테고리별 색상 (나중에 필요하면) */
+    --color-ecogirl: #EC4899;     /* 핑크 */
+    --color-massage: #0EA5E9;     /* 파랑 */
+    --color-villa: #10B981;       /* 초록 */
+    --color-karaoke: #F59E0B;     /* 노랑 */
+}
+
+/* 🌙 다크모드 준비 (나중에 필요하면) */
+[data-theme="dark"] {
+    --bg-white: #1E293B;
+    --bg-light: #334155;
+    --text-dark: #F1F5F9;
+    --text-medium: #CBD5E1;
+    --text-light: #94A3B8;
+    --border: #475569;
+}
+
+/* 🎯 색상 유틸리티 클래스 (편하게 쓰려고) */
+.text-primary { color: var(--primary); }
+.text-secondary { color: var(--secondary); }
+.text-success { color: var(--success); }
+.text-warning { color: var(--warning); }
+.text-error { color: var(--error); }
+
+.bg-primary { background-color: var(--primary); }
+.bg-secondary { background-color: var(--secondary); }
+.bg-light { background-color: var(--bg-light); }
+
+/* 어르신 모드 (글씨 크게) */
+.large-text {
+    font-size: 1.2em !important;
+}

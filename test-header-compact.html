@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>헤더 축소 테스트</title>
+    <link rel="stylesheet" href="shared/styles/main.css">
+    <style>
+        /* 테스트용 콘텐츠 */
+        .test-content {
+            height: 2000px;
+            padding: 2rem;
+            background: linear-gradient(to bottom, #f0f0f0, #ffffff);
+        }
+        
+        .scroll-info {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #333;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <!-- 헤더 include -->
+    <div id="header-container"></div>
+    
+    <!-- 테스트 콘텐츠 -->
+    <div class="test-content">
+        <h1>헤더 축소 테스트 페이지</h1>
+        <p>아래로 스크롤하면 헤더가 작아져야 합니다.</p>
+        <br><br>
+        <h2>현재 상태:</h2>
+        <ul>
+            <li>스크롤 50px 이상: 헤더 축소</li>
+            <li>스크롤 50px 미만: 원래 크기</li>
+        </ul>
+    </div>
+    
+    <!-- 스크롤 정보 표시 -->
+    <div class="scroll-info" id="scrollInfo">
+        스크롤: 0px<br>
+        헤더: 정상 크기
+    </div>
+    
+    <script>
+        // 헤더 로드
+        fetch('shared/components/header.html')
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('header-container').innerHTML = html;
+                
+                // 헤더 스크립트 로드
+                const script = document.createElement('script');
+                script.src = 'shared/js/header.js';
+                document.body.appendChild(script);
+                
+                // 스크롤 정보 업데이트
+                window.addEventListener('scroll', function() {
+                    const scrollY = window.pageYOffset;
+                    const header = document.getElementById('main-header');
+                    const info = document.getElementById('scrollInfo');
+                    
+                    let status = '정상 크기';
+                    if (scrollY > 50 && header) {
+                        status = header.classList.contains('compact') ? '축소됨' : '축소 안됨';
+                    }
+                    
+                    info.innerHTML = `
+                        스크롤: ${Math.round(scrollY)}px<br>
+                        헤더: ${status}<br>
+                        클래스: ${header ? header.className : '헤더 없음'}
+                    `;
+                });
+                
+                // 직접 스크롤 이벤트 추가 (테스트용)
+                window.addEventListener('scroll', function() {
+                    const header = document.getElementById('main-header');
+                    if (!header) {
+                        console.log('헤더를 찾을 수 없음');
+                        return;
+                    }
+                    
+                    const scrollY = window.pageYOffset;
+                    console.log('스크롤 위치:', scrollY);
+                    
+                    if (scrollY > 50) {
+                        header.classList.add('scrolled');
+                        header.classList.add('compact');
+                        document.body.classList.add('header-compact');
+                        console.log('클래스 추가됨:', header.className);
+                    } else {
+                        header.classList.remove('scrolled');
+                        header.classList.remove('compact');
+                        document.body.classList.remove('header-compact');
+                        console.log('클래스 제거됨:', header.className);
+                    }
+                });
+            });
+    </script>
+</body>
+</html>

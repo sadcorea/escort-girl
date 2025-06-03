@@ -1,11 +1,12 @@
 git status
 git add -u
+git add .
 git commit -m "마사지 완료 폴더 구조화 완료"
 git push
 
 
 # 깃 기본 업데이트 작업 순서
-
+git add .  이거 쓰면 새로 만든 것도 올리기
 1. 변경된 파일 모두 스테이지에 올리기  
 git add -A
 

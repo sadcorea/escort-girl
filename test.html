@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ecogirl.vn - 오아시스 다낭</title>
+    
+    <!-- 파비콘 -->
+    <link rel="icon" type="image/png" href="/shared/images/logo/favicon.png">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="/shared/styles/main.css">
+</head>
+<body>
+    <!-- 헤더 -->
+    <div id="header-container"></div>
+    
+    <!-- 메인 컨텐츠 -->
+    <main class="container" style="min-height: 500px; padding: 2rem 0;">
+        <h1 class="text-center">Ecogirl.vn 테스트 페이지</h1>
+        <p class="text-center text-medium">로고와 파비콘이 제대로 표시되는지 확인하세요!</p>
+        
+        <div class="grid grid-cols-4" style="margin-top: 3rem;">
+            <div class="card">
+                <h3 class="card-title">에코걸</h3>
+                <p class="card-description">다낭 최고의 에코걸 서비스</p>
+            </div>
+            <div class="card">
+                <h3 class="card-title">마사지</h3>
+                <p class="card-description">편안한 휴식을 위한 마사지</p>
+            </div>
+            <div class="card">
+                <h3 class="card-title">풀빌라</h3>
+                <p class="card-description">프라이빗한 풀빌라</p>
+            </div>
+            <div class="card">
+                <h3 class="card-title">가라오케</h3>
+                <p class="card-description">신나는 가라오케</p>
+            </div>
+        </div>
+    </main>
+    
+    <!-- 푸터 -->
+    <div id="footer-container"></div>
+    
+    <!-- JavaScript -->
+    <script src="/shared/js/config.js"></script>
+    <script src="/shared/js/header.js"></script>
+    <script>
+        // 헤더/푸터 로드
+        fetch('/shared/components/header.html')
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('header-container').innerHTML = html;
+                // 헤더 JS 재실행
+                if (typeof initHeader === 'function') {
+                    initHeader();
+                }
+            });
+            
+        fetch('/shared/components/footer.html')
+            .then(res => res.text())
+            .then(html => document.getElementById('footer-container').innerHTML = html);
+    </script>
+</body>
+</html>

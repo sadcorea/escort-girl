@@ -41,7 +41,7 @@ class CORSRequestHandler(SimpleHTTPRequestHandler):
             }
             
             # 필터 데이터 준비 (DB별 구분)
-            massage_db_ids = ['203e5f74c72e815d8f39d2946ee85c0a', '203e5f74-c72e-815d-8f39-d2946ee85c0a']
+            massage_db_ids = ['203e5f74c72e815d8f39d2946ee85c0a']
             poolvilla_db_ids = ['205e5f74c72e81e299e3c54e615d0d68', '205e5f74-c72e-81e2-99e3-c54e615d0d68']
             
             if request_data['database_id'] in massage_db_ids:
@@ -135,7 +135,7 @@ if __name__ == '__main__':
     print("📁 파일 서버도 함께 실행됩니다.") 
     print("🔗 홈페이지: http://localhost:8080/index.html")
     print("🔗 마사지 상세:  http://localhost:8080/massage/detail.html?id=1")
-    print("🔗 마사지 업체 전체: http://localhost:8080/massage/index.html")
+    print("🔗 마사지 업체 전체: http://localhost:8080/modules/massage/massage-section.html")
     print("🔗 마사지: http://localhost:8080/sections/massage-section.html")
     print("🔗 풀빌라 전체: http://localhost:8080/poolvilla/index.html")
     print("🔗 풀빌라 상세: http://localhost:8080/poolvilla/detail.html?id=1")    

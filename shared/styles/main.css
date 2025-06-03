@@ -1,0 +1,153 @@
+/**
+ * 🎨 EchoPal 메인 CSS
+ * 모든 스타일을 여기서 불러옵니다
+ * 
+ * 사용법: <link rel="stylesheet" href="/shared/styles/main.css">
+ */
+
+/* 1️⃣ 색상 변수 (가장 먼저) */
+@import url('colors.css');
+
+/* 2️⃣ 공통 스타일 (리셋, 버튼, 카드 등) */
+@import url('common-styles.css');
+
+/* 3️⃣ 그리드 시스템 */
+@import url('grid.css');
+
+/* 4️⃣ 헤더 스타일 */
+@import url('header.css');
+
+/* 🎯 추가 전역 스타일 */
+/* 고정 헤더를 위한 상단 여백 */
+body {
+    padding-top: 70px; /* 헤더 높이만큼 */
+}
+
+/* 부드러운 스크롤 */
+html {
+    scroll-behavior: smooth;
+}
+
+/* 이미지 최적화 */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* 포커스 스타일 (접근성) */
+:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+/* 선택 영역 색상 */
+::selection {
+    background-color: var(--primary-light);
+    color: var(--text-dark);
+}
+
+/* 스크롤바 스타일 (웹킷 브라우저) */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-light);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--secondary);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary-hover);
+}
+
+/* 📱 모바일 터치 최적화 */
+@media (max-width: 768px) {
+    /* 터치 타겟 크기 확보 (어르신 배려) */
+    .btn,
+    .airbnb-card,
+    .pinterest-card {
+        min-height: 44px;
+    }
+    
+    /* 모바일에서 호버 효과 제거 */
+    @media (hover: none) {
+        .card:hover,
+        .airbnb-card:hover,
+        .pinterest-card:hover {
+            transform: none;
+            box-shadow: var(--shadow-sm);
+        }
+    }
+}
+
+/* 🚫 우클릭 방지 (이미지 보호) */
+.protected-content {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.protected-content img {
+    pointer-events: none;
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
+}
+
+/* 🎯 페이지 전환 애니메이션 */
+.fade-in {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 📍 Lazy Loading 플레이스홀더 */
+.lazy-placeholder {
+    background: var(--bg-light);
+    background-image: linear-gradient(
+        90deg,
+        var(--bg-light) 0%,
+        #e0e0e0 50%,
+        var(--bg-light) 100%
+    );
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* 프린트 스타일 (필요시) */
+@media print {
+    .no-print,
+    .btn,
+    .airbnb-card-favorite {
+        display: none !important;
+    }
+}

@@ -1,0 +1,105 @@
+<!-- 
+    🎯 EchoPal 공통 헤더
+    검색창이 돋보기 호버 시 나타나는 스타일
+-->
+<header class="header" id="main-header">
+    <div class="container">
+        <div class="header-content">
+            <!-- 로고 -->
+            <div class="header-logo">
+                <a href="/">
+                    <img src="/shared/images/logo/logo-main.png" alt="Ecogirl.vn" class="logo-image">
+                </a>
+            </div>
+
+            <!-- 네비게이션 -->
+            <nav class="header-nav">
+                <a href="#ecogirl" class="nav-link">에코걸</a>
+                <a href="#massage" class="nav-link">마사지</a>
+                <a href="#villa" class="nav-link">풀빌라</a>
+                <a href="#karaoke" class="nav-link">가라오케</a>
+            </nav>
+
+            <!-- 검색 & 언어 -->
+            <div class="header-actions">
+                <!-- 검색창 (호버 시 나타남) -->
+                <div class="search-wrapper">
+                    <button class="search-trigger" aria-label="검색">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                    </button>
+                    
+                    <div class="search-dropdown">
+                        <form class="search-form" action="/search" method="GET">
+                            <input 
+                                type="text" 
+                                class="search-input" 
+                                placeholder="업체명, 지역, 서비스 검색..." 
+                                name="q"
+                            >
+                            <button type="submit" class="search-submit">검색</button>
+                        </form>
+                        
+                        <!-- 인기 검색어 -->
+                        <div class="search-suggestions">
+                            <p class="suggestions-title">인기 검색어</p>
+                            <div class="suggestions-list">
+                                <a href="/search?q=한시장" class="suggestion-tag">한시장</a>
+                                <a href="/search?q=미케비치" class="suggestion-tag">미케비치</a>
+                                <a href="/search?q=스웨디시" class="suggestion-tag">스웨디시</a>
+                                <a href="/search?q=풀빌라" class="suggestion-tag">풀빌라</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 언어 선택 -->
+                <div class="language-selector">
+                    <button class="language-trigger">
+                        <span>KO</span>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="language-dropdown">
+                        <a href="?lang=ko" class="language-option active">한국어</a>
+                        <a href="?lang=en" class="language-option">English</a>
+                        <a href="?lang=vn" class="language-option">Tiếng Việt</a>
+                    </div>
+                </div>
+
+                <!-- 모바일 메뉴 버튼 -->
+                <button class="mobile-menu-toggle" aria-label="메뉴">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 모바일 메뉴 -->
+    <div class="mobile-menu" id="mobile-menu">
+        <div class="mobile-menu-content">
+            <form class="mobile-search" action="/search" method="GET">
+                <input type="text" placeholder="검색..." name="q">
+                <button type="submit">검색</button>
+            </form>
+            
+            <nav class="mobile-nav">
+                <a href="#ecogirl">에코걸</a>
+                <a href="#massage">마사지</a>
+                <a href="#villa">풀빌라</a>
+                <a href="#karaoke">가라오케</a>
+            </nav>
+            
+            <div class="mobile-language">
+                <a href="?lang=ko" class="active">한국어</a>
+                <a href="?lang=en">English</a>
+                <a href="?lang=vn">Tiếng Việt</a>
+            </div>
+        </div>
+    </div>
+</header>
