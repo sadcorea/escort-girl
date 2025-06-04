@@ -408,12 +408,12 @@ body.header-compact .filter-sidebar {
 }
 
 /* PC에서 카드 호버 시 체크박스 표시 */
-.massage-card:hover .compare-checkbox {
+.fullvilla-card:hover .compare-checkbox {
     opacity: 1;
 }
 
 /* 선택된 카드는 항상 체크박스 표시 */
-.massage-card.selected-for-compare .compare-checkbox {
+.fullvilla-card.selected-for-compare .compare-checkbox {
     opacity: 1;
 }
 

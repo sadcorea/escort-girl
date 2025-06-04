@@ -1,4 +1,4 @@
-// 마사지 섹션 JavaScript
+// 풀빌라 섹션 JavaScript
 
 // 가격 관련 설정
 const PRICE_CONFIG = {
@@ -7,17 +7,16 @@ const PRICE_CONFIG = {
         USD: 0.000041  // 1 VND = 0.000041 USD
     },
     defaultPrices: {
-        '타이': 500000,
-        '오일': 700000,
-        '아로마': 800000,
-        '스포츠': 600000,
-        '발': 400000,
-        '커플': 1200000
+        '1베드룸': 2000000,
+        '2베드룸': 3000000,
+        '3베드룸': 4000000,
+        '4베드룸': 5000000,
+        '펜트하우스': 6500000
     }
 };
 
 // 전역 변수
-let massageData = [];
+let fullvillaData = [];
 let filteredData = [];
 let activeFilters = {
     service: [],
@@ -28,7 +27,7 @@ let activeFilters = {
 let selectedForCompare = []; // 비교를 위해 선택된 업체 ID들
 
 // API 캐싱
-const API_CACHE_KEY = 'massage_data_cache';
+const API_CACHE_KEY = 'fullvilla_data_cache';
 const CACHE_DURATION = 5 * 60 * 1000; // 5분
 
 function getCachedData() {
@@ -58,7 +57,7 @@ function setCachedData(data) {
 
 
 // 노션 데이터 로드
-async function loadMassageData() {
+async function loadFullvillaData() {
     const spinner = document.getElementById('loadingSpinner');
     spinner.classList.add('active');
     
@@ -67,7 +66,7 @@ async function loadMassageData() {
         const cachedData = getCachedData();
         if (cachedData) {
             console.log('캐시된 데이터 사용');
-            massageData = cachedData.massageData;
+            fullvillaData = cachedData.fullvillaData;
             filteredData = cachedData.filteredData;
             
             // 필터 생성
@@ -86,7 +85,7 @@ async function loadMassageData() {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                database_id: '203e5f74c72e815d8f39d2946ee85c0a',
+                database_id: CONFIG.API.notion.databases.poolvilla,
                 api_key: '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'
             })
         });
@@ -108,25 +107,25 @@ async function loadMassageData() {
         
         if (defaultItem) {
             console.log('ID=0 properties 키들:', Object.keys(defaultItem.properties));
-            console.log('마사지사진 필드:', defaultItem.properties['마사지사진']);
-            console.log('마사지로고 필드:', defaultItem.properties['마사지로고']);
+            console.log('풀빌라사진 필드:', defaultItem.properties['풀빌라사진']);
+            console.log('풀빌라로고 필드:', defaultItem.properties['풀빌라로고']);
         }
         
-        // 마사지로고 필드에서 기본 이미지 가져오기
-        const defaultImage = defaultItem?.properties['마사지로고']?.files?.[0]?.file?.url || 
-                           defaultItem?.properties['마사지로고']?.files?.[0]?.external?.url || null;
+        // 풀빌라로고 필드에서 기본 이미지 가져오기
+        const defaultImage = defaultItem?.properties['풀빌라로고']?.files?.[0]?.file?.url || 
+                           defaultItem?.properties['풀빌라로고']?.files?.[0]?.external?.url || null;
         console.log('기본 이미지 URL:', defaultImage);
         
-        massageData = processMassageData(data.results, defaultImage);
-        filteredData = [...massageData];
+        fullvillaData = processFullvillaData(data.results, defaultImage);
+        filteredData = [...fullvillaData];
         
         // 캐시에 저장
         setCachedData({
-            massageData: massageData,
+            fullvillaData: fullvillaData,
             filteredData: filteredData
         });
         
-        console.log('처리된 마사지 데이터:', massageData);
+        console.log('처리된 풀빌라 데이터:', fullvillaData);
         
         // 필터 생성
         generateFilters();
@@ -134,7 +133,7 @@ async function loadMassageData() {
         renderCards();
         
     } catch (error) {
-        console.error('마사지 데이터 로드 실패:', error);
+        console.error('풀빌라 데이터 로드 실패:', error);
         showError();
     } finally {
         spinner.classList.remove('active');
@@ -167,7 +166,7 @@ function handleImageError(img) {
 }
 
 // 데이터 처리
-function processMassageData(results, defaultImage) {
+function processFullvillaData(results, defaultImage) {
     return results.map(item => {
         const props = item.properties;
         
@@ -181,22 +180,24 @@ function processMassageData(results, defaultImage) {
         
         return {
             id: props.ID?.number || 0,
-            name: props['마사지명']?.title?.[0]?.plain_text || '이름 없음',
-            logo: props['마사지로고']?.files?.[0]?.file?.url || 
-                  props['마사지로고']?.files?.[0]?.external?.url || 
+            name: props['풀빌라명']?.title?.[0]?.plain_text || '이름 없음',
+            logo: props['풀빌라로고']?.files?.[0]?.file?.url || 
+                  props['풀빌라로고']?.files?.[0]?.external?.url || 
                   defaultImage,  // 기본 이미지 사용
-            photos: props['마사지사진']?.files || [],
-            services: props['서비스종류']?.multi_select?.map(s => s.name) || [],
+            photos: props['풀빌라사진']?.files || [],
+            roomTypes: props['침실수']?.number || 0,
+            capacity: props['수용인원']?.number || 0,
             languages: props['언어지원']?.multi_select?.map(l => l.name) || [],
             promotion: props['홍보문구']?.rich_text?.[0]?.plain_text || '',
             benefit: props['특별혜택']?.rich_text?.[0]?.plain_text || '',
-            address: props['vn 업체주소']?.rich_text?.[0]?.plain_text || '',
+            address: props['vn풀빌라주소']?.rich_text?.[0]?.plain_text || '',
             phone: props['연락처']?.rich_text?.[0]?.plain_text || '',
             kakaoId: props['카카오ID']?.rich_text?.[0]?.plain_text || '',
             hours: props['운영시간']?.rich_text?.[0]?.plain_text || '',
-            location: getLocationCategory(props['vn 업체주소']?.rich_text?.[0]?.plain_text || ''),
-            // 가격 정보 추가
-            price: props['가격']?.number || getDefaultPrice(props['서비스종류']?.multi_select?.map(s => s.name) || [])
+            location: getLocationCategory(props['vn풀빌라주소']?.rich_text?.[0]?.plain_text || ''),
+            price: props['가격대']?.rich_text?.[0]?.plain_text || '',
+            facilities: props['시설정보']?.rich_text?.[0]?.plain_text || '',
+            poolType: props['풀타입']?.multi_select?.map(p => p.name) || []
         };
     }).filter(item => item !== null);  // null 제거
 }
@@ -227,7 +228,7 @@ function getLocationCategory(address) {
 
 // 카드 렌더링
 function renderCards() {
-    const container = document.getElementById('massageCards');
+    const container = document.getElementById('fullvillaCards');
     const countElement = document.getElementById('resultCount');
     
     container.innerHTML = '';
@@ -240,8 +241,8 @@ function renderCards() {
     
     countElement.textContent = `전체 ${filteredData.length}개`;
     
-    filteredData.forEach(massage => {
-        const card = createMassageCard(massage);
+    filteredData.forEach(fullvilla => {
+        const card = createFullvillaCard(fullvilla);
         container.appendChild(card);
     });
 }
@@ -249,29 +250,31 @@ function renderCards() {
 // 필터 동적 생성
 function generateFilters() {
     // 중복 제거를 위한 Set 사용
-    const services = new Set();
+    const roomTypes = new Set();
     const languages = new Set();
     const locations = new Set();
     
     // 데이터에서 유니크한 값들 추출
-    massageData.forEach(massage => {
-        // 서비스 종류
-        massage.services.forEach(service => services.add(service));
+    fullvillaData.forEach(fullvilla => {
+        // 룸타입 (침실수 기반)
+        if (fullvilla.roomTypes > 0) {
+            roomTypes.add(`${fullvilla.roomTypes}베드룸`);
+        }
         
         // 언어
-        massage.languages.forEach(lang => languages.add(lang));
+        fullvilla.languages.forEach(lang => languages.add(lang));
         
         // 지역 (빈 값 제외)
-        if (massage.location) {
-            locations.add(massage.location);
+        if (fullvilla.location) {
+            locations.add(fullvilla.location);
         }
     });
     
-    // 서비스 필터 생성
+    // 룸타입 필터 생성
     const serviceContainer = document.getElementById('serviceFilters');
     serviceContainer.innerHTML = '';
-    Array.from(services).sort().forEach(service => {
-        const label = createFilterCheckbox('service', service, `${service}마사지`);
+    Array.from(roomTypes).sort().forEach(roomType => {
+        const label = createFilterCheckbox('service', roomType, roomType);
         serviceContainer.appendChild(label);
     });
     
@@ -317,38 +320,38 @@ function createFilterCheckbox(name, value, displayText) {
 }
 
 // 카드 생성 - 세로형 디자인
-function createMassageCard(massage) {
+function createFullvillaCard(fullvilla) {
     const card = document.createElement('div');
-    card.className = 'card massage-card';  // 공용 card 클래스 + 마사지 전용
+    card.className = 'card fullvilla-card';  // 공용 card 클래스 + 풀빌라 전용
     
     // 선택된 상태 확인
-    const isSelected = selectedForCompare.includes(massage.id);
+    const isSelected = selectedForCompare.includes(fullvilla.id);
     if (isSelected) {
         card.classList.add('selected-for-compare');
     }
     
-    // 서비스 태그 HTML 생성 (최대 3개만 표시)
-    const displayServices = massage.services.slice(0, 3);
-    const serviceTags = displayServices.map(service => 
-        `<span class="service-tag tag-${service}">${service}</span>`
+    // 룸타입 및 시설 정보
+    const roomInfo = fullvilla.roomTypes > 0 ? `${fullvilla.roomTypes}베드룸` : '';
+    const capacityInfo = fullvilla.capacity > 0 ? `${fullvilla.capacity}명` : '';
+    
+    // 풀타입 태그 HTML 생성
+    const poolTags = fullvilla.poolType.map(pool => 
+        `<span class="service-tag">${pool}</span>`
     ).join('');
     
-    // 가격 정보
-    const priceVND = massage.price;
-    
     // 언어 정보
-    const hasKorean = massage.languages.includes('한국어');
+    const hasKorean = fullvilla.languages.includes('한국어');
     const languageText = hasKorean ? 
         '<span class="language-korean">한국어 가능</span>' : 
         '베트남어, 영어';
     
     // 할인 정보 확인
-    const hasDiscount = massage.benefit && massage.benefit.includes('%');
+    const hasDiscount = fullvilla.benefit && fullvilla.benefit.includes('%');
     
     // 이미지 선택 (로고 또는 첫 번째 사진)
-    const rawImage = massage.logo || 
-                    (massage.photos && massage.photos[0]?.file?.url) || 
-                    (massage.photos && massage.photos[0]?.external?.url) ||
+    const rawImage = fullvilla.logo || 
+                    (fullvilla.photos && fullvilla.photos[0]?.file?.url) || 
+                    (fullvilla.photos && fullvilla.photos[0]?.external?.url) ||
                     '/shared/images/logo/default.png';
     
     // 썸네일용 최적화 (400px)
@@ -357,51 +360,45 @@ function createMassageCard(massage) {
     // 카드 HTML
     card.innerHTML = `
         <div class="compare-checkbox" onclick="event.stopPropagation()">
-            <input type="checkbox" id="compare-${massage.id}" 
+            <input type="checkbox" id="compare-${fullvilla.id}" 
                 ${isSelected ? 'checked' : ''}
-                onchange="toggleCompareSelection(${massage.id})">
-            <label for="compare-${massage.id}">비교</label>
+                onchange="toggleCompareSelection(${fullvilla.id})">
+            <label for="compare-${fullvilla.id}">비교</label>
         </div>
         
         <div class="card-image">
             <img src="${displayImage}" 
-                 alt="${massage.name}" 
+                 alt="${fullvilla.name}" 
                  loading="lazy"
                  onerror="handleImageError(this)">
             ${hasDiscount ? `<div class="discount-badge">할인 중</div>` : ''}
         </div>
         
         <div class="card-content">
-            <h3 class="card-title">${massage.name}</h3>
+            <h3 class="card-title">${fullvilla.name}</h3>
             
-            ${massage.location ? 
-                `<div class="location-info">${massage.location} 근처</div>` : ''
+            ${fullvilla.location ? 
+                `<div class="location-info">${fullvilla.location} 근처</div>` : ''
             }
             
-            <div class="service-tags">
-                ${serviceTags}
-                ${massage.services.length > 3 ? 
-                    `<span class="service-tag" style="background: #F3F4F6; color: #6B7280;">+${massage.services.length - 3}</span>` : 
-                    ''
-                }
+            <div class="room-info">
+                ${roomInfo} ${capacityInfo ? `· ${capacityInfo}` : ''}
             </div>
             
-            <div class="price-info">
-                ₫${priceVND.toLocaleString()}
-            </div>
+            ${poolTags ? `<div class="service-tags">${poolTags}</div>` : ''}
             
             <div class="language-info">${languageText}</div>
             
-            ${massage.benefit ? 
-                `<div class="benefit-info">🎁 ${massage.benefit}</div>` : 
+            ${fullvilla.benefit ? 
+                `<div class="benefit-info">🎁 ${fullvilla.benefit}</div>` : 
                 ''
             }
             
             <div class="card-actions">
-                <button class="btn-action primary" onclick="contactMassage(${massage.id}, event)">
+                <button class="btn-action primary" onclick="contactFullvilla(${fullvilla.id}, event)">
                     예약하기
                 </button>
-                <button class="btn-action" onclick="viewDetail(${massage.id}, event)">
+                <button class="btn-action" onclick="viewDetail(${fullvilla.id}, event)">
                     자세히
                 </button>
             </div>
@@ -411,15 +408,22 @@ function createMassageCard(massage) {
     return card;
 }
 
-// 연락 함수
-function contactMassage(id, event) {
+// 상세 페이지 이동
+function viewDetail(id, event) {
     event.stopPropagation();
-    const massage = massageData.find(m => m.id === id);
-    if (massage) {
-        if (massage.kakaoId) {
-            window.open(`https://open.kakao.com/o/${massage.kakaoId}`, '_blank');
-        } else if (massage.phone) {
-            window.location.href = `tel:${massage.phone}`;
+    // 풀빌라 상세 페이지로 이동
+    window.location.href = `/modules/poolvilla/poolvilla-detail.html?id=${id}`;
+}
+
+// 연락 함수
+function contactFullvilla(id, event) {
+    event.stopPropagation();
+    const fullvilla = fullvillaData.find(f => f.id === id);
+    if (fullvilla) {
+        if (fullvilla.kakaoId) {
+            window.open(`https://open.kakao.com/o/${fullvilla.kakaoId}`, '_blank');
+        } else if (fullvilla.phone) {
+            window.location.href = `tel:${fullvilla.phone}`;
         } else {
             alert('연락처 정보가 없습니다.');
         }
@@ -429,8 +433,8 @@ function contactMassage(id, event) {
 // 상세 보기 함수
 function viewDetail(id, event) {
     event.stopPropagation();
-    // 마사지 상세 페이지로 이동
-    window.location.href = `massage-detail.html?id=${id}`;
+    // 풀빌라 상세 페이지로 이동
+    window.location.href = `poolvilla-detail.html?id=${id}`;
 }
 
 // 필터 리스너 설정
@@ -463,31 +467,29 @@ function handleFilterChange(e) {
 
 // 필터 적용
 function applyFilters() {
-    filteredData = massageData.filter(massage => {
-        // 서비스 필터
+    filteredData = fullvillaData.filter(fullvilla => {
+        // 룸타입 필터
         if (activeFilters.service.length > 0) {
-            const hasService = activeFilters.service.some(service => 
-                massage.services.includes(service)
-            );
-            if (!hasService) return false;
+            const roomType = fullvilla.roomTypes > 0 ? `${fullvilla.roomTypes}베드룸` : '';
+            if (!activeFilters.service.includes(roomType)) return false;
         }
         
         // 언어 필터
         if (activeFilters.language.length > 0) {
             const hasLanguage = activeFilters.language.some(lang => 
-                massage.languages.includes(lang)
+                fullvilla.languages.includes(lang)
             );
             if (!hasLanguage) return false;
         }
         
         // 혜택 필터
-        if (activeFilters.benefit && !massage.benefit) {
+        if (activeFilters.benefit && !fullvilla.benefit) {
             return false;
         }
         
         // 지역 필터
         if (activeFilters.location.length > 0) {
-            if (!activeFilters.location.includes(massage.location)) {
+            if (!activeFilters.location.includes(fullvilla.location)) {
                 return false;
             }
         }
@@ -515,13 +517,13 @@ function resetFilters() {
     };
     
     // 전체 데이터 표시
-    filteredData = [...massageData];
+    filteredData = [...fullvillaData];
     renderCards();
 }
 
 // 에러 표시
 function showError() {
-    const container = document.getElementById('massageCards');
+    const container = document.getElementById('fullvillaCards');
     container.innerHTML = `
         <div class="error-message">
             <p>데이터를 불러오는데 실패했습니다.</p>
@@ -602,7 +604,7 @@ function clearCompareSelection() {
 
 // 비교 팝업 표시
 function showComparison() {
-    const selectedMassages = massageData.filter(m => selectedForCompare.includes(m.id));
+    const selectedFullvillas = fullvillaData.filter(f => selectedForCompare.includes(f.id));
     
     // 비교 팝업 HTML 생성
     const popup = document.createElement('div');
@@ -616,44 +618,45 @@ function showComparison() {
             </div>
             <div class="comparison-content">
                 <div class="comparison-grid">
-                    ${selectedMassages.map(massage => `
+                    ${selectedFullvillas.map(fullvilla => `
                         <div class="comparison-card">
-                            <img src="${massage.logo}" alt="${massage.name}" class="comparison-logo">
-                            <h3>${massage.name}</h3>
+                            <img src="${fullvilla.logo}" alt="${fullvilla.name}" class="comparison-logo">
+                            <h3>${fullvilla.name}</h3>
                             
                             <div class="comparison-section">
-                                <h4>서비스</h4>
-                                <div class="comparison-tags">
-                                    ${massage.services.map(s => 
-                                        `<span class="service-tag tag-${s}">${s}</span>`
-                                    ).join('')}
-                                </div>
+                                <h4>룸타입</h4>
+                                <p>${fullvilla.roomTypes}베드룸 · ${fullvilla.capacity}명</p>
+                            </div>
+                            
+                            <div class="comparison-section">
+                                <h4>시설</h4>
+                                <p>${fullvilla.facilities || '문의'}</p>
                             </div>
                             
                             <div class="comparison-section">
                                 <h4>언어</h4>
-                                <p>${massage.languages.join(', ') || '문의'}</p>
+                                <p>${fullvilla.languages.join(', ') || '문의'}</p>
                             </div>
                             
-                            ${massage.benefit ? `
+                            ${fullvilla.benefit ? `
                                 <div class="comparison-section">
                                     <h4>특별혜택</h4>
-                                    <p class="benefit-text">🎁 ${massage.benefit}</p>
+                                    <p class="benefit-text">🎁 ${fullvilla.benefit}</p>
                                 </div>
                             ` : ''}
                             
                             <div class="comparison-section">
-                                <h4>운영시간</h4>
-                                <p>${massage.hours || '문의'}</p>
+                                <h4>가격</h4>
+                                <p>${fullvilla.price || '문의'}</p>
                             </div>
                             
                             <div class="comparison-section">
                                 <h4>연락처</h4>
-                                ${massage.kakaoId ? 
-                                    `<button class="btn btn-primary btn-sm" onclick="window.open('https://open.kakao.com/o/${massage.kakaoId}')">
+                                ${fullvilla.kakaoId ? 
+                                    `<button class="btn btn-primary btn-sm" onclick="window.open('https://open.kakao.com/o/${fullvilla.kakaoId}')">
                                         카톡 문의
                                     </button>` : 
-                                    `<p>${massage.phone || '문의'}</p>`
+                                    `<p>${fullvilla.phone || '문의'}</p>`
                                 }
                             </div>
                         </div>
@@ -681,12 +684,12 @@ window.toggleCompareSelection = toggleCompareSelection;
 window.showComparison = showComparison;
 window.closeComparison = closeComparison;
 window.clearCompareSelection = clearCompareSelection;
-window.contactMassage = contactMassage;
+window.contactFullvilla = contactFullvilla;
 window.viewDetail = viewDetail;
 
 // 초기화
 document.addEventListener('DOMContentLoaded', function() {
-    loadMassageData();
+    loadFullvillaData();
     setupFilterListeners();
     
     // 헤더 스크롤 이벤트 강제 초기화

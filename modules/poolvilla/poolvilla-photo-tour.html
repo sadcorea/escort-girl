@@ -293,7 +293,7 @@
         // 뒤로가기
         function goBack() {
             const shopId = getShopId();
-            window.location.href = `massage-detail.html?id=${shopId}`;
+            window.location.href = `poolvilla-detail.html?id=${shopId}`;
         }
 
         // 노션에서 데이터 가져오기
@@ -305,7 +305,7 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        database_id: '203e5f74c72e815d8f39d2946ee85c0a',
+                        database_id: '208e5f74c72e805f9f29da2780d34974',
                         api_key: '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',
                         sorts: [
                             {
@@ -344,9 +344,9 @@
         function collectImages(properties) {
             const imgs = [];
             
-            // 마사지로고를 메인 이미지로
-            if (properties['마사지로고']?.files) {
-                properties['마사지로고'].files.forEach(file => {
+            // 풀빌라로고를 메인 이미지로
+            if (properties['풀빌라로고']?.files) {
+                properties['풀빌라로고'].files.forEach(file => {
                     if (file.type === 'file' && imgs.length < 9) {
                         imgs.push({
                             url: file.file.url,
@@ -356,9 +356,9 @@
                 });
             }
             
-            // 마사지사진 필드에서 추가 이미지 수집
-            if (properties['마사지사진']?.files) {
-                properties['마사지사진'].files.forEach(file => {
+            // 풀빌라사진 필드에서 추가 이미지 수집
+            if (properties['풀빌라사진']?.files) {
+                properties['풀빌라사진'].files.forEach(file => {
                     if (file.type === 'file' && imgs.length < 9) {
                         imgs.push({
                             url: file.file.url,
@@ -401,7 +401,7 @@
                              alt="${img.name}"
                              loading="lazy"
                              onerror="this.onerror=null; this.src='../../shared/images/logo/default.png';">` : 
-                        '<div class="no-image-item">💆‍♀️</div>'
+                        '<div class="no-image-item">🏝️</div>'
                     }
                 </div>
             `).join('');
@@ -473,7 +473,7 @@
             try {
                 shopData = await fetchShopData(shopId);
                 const properties = shopData.properties;
-                const shopName = properties['마사지명']?.title[0]?.plain_text || '업체명 없음';
+                const shopName = properties['풀빌라명']?.title[0]?.plain_text || '업체명 없음';
                 
                 document.getElementById('shopTitle').textContent = `${shopName} - 사진 투어`;
                 
