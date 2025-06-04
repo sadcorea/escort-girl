@@ -10,10 +10,7 @@
     <link rel="stylesheet" href="../../shared/styles/main.css">
     
     <!-- 마사지 전용 스타일 -->
-    <link rel="stylesheet" href="css/massage-style.css">
-    
-    <!-- 플로팅 연락 버튼 공용 스크립트 -->
-    <script src="../../shared/js/floating-contact.js"></script>
+    <link rel="stylesheet" href="massage-style.css">
 </head>
 <body>
     <!-- 공용 헤더 include -->
@@ -33,16 +30,54 @@
                     <!-- 서비스 종류 -->
                     <div class="filter-group">
                         <h3>서비스 종류</h3>
-                        <div class="filter-options" id="serviceFilters">
-                            <!-- 동적으로 생성됩니다 -->
+                        <div class="filter-options">
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="service" value="타이">
+                                <span>타이마사지</span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="service" value="오일">
+                                <span>오일마사지</span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="service" value="아로마">
+                                <span>아로마테라피</span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="service" value="스포츠">
+                                <span>스포츠마사지</span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="service" value="발">
+                                <span>발마사지</span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="service" value="커플">
+                                <span>커플마사지</span>
+                            </label>
                         </div>
                     </div>
 
                     <!-- 언어 지원 -->
                     <div class="filter-group">
                         <h3>언어 지원</h3>
-                        <div class="filter-options" id="languageFilters">
-                            <!-- 동적으로 생성됩니다 -->
+                        <div class="filter-options">
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="language" value="한국어">
+                                <span>한국어</span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="language" value="영어">
+                                <span>영어</span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="language" value="중국어">
+                                <span>중국어</span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="language" value="일본어">
+                                <span>일본어</span>
+                            </label>
                         </div>
                     </div>
 
@@ -60,8 +95,23 @@
                     <!-- 지역 -->
                     <div class="filter-group">
                         <h3>지역</h3>
-                        <div class="filter-options" id="locationFilters">
-                            <!-- 동적으로 생성됩니다 -->
+                        <div class="filter-options">
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="location" value="한시장">
+                                <span>한시장 근처</span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="location" value="미케비치">
+                                <span>미케비치 근처</span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="location" value="썬짜">
+                                <span>썬짜</span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="location" value="하이쩌우">
+                                <span>하이쩌우</span>
+                            </label>
                         </div>
                     </div>
                 </aside>
@@ -100,18 +150,13 @@
             // 헤더 로드
             const headerContainer = document.getElementById('header-container');
             try {
-                const headerResponse = await fetch('../../shared/components/header.html?v=' + CONFIG.SITE.version);
+                const headerResponse = await fetch('../../shared/components/header.html');
                 const headerHTML = await headerResponse.text();
                 headerContainer.innerHTML = headerHTML;
                 
                 // 헤더 로드 완료 후 헤더 스크립트 로드
                 const headerScript = document.createElement('script');
                 headerScript.src = '../../shared/js/header.js';
-                headerScript.onload = function() {
-                    console.log('헤더 스크립트 로드 완료');
-                    // 헤더 스크립트가 로드된 후 스크롤 이벤트 다시 트리거
-                    window.dispatchEvent(new Event('scroll'));
-                };
                 document.body.appendChild(headerScript);
             } catch (error) {
                 console.error('헤더 로드 실패:', error);
@@ -120,22 +165,14 @@
             // 푸터 로드
             const footerContainer = document.getElementById('footer-container');
             try {
-                const footerResponse = await fetch('../../shared/components/footer.html?v=' + CONFIG.SITE.version);
+                const footerResponse = await fetch('../../shared/components/footer.html');
                 const footerHTML = await footerResponse.text();
                 footerContainer.innerHTML = footerHTML;
             } catch (error) {
                 console.error('푸터 로드 실패:', error);
             }
-            
-            // 페이지가 완전히 로드된 후 플로팅 버튼 추가
-            setTimeout(async () => {
-                await loadFloatingContact({
-                    kakaoId: 'echopaldanang',  // 기본 카카오톡 ID
-                    phone: '+84123456789'      // 기본 전화번호
-                });
-            }, 100);
         });
     </script>
-    <script src="js/massage-script.js"></script>
+    <script src="massage-script.js"></script>
 </body>
 </html>

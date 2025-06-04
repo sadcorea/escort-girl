@@ -1,7 +1,7 @@
 git status
 git add -u
 git add .
-git commit -m "에코걸 일부 250603"
+git commit -m "풀빌라 진행중 디자인 전 내용 텍스트 api등 설정 전"
 git push
 
 

@@ -1,5 +1,19 @@
 // 에코걸 섹션 JavaScript
 
+// 노션 색상을 CSS 색상으로 변환하는 매핑
+const NOTION_COLOR_MAP = {
+    'default': { bg: '#F3F4F6', text: '#374151' },
+    'gray': { bg: '#F3F4F6', text: '#374151' },
+    'brown': { bg: '#F5E6D3', text: '#92400E' },
+    'orange': { bg: '#FED7AA', text: '#EA580C' },
+    'yellow': { bg: '#FEF3C7', text: '#CA8A04' },
+    'green': { bg: '#D1FAE5', text: '#059669' },
+    'blue': { bg: '#DBEAFE', text: '#2563EB' },
+    'purple': { bg: '#E9D5FF', text: '#7C3AED' },
+    'pink': { bg: '#FCE7F3', text: '#DB2777' },
+    'red': { bg: '#FEE2E2', text: '#DC2626' }
+};
+
 // 전역 변수
 let ecogirlData = [];
 let filteredData = [];
@@ -129,6 +143,17 @@ function processEcogirlData(results) {
                                props['프로필사진']?.files?.[0]?.external?.url || 
                                '/shared/images/logo/default.png';
         
+        // 성향과 취미를 색상 정보와 함께 처리
+        const personalities = props['성향']?.multi_select?.map(p => ({
+            name: p.name,
+            color: p.color || 'default'
+        })) || [];
+        
+        const hobbies = props['취미']?.multi_select?.map(h => ({
+            name: h.name,
+            color: h.color || 'default'
+        })) || [];
+        
         return {
             id: props.ID?.number || 0,
             name: props['이름']?.title?.[0]?.plain_text || '이름 없음',
@@ -136,8 +161,10 @@ function processEcogirlData(results) {
             profilePhoto: originalPhotoUrl,  // 원본 URL 저장 (나중에 자동 변환)
             galleryPhotos: props['갤러리사진']?.files || [],
             introduction: props['자기소개']?.rich_text?.[0]?.plain_text || '',
-            hobbies: props['취미']?.multi_select?.map(h => h.name) || [],
-            personalities: props['성향']?.multi_select?.map(p => p.name) || [],
+            hobbiesData: hobbies,  // 색상 정보 포함
+            personalitiesData: personalities,  // 색상 정보 포함
+            hobbies: hobbies.map(h => h.name),  // 필터링용 이름만
+            personalities: personalities.map(p => p.name),  // 필터링용 이름만
             languages: props['언어']?.multi_select?.map(l => l.name) || [],
             specialties: props['특기']?.multi_select?.map(s => s.name) || [],
             kakaoId: props['카카오톡ID']?.rich_text?.[0]?.plain_text || '',
@@ -262,11 +289,12 @@ function createEcogirlCard(girl) {
     // 찜한 상태 확인
     const isFavorite = favoriteGirls.includes(girl.id);
     
-    // 태그 HTML 생성
-    const allTags = [...girl.personalities, ...girl.hobbies].slice(0, 3);
-    const tagHTML = allTags.map(tag => 
-        `<span class="personality-tag tag-${tag}">${tag}</span>`
-    ).join('');
+    // 태그 HTML 생성 (노션 색상 사용)
+    const allTags = [...girl.personalitiesData, ...girl.hobbiesData].slice(0, 3);
+    const tagHTML = allTags.map(tag => {
+        const colorInfo = NOTION_COLOR_MAP[tag.color] || NOTION_COLOR_MAP.default;
+        return `<span class="personality-tag" style="background: ${colorInfo.bg}; color: ${colorInfo.text};">${tag.name}</span>`;
+    }).join('');
     
     // 언어 정보
     const hasKorean = girl.languages.includes('한국어');
@@ -345,16 +373,8 @@ function toggleFavorite(id, event) {
 // 연락 함수
 function contactGirl(id, event) {
     event.stopPropagation();
-    const girl = ecogirlData.find(g => g.id === id);
-    if (girl) {
-        if (girl.kakaoId) {
-            window.open(`https://open.kakao.com/o/${girl.kakaoId}`, '_blank');
-        } else if (girl.phone) {
-            window.location.href = `tel:${girl.phone}`;
-        } else {
-            alert('연락처 정보가 없습니다.');
-        }
-    }
+    // 회사 카카오톡으로 연결 (개인 카톡 사용 안함)
+    window.open(`https://open.kakao.com/o/gHDUmGRg`, '_blank');
 }
 
 // 상세 보기 함수
@@ -552,44 +572,48 @@ function showComparison() {
             </div>
             <div class="comparison-content">
                 <div class="comparison-grid">
-                    ${selectedGirls.map(girl => `
-                        <div class="comparison-card">
-                            <img src="${window.SmartImage ? window.SmartImage.getUrl(girl.profilePhoto, 'thumbnail') : girl.profilePhoto}" alt="${girl.name}" class="comparison-photo">
-                            <h3>${girl.name}</h3>
-                            <p class="comparison-age">${girl.age ? `${girl.age}세` : '나이 비공개'}</p>
-                            
-                            <div class="comparison-section">
-                                <h4>성향 & 취미</h4>
-                                <div class="comparison-tags">
-                                    ${[...girl.personalities, ...girl.hobbies].map(tag => 
-                                        `<span class="personality-tag tag-${tag}">${tag}</span>`
-                                    ).join('')}
-                                </div>
-                            </div>
-                            
-                            <div class="comparison-section">
-                                <h4>언어</h4>
-                                <p>${girl.languages.join(', ') || '베트남어'}</p>
-                            </div>
-                            
-                            ${girl.specialties && girl.specialties.length > 0 ? `
+                    ${selectedGirls.map(girl => {
+                        // 태그 HTML 생성 (노션 색상 사용)
+                        const allTags = [...girl.personalitiesData, ...girl.hobbiesData];
+                        const tagHTML = allTags.map(tag => {
+                            const colorInfo = NOTION_COLOR_MAP[tag.color] || NOTION_COLOR_MAP.default;
+                            return `<span class="personality-tag" style="background: ${colorInfo.bg}; color: ${colorInfo.text};">${tag.name}</span>`;
+                        }).join('');
+                        
+                        return `
+                            <div class="comparison-card">
+                                <img src="${girl.profilePhoto}" alt="${girl.name}" class="comparison-photo">
+                                <h3>${girl.name}</h3>
+                                <p class="comparison-age">${girl.age ? `${girl.age}세` : '나이 비공개'}</p>
+                                
                                 <div class="comparison-section">
-                                    <h4>특기</h4>
-                                    <p>${girl.specialties.join(', ')}</p>
+                                    <h4>성향 & 취미</h4>
+                                    <div class="comparison-tags">
+                                        ${tagHTML}
+                                    </div>
                                 </div>
-                            ` : ''}
-                            
-                            <div class="comparison-section">
-                                <h4>연락처</h4>
-                                ${girl.kakaoId ? 
-                                    `<button class="btn btn-primary btn-sm" onclick="window.open('https://open.kakao.com/o/${girl.kakaoId}')">
+                                
+                                <div class="comparison-section">
+                                    <h4>언어</h4>
+                                    <p>${girl.languages.join(', ') || '베트남어'}</p>
+                                </div>
+                                
+                                ${girl.specialties && girl.specialties.length > 0 ? `
+                                    <div class="comparison-section">
+                                        <h4>특기</h4>
+                                        <p>${girl.specialties.join(', ')}</p>
+                                    </div>
+                                ` : ''}
+                                
+                                <div class="comparison-section">
+                                    <h4>연락처</h4>
+                                    <button class="btn btn-primary btn-sm" onclick="window.open('https://open.kakao.com/o/gHDUmGRg')">
                                         카톡 문의
-                                    </button>` : 
-                                    `<p>${girl.phone || '문의'}</p>`
-                                }
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                    `).join('')}
+                        `;
+                    }).join('')}
                 </div>
             </div>
         </div>

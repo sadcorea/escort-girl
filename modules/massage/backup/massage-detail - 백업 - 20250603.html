@@ -1,0 +1,841 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마사지 상세 - Ecogirl.vn</title>
+    <link rel="icon" type="image/png" href="../../shared/images/logo/favicon.png">
+    
+    <!-- 공용 스타일 -->
+    <link rel="stylesheet" href="../../shared/styles/colors.css">
+    <link rel="stylesheet" href="../../shared/styles/common-styles.css">
+    <link rel="stylesheet" href="../../shared/styles/grid.css">
+    <link rel="stylesheet" href="../../shared/styles/header.css">
+    
+    <!-- 마사지 상세 전용 스타일 -->
+    <style>
+        /* 전체 페이지 레이아웃 */
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 메인 콘텐츠 */
+        .detail-container {
+            width: 100%;
+            margin-top: 80px; /* 헤더 높이만큼 */
+        }
+
+        /* 이미지 섹션 - 독립적인 영역 */
+        .image-section {
+            width: 100%;
+            background: var(--background-secondary);
+            padding: 2rem 0; /* 위아래 여백 증가 */
+        }
+
+        /* 이미지 갤러리 컨테이너 */
+        .gallery-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* 이미지 갤러리 - 5장 레이아웃 */
+        .image-gallery {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 50:50으로 변경 */
+            gap: 8px; /* 간격 살짝 늘림 */
+            height: 500px; /* 높이 증가 */
+            box-sizing: border-box;
+        }
+
+        /* 메인 이미지 */
+        .main-image {
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            border-radius: 8px;
+            height: 100%; /* 명시적 높이 */
+        }
+
+        .main-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 썸네일 그리드 - 2x2 정사각형 */
+        .thumbnail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 8px;
+            height: 100%; /* 부모 높이 상속 */
+            aspect-ratio: 1; /* 정사각형 비율 유지 */
+        }
+
+        .thumbnail {
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: opacity 0.2s;
+        }
+
+        .thumbnail:hover {
+            opacity: 0.8;
+        }
+
+        .thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 사진 더보기 버튼 */
+        .view-photos-btn {
+            position: absolute;
+            bottom: 0.5rem;
+            right: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            z-index: 10;
+        }
+
+        .view-photos-btn:hover {
+            background: var(--background-secondary);
+        }
+
+        /* 정보 컨테이너 - 이미지 아래 독립 영역 */
+        .info-container {
+            position: relative;
+            max-width: 1200px;
+            width: 100%;
+            margin: 4rem auto 0; /* 이미지와 간격 더 증가 */
+            padding: 3rem 2rem; /* 내부 여백 증가 */
+            background: white;
+            min-height: 500px;
+        }
+
+        /* 빵부스러기 */
+        .breadcrumb {
+            margin-bottom: 2rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .breadcrumb a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--primary);
+        }
+
+        /* 정보 섹션 - 2열 그리드 */
+        .info-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 3rem;
+        }
+
+        .main-info {
+            /* 왼쪽 주요 정보 */
+        }
+
+        .side-info {
+            /* 오른쪽 보조 정보 */
+        }
+
+        .shop-name {
+            font-size: 2.5rem; /* 크기 증가 */
+            font-weight: bold;
+            color: var(--text-primary);
+            margin-bottom: 3rem; /* 여백 증가 */
+            text-align: center;
+        }
+
+        /* 서비스 종류 카드 */
+        .service-card {
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .service-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .service-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .service-tag {
+            padding: 0.4rem 1.2rem;
+            border-radius: 20px;
+            font-size: 1rem; /* 폰트 크기 증가 */
+            color: white;
+        }
+
+        /* 서비스별 태그 색상 */
+        .tag-thai { background-color: #10B981; }
+        .tag-oil { background-color: #0EA5E9; }
+        .tag-aroma { background-color: #9333EA; }
+        .tag-sports { background-color: #EF4444; }
+        .tag-foot { background-color: #F97316; }
+        .tag-couple { background-color: #EC4899; }
+
+        /* 정보 카드 */
+        .info-card {
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .info-item span {
+            margin-left: 0.5rem;
+        }
+
+        /* 위치 정보 */
+        .location-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .copy-btn {
+            padding: 0.5rem 1rem;
+            background: var(--background-secondary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* 가격 아코디언 */
+        .price-accordion {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .accordion-item {
+            border-bottom: 1px solid var(--border);
+        }
+
+        .accordion-item:last-child {
+            border-bottom: none;
+        }
+
+        .accordion-header {
+            padding: 1rem 1.5rem;
+            background: var(--background);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .accordion-header:hover {
+            background: var(--background-secondary);
+        }
+
+        .accordion-header h4 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        .accordion-arrow {
+            transition: transform 0.3s;
+        }
+
+        .accordion-item.active .accordion-arrow {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .accordion-item.active .accordion-content {
+            max-height: 500px;
+        }
+
+        .price-list {
+            padding: 1rem 1.5rem;
+            background: var(--background-secondary);
+        }
+
+        .price-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px dashed var(--border);
+        }
+
+        .price-item:last-child {
+            border-bottom: none;
+        }
+
+        /* 기존 연락 버튼 제거 */
+        .contact-buttons {
+            display: none;
+        }
+
+        /* 모바일 반응형 */
+        @media (max-width: 768px) {
+            .header-spacer {
+                height: 60px;
+            }
+            
+            .image-gallery {
+                grid-template-columns: 1fr;
+                height: 300px;
+            }
+            
+            .thumbnail-grid {
+                display: none; /* 모바일에서는 메인 이미지만 */
+            }
+            
+            .gallery-container {
+                padding: 0 0.5rem;
+            }
+
+            .thumbnail-grid {
+                display: none;
+            }
+
+            .view-photos-btn {
+                bottom: 0.5rem;
+                right: 0.5rem;
+            }
+
+            .info-section {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .info-container {
+                padding: 0 1rem 3rem;
+            }
+
+            .shop-name {
+                font-size: 1.5rem;
+            }
+
+            .floating-contact {
+                bottom: 1rem;
+                right: 1rem;
+            }
+
+            .floating-btn {
+                width: 48px;
+                height: 48px;
+                font-size: 1.25rem;
+            }
+        }
+
+        /* 이미지 없을 때 기본 스타일 */
+        .no-image {
+            background: var(--background-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 3rem;
+        }
+
+        /* 로딩 상태 */
+        .loading {
+            text-align: center;
+            padding: 4rem;
+            color: var(--text-secondary);
+        }
+
+        .error {
+            text-align: center;
+            padding: 4rem;
+            color: var(--error);
+        }
+    </style>
+</head>
+<body>
+    <!-- 헤더 로드 -->
+    <div id="header-container"></div>
+
+    <!-- 메인 콘텐츠 -->
+    <main class="detail-container">
+        <div id="content-area" class="loading">
+            <p>로딩 중...</p>
+        </div>
+    </main>
+
+    <!-- 푸터 로드 -->
+    <div id="footer-container"></div>
+
+    <!-- 스크립트 -->
+    <script src="../../shared/js/config.js"></script>
+    <script src="../../shared/js/floating-contact.js"></script>
+    <script>
+        // 전역 변수
+        let shopData = null;
+        let currentImageIndex = 0;
+        let images = [];
+
+        // URL에서 ID 파라미터 가져오기
+        function getShopId() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('id');
+        }
+
+        // 헤더와 푸터 로드
+        async function loadComponents() {
+            try {
+                const headerResponse = await fetch('../../shared/components/header.html');
+                document.getElementById('header-container').innerHTML = await headerResponse.text();
+                
+                const footerResponse = await fetch('../../shared/components/footer.html');
+                document.getElementById('footer-container').innerHTML = await footerResponse.text();
+
+                // 헤더 스크립트 실행
+                const headerScript = document.createElement('script');
+                headerScript.src = '../../shared/js/header.js';
+                document.body.appendChild(headerScript);
+                
+                // 마사지 링크 수정
+                setTimeout(() => {
+                    const massageLink = document.querySelector('a[href="#massage"]');
+                    if (massageLink) {
+                        massageLink.href = 'massage-section.html';
+                    }
+                }, 100);
+            } catch (error) {
+                console.error('컴포넌트 로드 실패:', error);
+            }
+        }
+
+        // 노션에서 데이터 가져오기
+        async function fetchShopData(shopId) {
+            try {
+                const response = await fetch('http://localhost:8080/api/notion', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        database_id: '203e5f74c72e815d8f39d2946ee85c0a',
+                        api_key: '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',
+                        sorts: [
+                            {
+                                property: "ID",
+                                direction: "ascending"
+                            }
+                        ]
+                    })
+                });
+
+                if (!response.ok) throw new Error('데이터 로드 실패');
+
+                const data = await response.json();
+                if (data.results && data.results.length > 0) {
+                    // ID로 필터링
+                    const shop = data.results.find(item => {
+                        const itemId = item.properties.ID?.number;
+                        return itemId === parseInt(shopId);
+                    });
+                    
+                    if (shop) {
+                        return shop;
+                    } else {
+                        throw new Error('업체를 찾을 수 없습니다');
+                    }
+                } else {
+                    throw new Error('데이터가 없습니다');
+                }
+            } catch (error) {
+                console.error('데이터 로드 에러:', error);
+                throw error;
+            }
+        }
+
+        // 가격 정보 파일 로드
+        async function loadPriceData(shopId) {
+            try {
+                const response = await fetch(`price-data/${shopId}.txt`);
+                if (!response.ok) return null;
+                
+                const text = await response.text();
+                return parsePriceData(text);
+            } catch (error) {
+                console.error('가격 정보 로드 실패:', error);
+                return null;
+            }
+        }
+
+        // 가격 데이터 파싱
+        function parsePriceData(text) {
+            const services = {};
+            const lines = text.split('\n').filter(line => line.trim());
+            
+            lines.forEach(line => {
+                // "서비스명: 가격들" 형식 파싱
+                const match = line.match(/^(.+?):\s*(.+)$/);
+                if (match) {
+                    const serviceName = match[1].trim();
+                    const priceText = match[2].trim();
+                    
+                    // 가격들을 쉼표로 분리
+                    const prices = priceText.split(',').map(p => {
+                        const priceMatch = p.trim().match(/(\d+분)\s+(.+)/);
+                        if (priceMatch) {
+                            return {
+                                duration: priceMatch[1],
+                                price: priceMatch[2]
+                            };
+                        }
+                        return null;
+                    }).filter(p => p !== null);
+                    
+                    if (prices.length > 0) {
+                        services[serviceName] = prices;
+                    }
+                }
+            });
+            
+            return Object.keys(services).length > 0 ? services : null;
+        }
+
+        // 이미지 수집
+        function collectImages(properties) {
+            const imgs = [];
+            
+            // 마사지로고를 메인 이미지로
+            if (properties['마사지로고']?.files) {
+                properties['마사지로고'].files.forEach(file => {
+                    if (file.type === 'file') {
+                        imgs.push({
+                            url: file.file.url,
+                            name: '메인 이미지'
+                        });
+                    }
+                });
+            }
+            
+            // 마사지사진 필드에서 추가 이미지 수집
+            if (properties['마사지사진']?.files) {
+                properties['마사지사진'].files.forEach(file => {
+                    if (file.type === 'file') {
+                        imgs.push({
+                            url: file.file.url,
+                            name: file.name
+                        });
+                    }
+                });
+            }
+
+            // 이미지가 없으면 빈 배열 반환
+            return imgs;
+        }
+
+        // 서비스 종류에 따른 태그 클래스
+        function getServiceTagClass(service) {
+            const tagMap = {
+                '타이마사지': 'tag-thai',
+                '오일마사지': 'tag-oil',
+                '아로마테라피': 'tag-aroma',
+                '스포츠마사지': 'tag-sports',
+                '발마사지': 'tag-foot',
+                '커플마사지': 'tag-couple'
+            };
+            return tagMap[service] || 'tag-thai';
+        }
+
+        // 상세 페이지 렌더링
+        async function renderDetailPage() {
+            const shopId = getShopId();
+            if (!shopId) {
+                document.getElementById('content-area').innerHTML = 
+                    '<div class="error">잘못된 접근입니다.</div>';
+                return;
+            }
+
+            try {
+                // 메인 데이터 로드
+                shopData = await fetchShopData(shopId);
+                const properties = shopData.properties;
+
+                // 기본 이미지 설정 (로컬)
+                const defaultImage = {
+                    url: '../../shared/images/logo/default.png',
+                    name: '기본 이미지'
+                };
+
+                // 이미지 수집
+                images = collectImages(properties);
+                
+                // 이미지가 없거나 5장 미만이면 기본 이미지로 채우기
+                if (images.length === 0) {
+                    // 이미지가 하나도 없으면 5장 모두 기본 이미지로
+                    for (let i = 0; i < 5; i++) {
+                        images.push(defaultImage);
+                    }
+                } else {
+                    // 5장이 안되면 나머지를 기본 이미지로 채우기
+                    while (images.length < 5) {
+                        images.push(defaultImage);
+                    }
+                }
+
+                // 기본 정보 추출
+                const shopName = properties['마사지명']?.title[0]?.plain_text || '업체명 없음';
+                const services = properties['서비스종류']?.multi_select || [];
+                const address = properties['vn 업체주소']?.rich_text[0]?.plain_text || '';
+                
+                // 주소에서 동(지역)명 추출
+                const getLocationArea = (fullAddress) => {
+                    if (!fullAddress) return '다낭';
+                    // 쉼표로 분리
+                    const parts = fullAddress.split(',').map(p => p.trim());
+                    
+                    // 보통 베트남 주소는 "번지 도로명, 동, 구, 도시" 형식
+                    // 두 번째 부분(동)을 가져오기, 없으면 세 번째 부분
+                    if (parts.length >= 2) {
+                        // 첫 번째 부분에서 도로명만 추출 (숫자 제거)
+                        const streetName = parts[0].replace(/^\d+\s*/, '');
+                        
+                        // 두 번째 부분이 있으면 그것을 사용 (보통 동 이름)
+                        if (parts[1]) {
+                            return parts[1] + ' 근처';
+                        }
+                        // 두 번째가 없으면 도로명 사용
+                        return streetName + ' 근처';
+                    }
+                    return '다낭';
+                };
+                
+                const locationArea = getLocationArea(address);
+                const phone = properties['연락처']?.phone_number || '';
+                const kakaoId = properties['카카오ID']?.rich_text[0]?.plain_text || '';
+                const openHours = properties['운영시간']?.rich_text[0]?.plain_text || '09:00 - 24:00';
+                const languages = properties['언어지원']?.multi_select || [];
+                const description = properties['홍보문구']?.rich_text[0]?.plain_text || '';
+                const benefit = properties['특별혜택']?.rich_text[0]?.plain_text || '';
+                const priceInfo = properties['가격정보']?.rich_text[0]?.plain_text || '';
+
+                // HTML 생성
+                let html = `
+                    <!-- 이미지 섹션 -->
+                    <div class="image-section">
+                        <div class="gallery-container">
+                            <div class="image-gallery">
+                                <div class="main-image" onclick="goToPhotoTour('${shopId}')">
+                                    ${images[0].url ? 
+                                        `<img src="${images[0].url}" alt="${shopName}">` : 
+                                        '<div class="no-image">💆‍♀️</div>'
+                                    }
+                                </div>
+                                <div class="thumbnail-grid">
+                                    ${images.slice(1, 5).map((img, idx) => `
+                                        <div class="thumbnail" onclick="goToPhotoTour('${shopId}')">
+                                            ${img.url ? 
+                                                `<img src="${img.url}" alt="이미지 ${idx + 2}">` : 
+                                                '<div class="no-image">💆‍♀️</div>'
+                                            }
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 정보 컨테이너 -->
+                    <div class="info-container">
+                        <h1 class="shop-name">${shopName}</h1>
+                        
+                        <!-- 정보 섹션 그리드 -->
+                        <div class="info-section">
+                            <!-- 왼쪽 메인 정보 -->
+                            <div class="main-info">
+                                <!-- 서비스 종류 카드 -->
+                                <div class="service-card">
+                                    <h3>서비스 종류</h3>
+                                    <div class="service-tags">
+                                        ${services.map(service => 
+                                            `<span class="service-tag ${getServiceTagClass(service.name)}">${service.name}</span>`
+                                        ).join('')}
+                                    </div>
+                                </div>
+
+                                <!-- 홍보문구 카드 -->
+                                ${description ? `
+                                    <div class="info-card">
+                                        <h3>소개</h3>
+                                        <p style="margin: 0; color: var(--text-secondary); font-size: 1.1rem; line-height: 1.6;">${description}</p>
+                                    </div>
+                                ` : ''}
+
+                                <!-- 특별혜택 -->
+                                ${benefit ? `
+                                    <div class="info-card" style="background: #FFF3CD; border-color: #FFEAA7;">
+                                        <h3 style="color: #856404;">🎁 특별혜택</h3>
+                                        <p style="color: #856404; margin: 0;">${benefit}</p>
+                                    </div>
+                                ` : ''}
+
+                                <!-- 가격 정보 -->
+                                ${priceInfo ? (() => {
+                                    const parsedPrices = parsePriceData(priceInfo);
+                                    if (parsedPrices) {
+                                        return `
+                                            <div class="price-accordion">
+                                                ${Object.entries(parsedPrices).map(([service, prices], index) => `
+                                                    <div class="accordion-item">
+                                                        <div class="accordion-header" onclick="toggleAccordion(this)">
+                                                            <h4>${service}</h4>
+                                                            <span class="accordion-arrow">▼</span>
+                                                        </div>
+                                                        <div class="accordion-content">
+                                                            <div class="price-list">
+                                                                ${prices.map(price => `
+                                                                    <div class="price-item">
+                                                                        <span>${price.duration}</span>
+                                                                        <strong>${price.price}</strong>
+                                                                    </div>
+                                                                `).join('')}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                `).join('')}
+                                            </div>
+                                        `;
+                                    } else {
+                                        return `
+                                            <div class="info-card">
+                                                <h3>가격 정보</h3>
+                                                <div style="white-space: pre-line; color: var(--text-secondary);">
+                                                    ${priceInfo}
+                                                </div>
+                                            </div>
+                                        `;
+                                    }
+                                })() : ''}
+                            </div>
+
+                            <!-- 오른쪽 보조 정보 -->
+                            <div class="side-info">
+                                <!-- 운영 정보 -->
+                                <div class="info-card">
+                                    <h3>운영 정보</h3>
+                                    <div class="info-item">
+                                        <span>운영시간: ${openHours}</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span>언어지원: ${languages.map(l => l.name).join(', ') || '베트남어'}</span>
+                                    </div>
+                                </div>
+
+                                <!-- 위치 정보 -->
+                                <div class="info-card">
+                                    <h3>위치</h3>
+                                    <div class="location-info">
+                                        <span>📍 ${locationArea}</span>
+                                        <button class="copy-btn" onclick="copyAddress('${address}')">
+                                            주소 복사
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 플로팅 연락 버튼은 동적으로 로드됨 -->
+                `;
+
+                document.getElementById('content-area').innerHTML = html;
+                document.getElementById('content-area').classList.remove('loading');
+
+                // 페이지가 완전히 로드된 후 플로팅 버튼 추가
+                setTimeout(async () => {
+                    await loadFloatingContact({
+                        kakaoId: kakaoId,
+                        phone: phone
+                    });
+                }, 100);
+
+            } catch (error) {
+                document.getElementById('content-area').innerHTML = 
+                    `<div class="error">데이터를 불러올 수 없습니다.<br>${error.message}</div>`;
+            }
+        }
+
+        // 사진 투어 페이지로 이동
+        function goToPhotoTour(shopId) {
+            window.location.href = `massage-photo-tour.html?id=${shopId}`;
+        }
+
+        // 주소 복사
+        function copyAddress(address) {
+            navigator.clipboard.writeText(address).then(() => {
+                alert('주소가 복사되었습니다!');
+            }).catch(() => {
+                alert('주소 복사에 실패했습니다.');
+            });
+        }
+
+        // 아코디언 토글
+        function toggleAccordion(header) {
+            const item = header.parentElement;
+            item.classList.toggle('active');
+        }
+
+        // 페이지 초기화
+        async function init() {
+            await loadComponents();
+            await renderDetailPage();
+        }
+
+        // 페이지 로드 시 실행
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
