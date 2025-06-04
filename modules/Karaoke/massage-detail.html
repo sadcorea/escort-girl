@@ -501,7 +501,7 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        database_id: '208e5f74c72e805f9f29da2780d34974',
+                        database_id: '203e5f74c72e815d8f39d2946ee85c0a',
                         api_key: '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',
                         sorts: [
                             {
@@ -550,24 +550,24 @@
             }
         }
 
-                // 가격 데이터 파싱 (풀빌라용)
+        // 가격 데이터 파싱
         function parsePriceData(text) {
-            const categories = {};
+            const services = {};
             const lines = text.split('\n').filter(line => line.trim());
             
             lines.forEach(line => {
-                // "카테고리: 가격들" 형식 파싱
+                // "서비스명: 가격들" 형식 파싱
                 const match = line.match(/^(.+?):\s*(.+)$/);
                 if (match) {
-                    const categoryName = match[1].trim();
+                    const serviceName = match[1].trim();
                     const priceText = match[2].trim();
                     
                     // 가격들을 쉼표로 분리
                     const prices = priceText.split(',').map(p => {
-                        const priceMatch = p.trim().match(/(.+?)\s+(.+)/);
+                        const priceMatch = p.trim().match(/(\d+분)\s+(.+)/);
                         if (priceMatch) {
                             return {
-                                period: priceMatch[1],
+                                duration: priceMatch[1],
                                 price: priceMatch[2]
                             };
                         }
@@ -575,21 +575,21 @@
                     }).filter(p => p !== null);
                     
                     if (prices.length > 0) {
-                        categories[categoryName] = prices;
+                        services[serviceName] = prices;
                     }
                 }
             });
             
-            return Object.keys(categories).length > 0 ? categories : null;
+            return Object.keys(services).length > 0 ? services : null;
         }
 
         // 이미지 수집
         function collectImages(properties) {
             const imgs = [];
             
-            // 풀빌라로고를 메인 이미지로
-            if (properties['풀빌라로고']?.files) {
-                properties['풀빌라로고'].files.forEach(file => {
+            // 마사지로고를 메인 이미지로
+            if (properties['마사지로고']?.files) {
+                properties['마사지로고'].files.forEach(file => {
                     if (file.type === 'file') {
                         imgs.push({
                             url: file.file.url,
@@ -599,9 +599,9 @@
                 });
             }
             
-            // 풀빌라사진 필드에서 추가 이미지 수집
-            if (properties['풀빌라사진']?.files) {
-                properties['풀빌라사진'].files.forEach(file => {
+            // 마사지사진 필드에서 추가 이미지 수집
+            if (properties['마사지사진']?.files) {
+                properties['마사지사진'].files.forEach(file => {
                     if (file.type === 'file') {
                         imgs.push({
                             url: file.file.url,
@@ -664,25 +664,41 @@
                     }
                 }
 
-                // 기본 정보 추출 (안전하게)
-                const shopName = properties['풀빌라명']?.title?.[0]?.plain_text || '업체명 없음';
-                const roomTypes = properties['침실수']?.number || 0;
-                const capacity = properties['수용인원']?.number || 0;
-                const address = properties['vn풀빌라주소']?.rich_text?.[0]?.plain_text || '';
-                const phone = properties['연락처']?.rich_text?.[0]?.plain_text || '';
-                const kakaoId = properties['카카오ID']?.rich_text?.[0]?.plain_text || '';
-                const openHours = properties['운영시간']?.rich_text?.[0]?.plain_text || '09:00 - 24:00';
-                const languages = properties['언어지원']?.multi_select || [];
-                const description = properties['홍보문구']?.rich_text?.[0]?.plain_text || '';
-                const benefit = properties['특별혜택']?.rich_text?.[0]?.plain_text || '';
-                const priceInfo = properties['가격대']?.rich_text?.[0]?.plain_text || '';
-                const facilities = properties['시설정보']?.rich_text?.[0]?.plain_text || '';
-                const poolType = properties['풀타입']?.multi_select || [];
+                // 기본 정보 추출
+                const shopName = properties['마사지명']?.title[0]?.plain_text || '업체명 없음';
+                const services = properties['서비스종류']?.multi_select || [];
+                const address = properties['vn 업체주소']?.rich_text[0]?.plain_text || '';
                 
-                // 디버깅
-                console.log('풀빌라 데이터 필드:', Object.keys(properties));
-                console.log('풀빌라명:', properties['풀빌라명']);
-                console.log('주소:', properties['vn풀빌라주소']);
+                // 주소에서 동(지역)명 추출
+                const getLocationArea = (fullAddress) => {
+                    if (!fullAddress) return '다낭';
+                    // 쉼표로 분리
+                    const parts = fullAddress.split(',').map(p => p.trim());
+                    
+                    // 보통 베트남 주소는 "번지 도로명, 동, 구, 도시" 형식
+                    // 두 번째 부분(동)을 가져오기, 없으면 세 번째 부분
+                    if (parts.length >= 2) {
+                        // 첫 번째 부분에서 도로명만 추출 (숫자 제거)
+                        const streetName = parts[0].replace(/^\d+\s*/, '');
+                        
+                        // 두 번째 부분이 있으면 그것을 사용 (보통 동 이름)
+                        if (parts[1]) {
+                            return parts[1] + ' 근처';
+                        }
+                        // 두 번째가 없으면 도로명 사용
+                        return streetName + ' 근처';
+                    }
+                    return '다낭';
+                };
+                
+                const locationArea = getLocationArea(address);
+                const phone = properties['연락처']?.phone_number || '';
+                const kakaoId = properties['카카오ID']?.rich_text[0]?.plain_text || '';
+                const openHours = properties['운영시간']?.rich_text[0]?.plain_text || '09:00 - 24:00';
+                const languages = properties['언어지원']?.multi_select || [];
+                const description = properties['홍보문구']?.rich_text[0]?.plain_text || '';
+                const benefit = properties['특별혜택']?.rich_text[0]?.plain_text || '';
+                const priceInfo = properties['가격정보']?.rich_text[0]?.plain_text || '';
 
                 // HTML 생성
                 let html = `
@@ -696,7 +712,7 @@
                                              alt="${shopName}"
                                              loading="lazy"
                                              onerror="this.onerror=null; this.src='../../shared/images/logo/default.png';">` : 
-                                        '<div class="no-image">🏝️</div>'
+                                        '<div class="no-image">💆‍♀️</div>'
                                     }
                                 </div>
                                 <div class="thumbnail-grid">
@@ -707,7 +723,7 @@
                                                      alt="이미지 ${idx + 2}"
                                                      loading="lazy"
                                                      onerror="this.onerror=null; this.src='../../shared/images/logo/default.png';">` : 
-                                                '<div class="no-image">🏝️</div>'
+                                                '<div class="no-image">💆‍♀️</div>'
                                             }
                                         </div>
                                     `).join('')}
@@ -724,37 +740,21 @@
                         <div class="info-section">
                             <!-- 왼쪽 메인 정보 -->
                             <div class="main-info">
-                                <!-- 객실 정보 카드 -->
+                                <!-- 서비스 종류 카드 -->
                                 <div class="service-card">
-                                    <h3>객실 정보</h3>
-                                    <div class="info-item">
-                                        <span>침실수: ${roomTypes}베드룸</span>
+                                    <h3>서비스 종류</h3>
+                                    <div class="service-tags">
+                                        ${services.map(service => 
+                                            `<span class="service-tag ${getServiceTagClass(service.name)}">${service.name}</span>`
+                                        ).join('')}
                                     </div>
-                                    <div class="info-item">
-                                        <span>수용인원: ${capacity}명</span>
-                                    </div>
-                                    ${poolType.length > 0 ? `
-                                        <div class="service-tags" style="margin-top: 1rem;">
-                                            ${poolType.map(pool => 
-                                                `<span class="service-tag tag-oil">${pool.name}</span>`
-                                            ).join('')}
-                                        </div>
-                                    ` : ''}
                                 </div>
 
-                                <!-- 홈보문구 카드 -->
+                                <!-- 홍보문구 카드 -->
                                 ${description ? `
                                     <div class="info-card">
                                         <h3>소개</h3>
                                         <p style="margin: 0; color: var(--text-secondary); font-size: 1.1rem; line-height: 1.6;">${description}</p>
-                                    </div>
-                                ` : ''}
-
-                                <!-- 시설 정보 -->
-                                ${facilities ? `
-                                    <div class="info-card">
-                                        <h3>시설 정보</h3>
-                                        <p style="margin: 0; color: var(--text-secondary); font-size: 1.1rem; line-height: 1.6;">${facilities}</p>
                                     </div>
                                 ` : ''}
 
@@ -772,10 +772,10 @@
                                     if (parsedPrices) {
                                         return `
                                             <div class="price-accordion">
-                                                ${Object.entries(parsedPrices).map(([category, prices], index) => `
+                                                ${Object.entries(parsedPrices).map(([service, prices], index) => `
                                                     <div class="accordion-item">
                                                         <div class="accordion-header" onclick="toggleAccordion(this)">
-                                                            <h4>${category}</h4>
+                                                            <h4>${service}</h4>
                                                             <span class="accordion-arrow">▼</span>
                                                         </div>
                                                         <div class="accordion-content">
@@ -784,11 +784,11 @@
                                                                     <div class="price-item">
                                                                         <label style="display: flex; align-items: center; width: 100%; cursor: pointer;">
                                                                             <input type="checkbox" class="price-checkbox" 
-                                                                                data-category="${category}" 
-                                                                                data-period="${price.period}" 
+                                                                                data-service="${service}" 
+                                                                                data-duration="${price.duration}" 
                                                                                 data-price="${price.price}"
                                                                                 onchange="updateSelection()">
-                                                                            <span style="flex: 1;">${price.period}</span>
+                                                                            <span style="flex: 1;">${price.duration}</span>
                                                                             <strong>${price.price}</strong>
                                                                         </label>
                                                                     </div>
@@ -803,7 +803,9 @@
                                         return `
                                             <div class="info-card">
                                                 <h3>가격 정보</h3>
-                                                <p style="margin: 0; color: var(--text-secondary); font-size: 1.1rem;">${priceInfo}</p>
+                                                <div style="white-space: pre-line; color: var(--text-secondary);">
+                                                    ${priceInfo}
+                                                </div>
                                             </div>
                                         `;
                                     }
@@ -827,7 +829,7 @@
                                 <div class="info-card">
                                     <h3>위치</h3>
                                     <div class="location-info">
-                                        <span>📍 ${address ? address.split(',')[0] + ' 근처' : '다낭'}</span>
+                                        <span>📍 ${locationArea}</span>
                                         <button class="copy-btn" onclick="copyAddress('${address}')">
                                             주소 복사
                                         </button>
@@ -836,10 +838,10 @@
                                 
                                 <!-- 선택 요약 카드 -->
                                 <div class="selection-summary" id="selectionSummary">
-                                    <h3>선택한 옵션</h3>
+                                    <h3>선택한 서비스</h3>
                                     <div class="selected-items" id="selectedItems">
                                         <p style="color: var(--text-secondary); text-align: center; padding: 1rem 0;">
-                                            숙박 옵션을 선택해주세요
+                                            서비스를 선택해주세요
                                         </p>
                                     </div>
                                     <div class="total-price">
@@ -873,7 +875,7 @@
 
         // 사진 투어 페이지로 이동
         function goToPhotoTour(shopId) {
-            window.location.href = `poolvilla-photo-tour.html?id=${shopId}`;
+            window.location.href = `massage-photo-tour.html?id=${shopId}`;
         }
 
         // 주소 복사
@@ -900,7 +902,7 @@
             if (checkboxes.length === 0) {
                 selectedItemsDiv.innerHTML = `
                     <p style="color: var(--text-secondary); text-align: center; padding: 1rem 0;">
-                        숙박 옵션을 선택해주세요
+                        서비스를 선택해주세요
                     </p>
                 `;
                 totalPriceSpan.textContent = '₫0';
@@ -911,34 +913,26 @@
             let total = 0;
             
             checkboxes.forEach(checkbox => {
-                const category = checkbox.dataset.category;
-                const period = checkbox.dataset.period;
+                const service = checkbox.dataset.service;
+                const duration = checkbox.dataset.duration;
                 const priceText = checkbox.dataset.price;
                 
-                // 가격에서 숫자만 추출 (다양한 통화 형식 처리)
+                // 가격에서 숫자만 추출
                 const priceNumber = parseInt(priceText.replace(/[^0-9]/g, ''));
-                if (!isNaN(priceNumber)) {
-                    total += priceNumber;
-                }
+                total += priceNumber;
                 
                 // 선택 항목 표시
                 const itemDiv = document.createElement('div');
                 itemDiv.className = 'selected-item';
                 itemDiv.innerHTML = `
-                    <span>${category} - ${period}</span>
+                    <span>${service} ${duration}</span>
                     <span>${priceText}</span>
                 `;
                 selectedItemsDiv.appendChild(itemDiv);
             });
             
-            // 합계 표시 (통화 단위 처리)
-            if (selectedItemsDiv.innerHTML.includes('₫')) {
-                totalPriceSpan.textContent = `₫${total.toLocaleString()}`;
-            } else if (selectedItemsDiv.innerHTML.includes('₩')) {
-                totalPriceSpan.textContent = `₩${total.toLocaleString()}`;
-            } else {
-                totalPriceSpan.textContent = total.toLocaleString();
-            }
+            // 합계 표시
+            totalPriceSpan.textContent = `₫${total.toLocaleString()}`;
         }
 
         // 페이지 초기화
