@@ -51,7 +51,7 @@
     <script src="/shared/js/header.js"></script>
     <script>
         // 헤더/푸터 로드
-        fetch('/shared/components/header.html')
+        fetch('/shared/components/header.html?v=' + CONFIG.SITE.version)
             .then(res => res.text())
             .then(html => {
                 document.getElementById('header-container').innerHTML = html;
@@ -61,7 +61,7 @@
                 }
             });
             
-        fetch('/shared/components/footer.html')
+        fetch('/shared/components/footer.html?v=' + CONFIG.SITE.version)
             .then(res => res.text())
             .then(html => document.getElementById('footer-container').innerHTML = html);
             

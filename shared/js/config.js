@@ -10,7 +10,7 @@ const CONFIG = {
         domain: 'ecogirl.vn',
         title: '오아시스 다낭 - 다낭 여행 가이드 플랫폼',
         description: '다낭 최고의 서비스를 한 곳에서',
-        version: '1.0.0',
+        version: '1.0.2',
         slogan: '오아시스 다낭'
     },
 

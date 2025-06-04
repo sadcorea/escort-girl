@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>링크 테스트 페이지</title>
+    <link rel="icon" type="image/png" href="/shared/images/logo/favicon.png">
+    <link rel="stylesheet" href="/shared/styles/main.css">
+</head>
+<body>
+    <!-- 헤더 -->
+    <div id="header-container"></div>
+    
+    <!-- 메인 컨텐츠 -->
+    <main class="container" style="min-height: 500px; padding: 2rem 0;">
+        <h1 class="text-center">🔗 링크 테스트 페이지</h1>
+        <p class="text-center text-medium" style="margin-bottom: 3rem;">헤더의 링크들이 정상 작동하는지 확인하세요!</p>
+        
+        <div class="card" style="max-width: 600px; margin: 0 auto;">
+            <h2 style="margin-bottom: 1rem;">직접 링크 테스트</h2>
+            <p style="margin-bottom: 1rem;">아래 링크들을 클릭해보세요:</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <a href="/modules/ecogirl/ecogirl-section.html" class="btn btn-primary">✅ 에코걸 바로가기</a>
+                <a href="/modules/massage/massage-section.html" class="btn btn-primary">✅ 마사지 바로가기</a>
+                <a href="/modules/villa/villa-section.html" class="btn btn-secondary">✅ 풀빌라 바로가기</a>
+                <a href="/modules/karaoke/karaoke-section.html" class="btn btn-secondary">✅ 가라오케 바로가기</a>
+            </div>
+            
+            <hr style="margin: 2rem 0;">
+            
+            <h3 style="margin-bottom: 1rem;">🎯 헤더 링크 확인사항</h3>
+            <ul style="list-style: disc; padding-left: 2rem;">
+                <li>상단 헤더의 메뉴를 클릭하세요</li>
+                <li>각 페이지로 정상 이동되는지 확인</li>
+                <li>더 이상 루트(/)로 가지 않아야 합니다</li>
+            </ul>
+        </div>
+    </main>
+    
+    <!-- 푸터 -->
+    <div id="footer-container"></div>
+    
+    <!-- JavaScript -->
+    <script src="/shared/js/config.js"></script>
+    <script>
+        // 헤더/푸터 로드
+        fetch('/shared/components/header.html')
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('header-container').innerHTML = html;
+                // header.js 로드
+                const script = document.createElement('script');
+                script.src = '/shared/js/header.js?v=' + Date.now(); // 캐시 방지
+                document.body.appendChild(script);
+            });
+            
+        fetch('/shared/components/footer.html')
+            .then(res => res.text())
+            .then(html => document.getElementById('footer-container').innerHTML = html);
+    </script>
+</body>
+</html>

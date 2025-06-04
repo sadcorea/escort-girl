@@ -120,7 +120,7 @@
             // 헤더 로드
             const headerContainer = document.getElementById('header-container');
             try {
-                const headerResponse = await fetch('../../shared/components/header.html');
+                const headerResponse = await fetch('../../shared/components/header.html?v=' + CONFIG.SITE.version);
                 const headerHTML = await headerResponse.text();
                 headerContainer.innerHTML = headerHTML;
                 
@@ -140,7 +140,7 @@
             // 푸터 로드
             const footerContainer = document.getElementById('footer-container');
             try {
-                const footerResponse = await fetch('../../shared/components/footer.html');
+                const footerResponse = await fetch('../../shared/components/footer.html?v=' + CONFIG.SITE.version);
                 const footerHTML = await footerResponse.text();
                 footerContainer.innerHTML = footerHTML;
             } catch (error) {

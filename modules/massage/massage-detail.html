@@ -477,24 +477,16 @@
         // 헤더와 푸터 로드
         async function loadComponents() {
             try {
-                const headerResponse = await fetch('../../shared/components/header.html');
+                const headerResponse = await fetch('../../shared/components/header.html?v=' + CONFIG.SITE.version);
                 document.getElementById('header-container').innerHTML = await headerResponse.text();
                 
-                const footerResponse = await fetch('../../shared/components/footer.html');
+                const footerResponse = await fetch('../../shared/components/footer.html?v=' + CONFIG.SITE.version);
                 document.getElementById('footer-container').innerHTML = await footerResponse.text();
 
                 // 헤더 스크립트 실행
                 const headerScript = document.createElement('script');
                 headerScript.src = '../../shared/js/header.js';
                 document.body.appendChild(headerScript);
-                
-                // 마사지 링크 수정
-                setTimeout(() => {
-                    const massageLink = document.querySelector('a[href="#massage"]');
-                    if (massageLink) {
-                        massageLink.href = 'massage-section.html';
-                    }
-                }, 100);
             } catch (error) {
                 console.error('컴포넌트 로드 실패:', error);
             }

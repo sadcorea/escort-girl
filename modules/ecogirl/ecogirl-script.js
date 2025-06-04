@@ -290,13 +290,10 @@ function createEcogirlCard(girl) {
         </div>
         
         <div class="card-image">
-            ${window.SmartImage ? 
-                window.SmartImage.create(girl.profilePhoto, girl.name, 'card') :
-                `<img src="${girl.profilePhoto}" 
-                     alt="${girl.name}" 
-                     loading="lazy"
-                     onerror="this.onerror=null; this.src='/shared/images/logo/default.png';">`
-            }
+            <img src="${girl.profilePhoto}" 
+                 alt="${girl.name}" 
+                 loading="lazy"
+                 onerror="this.onerror=null; this.src='/shared/images/logo/default.png';">
             ${girl.age ? `<div class="age-badge">${girl.age}세</div>` : ''}
         </div>
         

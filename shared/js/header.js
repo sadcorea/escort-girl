@@ -112,79 +112,8 @@ function initializeHeader() {
         });
     }
     
-    // 🎯 카테고리 네비게이션 링크 처리
-    const categoryLinks = document.querySelectorAll('.nav-link');
-    categoryLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const href = this.getAttribute('href');
-            const currentPath = window.location.pathname;
-            
-            // 현재 경로에 따른 적절한 이동
-            let targetUrl = '/';
-            
-            switch(href) {
-                case '#ecogirl':
-                    // modules/ecogirl 폴더에 있으면 같은 폴더로
-                    if (currentPath.includes('/modules/ecogirl/')) {
-                        targetUrl = '/modules/ecogirl/ecogirl-section.html';
-                    } else if (currentPath.includes('/modules/')) {
-                        // 다른 모듈에서 에코걸로
-                        targetUrl = '/modules/ecogirl/ecogirl-section.html';
-                    } else {
-                        targetUrl = '/modules/ecogirl/ecogirl-section.html';
-                    }
-                    break;
-                case '#massage':
-                    if (currentPath.includes('/modules/massage/')) {
-                        targetUrl = '/modules/massage/massage-section.html';
-                    } else if (currentPath.includes('/modules/')) {
-                        targetUrl = '/modules/massage/massage-section.html';
-                    } else {
-                        targetUrl = '/modules/massage/massage-section.html';
-                    }
-                    break;
-                case '#villa':
-                    targetUrl = '/modules/villa/villa-section.html';
-                    break;
-                case '#karaoke':
-                    targetUrl = '/modules/karaoke/karaoke-section.html';
-                    break;
-            }
-            
-            window.location.href = targetUrl;
-        });
-    });
-    
-    // 모바일 메뉴 네비게이션도 처리
-    const mobileCategoryLinks = document.querySelectorAll('.mobile-nav a');
-    mobileCategoryLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const href = this.getAttribute('href');
-            const currentPath = window.location.pathname;
-            
-            // 같은 로직 적용
-            let targetUrl = '/';
-            
-            switch(href) {
-                case '#ecogirl':
-                    targetUrl = '/modules/ecogirl/ecogirl-section.html';
-                    break;
-                case '#massage':
-                    targetUrl = '/modules/massage/massage-section.html';
-                    break;
-                case '#villa':
-                    targetUrl = '/modules/villa/villa-section.html';
-                    break;
-                case '#karaoke':
-                    targetUrl = '/modules/karaoke/karaoke-section.html';
-                    break;
-            }
-            
-            window.location.href = targetUrl;
-        });
-    });
+    // 🎯 카테고리 네비게이션 링크는 이제 기본 동작을 사용합니다
+    // preventDefault를 제거하여 href 속성대로 정상 이동하도록 함
     
     // 🎯 현재 페이지 네비게이션 하이라이트
     const currentPath = window.location.pathname;

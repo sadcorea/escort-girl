@@ -334,24 +334,16 @@
         // 헤더와 푸터 로드
         async function loadComponents() {
             try {
-                const headerResponse = await fetch('../../shared/components/header.html');
+                const headerResponse = await fetch('../../shared/components/header.html?v=' + CONFIG.SITE.version);
                 document.getElementById('header-container').innerHTML = await headerResponse.text();
                 
-                const footerResponse = await fetch('../../shared/components/footer.html');
+                const footerResponse = await fetch('../../shared/components/footer.html?v=' + CONFIG.SITE.version);
                 document.getElementById('footer-container').innerHTML = await footerResponse.text();
 
                 // 헤더 스크립트 실행
                 const headerScript = document.createElement('script');
                 headerScript.src = '../../shared/js/header.js';
                 document.body.appendChild(headerScript);
-                
-                // 에코걸 링크 수정
-                setTimeout(() => {
-                    const ecogirlLink = document.querySelector('a[href="#ecogirl"]');
-                    if (ecogirlLink) {
-                        ecogirlLink.href = 'ecogirl-section.html';
-                    }
-                }, 100);
             } catch (error) {
                 console.error('컴포넌트 로드 실패:', error);
             }
